@@ -15,7 +15,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qwize/wize-dev-kit.git"
+    "url": "git+https://github.com/qwize-br/wize-development-kit.git"
+  },
+  "homepage": "https://github.com/qwize-br/wize-development-kit#readme",
+  "bugs": {
+    "url": "https://github.com/qwize-br/wize-development-kit/issues"
   },
   "license": "MIT",
   "author": "Qwize <desenvolvimento@qwize.io>",
@@ -27,7 +31,8 @@
     "install:wize": "node tools/installer/wize-cli.js install",
     "uninstall:wize": "node tools/installer/wize-cli.js uninstall",
     "validate": "node tools/installer/validators/run-all.js",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "prepublishOnly": "npm test && npm run validate"
   },
   "engines": {
     "node": ">=20"

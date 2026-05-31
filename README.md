@@ -3,8 +3,10 @@
 > **Full-lifecycle AI-assisted development kit** with Test Architect and Whiteport Design Studio embedded.
 > Inspired by [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) and [WDS Expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
+[![npm version](https://img.shields.io/npm/v/wize-dev-kit?color=blue)](https://www.npmjs.com/package/wize-dev-kit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-alpha-orange)](#status)
+[![Repo](https://img.shields.io/badge/repo-qwize--br%2Fwize--development--kit-181717?logo=github)](https://github.com/qwize-br/wize-development-kit)
 
 ---
 
@@ -45,6 +47,12 @@ See [`ROSTER.md`](ROSTER.md) for personas, styles and BMAD equivalences.
 ```bash
 # In any greenfield or brownfield repo
 npx wize-dev-kit install
+```
+
+Or, before this is published in your environment, install straight from GitHub:
+
+```bash
+npx github:qwize-br/wize-development-kit install
 ```
 
 The installer asks:
