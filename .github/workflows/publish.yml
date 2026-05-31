@@ -1,0 +1,55 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (run all checks + npm publish --dry-run, do not actually publish)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write   # required for Trusted Publishing via OIDC
+
+jobs:
+  publish:
+    name: Test, validate & publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Confirm tag matches package.json version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "tag=$TAG_VERSION pkg=$PKG_VERSION"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag $TAG_VERSION does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run structural validators
+        run: npm run validate
+
+      - name: Publish to npm (with provenance)
+        if: ${{ inputs.dry_run != true }}
+        run: npm publish --access public --provenance
+
+      - name: Publish dry-run
+        if: ${{ inputs.dry_run == true }}
+        run: npm publish --access public --provenance --dry-run
