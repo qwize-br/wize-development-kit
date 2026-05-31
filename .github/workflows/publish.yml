@@ -29,6 +29,30 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Inspect OIDC claims sent to npm (diagnostic)
+        run: |
+          set -euo pipefail
+          TOKEN=$(curl -sSL \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:registry.npmjs.org" \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r .value)
+          PAYLOAD=$(echo "$TOKEN" | cut -d. -f2 | tr '_-' '/+' | base64 -d --ignore-garbage 2>/dev/null || true)
+          echo "$PAYLOAD" | jq '{
+            issuer: .iss,
+            audience: .aud,
+            subject: .sub,
+            repository: .repository,
+            repository_owner: .repository_owner,
+            repository_id: .repository_id,
+            workflow: .workflow,
+            workflow_ref: .workflow_ref,
+            ref: .ref,
+            ref_type: .ref_type,
+            environment: .environment,
+            event_name: .event_name,
+            actor: .actor,
+            job_workflow_ref: .job_workflow_ref
+          }'
+
       - name: Confirm tag matches package.json version
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
