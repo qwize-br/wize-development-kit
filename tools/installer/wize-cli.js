@@ -12,6 +12,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const readline = require('node:readline');
+const prompts = require('prompts');
+
+const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
 
 const KIT_ROOT = path.resolve(__dirname, '..', '..');
 const KIT_VERSION = require(path.join(KIT_ROOT, 'package.json')).version;
@@ -94,12 +97,41 @@ async function confirm(question, defaultYes = true) {
 }
 
 async function selectLanguage(label, defaultCode = 'en') {
+  if (INTERACTIVE) {
+    const choices = LANGUAGES.map(l => ({
+      title: `${l.code.padEnd(6)} — ${l.label}`,
+      value: l.code,
+      description: l.code === defaultCode ? 'default' : undefined
+    }));
+    choices.push({ title: 'Other (type a custom BCP-47 code)…', value: '__custom' });
+    const initial = LANGUAGES.findIndex(l => l.code === defaultCode);
+    const { picked } = await prompts({
+      type: 'select',
+      name: 'picked',
+      message: label,
+      choices,
+      initial: initial === -1 ? 0 : initial
+    });
+    if (picked === undefined) process.exit(130);
+    if (picked === '__custom') {
+      const { custom } = await prompts({
+        type: 'text',
+        name: 'custom',
+        message: 'Type a BCP-47 language code (e.g. ko, ar, nl, ru)',
+        initial: defaultCode,
+        validate: v => /^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})?$/.test(v) || 'use a valid code like "en" or "pt-BR"'
+      });
+      return custom || defaultCode;
+    }
+    return picked;
+  }
+  // Non-TTY fallback: number-driven.
   console.log(`\n${label}:`);
   LANGUAGES.forEach((l, i) => {
     const def = l.code === defaultCode ? '(default)' : '';
     console.log(`  ${String(i + 1).padStart(2)}. ${l.code.padEnd(6)} — ${l.label} ${def}`);
   });
-  const ans = (await prompt(`Pick a number, type a code (e.g. "en", "pt-BR", "ko"), or ENTER for ${defaultCode}: `)).trim();
+  const ans = (await prompt(`Pick a number, type a code, or ENTER for ${defaultCode}: `)).trim();
   if (!ans) return defaultCode;
   const asNum = parseInt(ans, 10);
   if (!isNaN(asNum) && asNum >= 1 && asNum <= LANGUAGES.length) return LANGUAGES[asNum - 1].code;
@@ -107,6 +139,26 @@ async function selectLanguage(label, defaultCode = 'en') {
 }
 
 async function multiSelect(label, items, isSelected = i => i.default) {
+  if (INTERACTIVE) {
+    const { picked } = await prompts({
+      type: 'multiselect',
+      name: 'picked',
+      message: label,
+      hint: '↑/↓ navigate · space toggle · enter confirm',
+      instructions: false,
+      choices: items.map(it => ({
+        title: it.label + (it.required ? ' (required)' : ''),
+        value: it.code,
+        selected: it.required || isSelected(it),
+        disabled: it.required
+      }))
+    });
+    if (picked === undefined) process.exit(130);
+    const codes = new Set(picked);
+    for (const req of items.filter(i => i.required)) codes.add(req.code);
+    return items.filter(it => codes.has(it.code));
+  }
+  // Non-TTY fallback.
   console.log(`\n${label}:`);
   items.forEach((it, i) => {
     const star = it.required ? '★ ' : '  ';
@@ -114,9 +166,7 @@ async function multiSelect(label, items, isSelected = i => i.default) {
     console.log(`  ${i + 1}. ${star}${it.label} ${def}`);
   });
   const ans = await prompt('Pick numbers (comma-separated) or ENTER for defaults: ');
-  if (!ans) {
-    return items.filter(it => it.required || isSelected(it));
-  }
+  if (!ans) return items.filter(it => it.required || isSelected(it));
   const indices = ans.split(',').map(s => parseInt(s.trim(), 10) - 1).filter(i => !isNaN(i));
   const picked = indices.map(i => items[i]).filter(Boolean);
   for (const req of items.filter(i => i.required)) {
@@ -227,6 +277,35 @@ function userToml() {
 `;
 }
 
+function renderAdapters({ kitRoot, projectRoot, targets, profiles }) {
+  const results = [];
+  const profileCodes = profiles.map(p => p.code);
+  for (const target of targets) {
+    const adapterDir = path.join(kitRoot, 'adapters', target.code);
+    const renderPath = path.join(adapterDir, 'render.js');
+    if (!fs.existsSync(renderPath)) {
+      results.push({ code: target.code, skipped: true, reason: 'adapter missing' });
+      continue;
+    }
+    try {
+      const mod = require(renderPath);
+      if (typeof mod.render !== 'function') {
+        results.push({ code: target.code, skipped: true, reason: 'no render() export' });
+        continue;
+      }
+      const out = mod.render(kitRoot, projectRoot, { profiles: profileCodes });
+      if (out && typeof out === 'object' && Array.isArray(out.written)) {
+        results.push({ code: target.code, written: out.written.length });
+      } else {
+        results.push({ code: target.code, skipped: true, reason: 'stub (no skills emitted)' });
+      }
+    } catch (err) {
+      results.push({ code: target.code, error: err.message });
+    }
+  }
+  return results;
+}
+
 async function cmdInstall(args) {
   const cwd = process.cwd();
   console.log(logo());
@@ -270,8 +349,18 @@ async function cmdInstall(args) {
   console.log(`✓ profiles: ${profiles.map(p => p.code).join(', ')}`);
   console.log(`✓ ide targets: ${targets.map(t => t.code).join(', ')}`);
 
-  console.log('\n(stub) IDE adapter generation would run now for each target.');
-  console.log('(stub) onboarding handoff to Wizer would start here.');
+  console.log('\nGenerating IDE adapters...');
+  const renderResults = renderAdapters({
+    kitRoot: KIT_ROOT,
+    projectRoot: cwd,
+    targets,
+    profiles
+  });
+  for (const r of renderResults) {
+    if (r.skipped) console.log(`  - ${r.code}: skipped (${r.reason})`);
+    else if (r.written) console.log(`  ✓ ${r.code}: ${r.written} skill(s) emitted`);
+    else if (r.error) console.log(`  ✖ ${r.code}: ${r.error}`);
+  }
 
   if (detection.brownfield) {
     const baseline = await confirm('\nRun `wize-document-project` to baseline the existing repo now?', true);

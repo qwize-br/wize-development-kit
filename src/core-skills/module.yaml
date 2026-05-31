@@ -16,9 +16,6 @@ skills:
   - code: wize-brainstorming
     name: "Brainstorming"
     description: "Divergent-then-convergent ideation; produces idea-pool.md."
-  - code: wize-help
-    name: "Help"
-    description: "Routes user to the right agent/workflow based on intent."
   - code: wize-shard-doc
     name: "Shard Doc"
     description: "Splits large markdown docs (PRD, architecture) into addressable shards."

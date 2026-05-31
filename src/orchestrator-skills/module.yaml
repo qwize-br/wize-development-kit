@@ -13,6 +13,9 @@ agents:
     description: "Knows the user deeply, parses raw demand, routes to the right specialist. Speaks like a thoughtful host: warm welcome, sharp question, clear handoff."
 
 skills:
+  - code: wize-help
+    name: "Help (Wizer)"
+    description: "Project-state-aware help. Reads .wize/ and tells the user what to do next. Modes: default, next, status, personas."
   - code: wize-onboarding
     name: "Onboarding"
     description: "Post-install triage: greenfield vs brownfield, profile, objective. Delegates to specialists."
