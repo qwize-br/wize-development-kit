@@ -10,6 +10,36 @@
 
 ---
 
+## Install
+
+In any greenfield or brownfield repo:
+
+```bash
+npx wize-dev-kit install
+```
+
+Or straight from GitHub (no npm required):
+
+```bash
+npx github:qwize-br/wize-development-kit install
+```
+
+The installer asks:
+
+1. Profile(s) to enable (Core / +Web / +App — multi-select).
+2. IDE target(s) (Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity, or generic fallback — multi-select).
+3. Language preferences (communication + document output).
+4. Output folder (default `.wize/`).
+5. For brownfield repos: offers to run `wize-document-project` to baseline the existing codebase.
+
+After install, open your IDE and start with:
+
+> "Activate Wizer and brief him on the project."
+
+Wizer will route you to the right persona (Pepper for brief, Mantis for UX baseline, Tony for architecture preferences, etc.).
+
+---
+
 ## What it is
 
 Wize Development Kit (WDK) is an installable AI agent stack that takes a project from **brief → PRD → UX strategy → architecture → tested implementation** through 9 specialized agents (Marvel-themed) and a structured workflow library. It runs inside your AI IDE (Claude Code, Cursor, Windsurf, and others) and writes structured artifacts to a hidden `.wize/` folder in the target repo.
@@ -39,35 +69,6 @@ Three profiles, combinable in monorepos:
 | 9 | **Shuri** | `wize-agent-dev` | Senior Developer (TDD, code, refactor) |
 
 See [`ROSTER.md`](ROSTER.md) for personas, styles and BMAD equivalences.
-
----
-
-## Quick start
-
-```bash
-# In any greenfield or brownfield repo
-npx wize-dev-kit install
-```
-
-Or, before this is published in your environment, install straight from GitHub:
-
-```bash
-npx github:qwize-br/wize-development-kit install
-```
-
-The installer asks:
-
-1. Profile(s) to enable (Core / +Web / +App — multi-select).
-2. IDE target(s) (Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity, or generic fallback — multi-select).
-3. Language preferences (communication + document output).
-4. Output folder (default `.wize/`).
-5. For brownfield repos: offers to run `wize-document-project` to baseline the existing codebase.
-
-After install, open your IDE and start with:
-
-> "Activate Wizer and brief him on the project."
-
-Wizer will route you to the right persona (Pepper for brief, Mantis for UX baseline, Tony for architecture preferences, etc.).
 
 ---
 
