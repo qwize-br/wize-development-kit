@@ -34,6 +34,20 @@ const PROFILES = [
   { code: 'app-overlay', label: 'Wize App Development (overlay)', required: false }
 ];
 
+// Common BCP-47 short codes. Users can type any other value freely.
+const LANGUAGES = [
+  { code: 'en',    label: 'English' },
+  { code: 'pt-BR', label: 'Português (Brasil)' },
+  { code: 'pt-PT', label: 'Português (Portugal)' },
+  { code: 'es',    label: 'Español' },
+  { code: 'fr',    label: 'Français' },
+  { code: 'de',    label: 'Deutsch' },
+  { code: 'it',    label: 'Italiano' },
+  { code: 'zh-CN', label: '中文 (简体)' },
+  { code: 'ja',    label: '日本語' },
+  { code: 'vi',    label: 'Tiếng Việt' }
+];
+
 const HELP = `wize-dev-kit v${KIT_VERSION}
 
 Usage:
@@ -77,6 +91,19 @@ async function confirm(question, defaultYes = true) {
   const ans = (await prompt(`${question} ${hint} `)).toLowerCase();
   if (!ans) return defaultYes;
   return ans.startsWith('y');
+}
+
+async function selectLanguage(label, defaultCode = 'en') {
+  console.log(`\n${label}:`);
+  LANGUAGES.forEach((l, i) => {
+    const def = l.code === defaultCode ? '(default)' : '';
+    console.log(`  ${String(i + 1).padStart(2)}. ${l.code.padEnd(6)} — ${l.label} ${def}`);
+  });
+  const ans = (await prompt(`Pick a number, type a code (e.g. "en", "pt-BR", "ko"), or ENTER for ${defaultCode}: `)).trim();
+  if (!ans) return defaultCode;
+  const asNum = parseInt(ans, 10);
+  if (!isNaN(asNum) && asNum >= 1 && asNum <= LANGUAGES.length) return LANGUAGES[asNum - 1].code;
+  return ans;
 }
 
 async function multiSelect(label, items, isSelected = i => i.default) {
@@ -147,7 +174,7 @@ const WIZE_DIRS = [
   '.wize/custom/workflows'
 ];
 
-function projectToml({ profiles, targets, language, project_name }) {
+function projectToml({ profiles, targets, communication_language, document_output_language, project_name }) {
   const profileLine = profiles.map(p => `"${p.code}"`).join(', ');
   const targetLine = targets.map(t => `"${t.code}"`).join(', ');
   return `# Wize Development Kit — project config
@@ -162,8 +189,11 @@ profiles = [${profileLine}]
 ide_targets = [${targetLine}]
 
 [language]
-communication = "${language}"
-document_output = "${language}"
+# Language used when agents talk to you in the IDE chat.
+communication = "${communication_language}"
+# Language used when agents write artifacts to disk
+# (brief.md, prd.md, architecture.md, gate.md, etc.).
+document_output = "${document_output_language}"
 
 [paths]
 output_root    = ".wize"
@@ -217,12 +247,22 @@ async function cmdInstall(args) {
   const project_name = (await prompt(`Project name [${path.basename(cwd)}]: `)) || path.basename(cwd);
   const profiles = await multiSelect('Select profile(s) to install', PROFILES);
   const targets = await multiSelect('Select IDE target(s)', TARGETS);
-  const language = (await prompt('Communication language [en]: ')) || 'en';
+
+  const communication_language = await selectLanguage(
+    'Communication language (how agents will talk to you in chat)',
+    'en'
+  );
+  const document_output_language = await selectLanguage(
+    `Document output language (language used in generated files; ENTER for "${communication_language}")`,
+    communication_language
+  );
 
   console.log('\nCreating .wize/ skeleton...');
   for (const dir of WIZE_DIRS) mkdirp(path.join(cwd, dir));
 
-  writeIfMissing(path.join(cwd, '.wize/config/project.toml'), projectToml({ profiles, targets, language, project_name }));
+  writeIfMissing(path.join(cwd, '.wize/config/project.toml'), projectToml({
+    profiles, targets, communication_language, document_output_language, project_name
+  }));
   writeIfMissing(path.join(cwd, '.wize/config/user.toml'), userToml());
   writeIfMissing(path.join(cwd, '.wize/config/tea.toml'), teaToml());
 
