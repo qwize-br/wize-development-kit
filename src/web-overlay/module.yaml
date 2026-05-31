@@ -1,0 +1,41 @@
+code: web-overlay
+name: "Wize Web Dev (overlay)"
+description: "Web-stack extension: scaffolds (Next/Vue/Astro/Laravel/SvelteKit), SEO audit, deploy flows, WCAG playbook for Mantis, Playwright/Vitest playbook for Hawkeye."
+default_selected: false
+required: false
+overlay_of: method
+
+# Stack catalog (referenced by Tony during architecture interview):
+stack_catalog:
+  - Next.js + React + Tailwind
+  - Vue / Nuxt + Tailwind
+  - SvelteKit
+  - Astro
+  - Remix
+  - Laravel + Vue / Inertia
+  - Supabase backends
+  - Drizzle / Prisma ORMs
+
+# Extra artifacts:
+artifacts:
+  - ".wize/planning/web/seo-strategy.md"
+  - ".wize/planning/web/analytics-plan.md"
+  - ".wize/planning/ux/design-tokens.json"
+
+skills:
+  - code: wize-web-scaffold
+    description: "Scaffold a web app skeleton per chosen stack (Next/Vue/etc)."
+  - code: wize-web-seo-audit
+    description: "Audit SEO basics: sitemap, meta tags, structured data, Core Web Vitals."
+  - code: wize-web-deploy
+    description: "Generate deploy playbook (Vercel, Cloudflare, Fly, Coolify, etc)."
+
+# Playbooks added to existing agents:
+agent_playbooks:
+  wize-agent-ux-designer:
+    - "playbooks/wcag-aa.md"
+    - "playbooks/responsive-breakpoints.md"
+    - "playbooks/semantic-html.md"
+  wize-agent-test-architect:
+    - "playbooks/playwright-vitest.md"
+    - "playbooks/web-perf-budgets.md"

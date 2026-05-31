@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qwize.io/wize-dev-kit/schemas/module.schema.json",
+  "title": "Wize Module",
+  "type": "object",
+  "required": ["code", "name", "description"],
+  "additionalProperties": true,
+  "properties": {
+    "code": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "default_selected": { "type": "boolean" },
+    "required": { "type": "boolean" },
+    "overlay_of": { "type": "string" },
+    "agents": { "type": "array" },
+    "skills": { "type": "array" }
+  }
+}

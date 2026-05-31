@@ -1,0 +1,40 @@
+code: app-overlay
+name: "Wize App Development (overlay)"
+description: "Mobile-stack extension: scaffolds (RN/Expo/Flutter/native), store-listing, release channels, HIG/Material 3 playbook for Mantis, Detox/Maestro playbook for Hawkeye."
+default_selected: false
+required: false
+overlay_of: method
+
+# Stack catalog:
+stack_catalog:
+  - React Native + Expo
+  - React Native bare (no Expo)
+  - Flutter
+  - SwiftUI (iOS native)
+  - Jetpack Compose (Android native)
+  - Capacitor / Ionic (hybrid)
+
+# Extra artifacts:
+artifacts:
+  - ".wize/planning/app/mobile-store-listing.md"
+  - ".wize/planning/app/app-perms-and-privacy.md"
+  - ".wize/planning/app/release-channels.md"
+
+skills:
+  - code: wize-app-scaffold
+    description: "Scaffold a mobile app skeleton per chosen runtime."
+  - code: wize-app-release-channels
+    description: "Define release channel strategy (dev/preview/prod, EAS branches, beta tracks)."
+  - code: wize-app-store-listing
+    description: "Draft store listing copy + screenshots brief + ASO keywords."
+
+agent_playbooks:
+  wize-agent-ux-designer:
+    - "playbooks/apple-hig.md"
+    - "playbooks/material-design-3.md"
+    - "playbooks/touch-targets-and-gestures.md"
+    - "playbooks/permissions-ux.md"
+  wize-agent-test-architect:
+    - "playbooks/detox-maestro.md"
+    - "playbooks/mobile-perf-budgets.md"
+    - "playbooks/device-matrix.md"

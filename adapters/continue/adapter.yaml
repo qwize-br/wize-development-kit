@@ -1,0 +1,8 @@
+code: continue
+description: "Continue agent slot."
+target_path: ".continue/agents/"
+file_pattern: "wize-*.md"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []

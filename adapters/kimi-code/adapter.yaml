@@ -1,0 +1,8 @@
+code: kimi-code
+description: "Moonshot Kimi Code agents."
+target_path: ".kimi/agents/"
+file_pattern: "wize-*.md"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []

@@ -1,0 +1,23 @@
+code: builder
+name: "Wize Agent Builder"
+description: "Meta-skills to create new agents, skills and workflows. Validates schema + lint + dry-run. Auto-syncs across all active IDE adapters."
+default_selected: true
+required: true
+
+agents: []   # Builder ships no agents; only meta-skills.
+
+skills:
+  - code: wize-create-agent
+    name: "Create Agent"
+    description: "Interactive workflow to scaffold a new Wize agent. Validates JSON Schema + persona markdown lint + smoke dry-run. Registers in .wize/custom/agents/{code}/."
+  - code: wize-create-skill
+    name: "Create Skill"
+    description: "Scaffold a single-step skill. Validates schema + dry-run."
+  - code: wize-create-workflow
+    name: "Create Workflow"
+    description: "Scaffold a multi-step composite workflow with inputs/outputs/steps."
+
+# Override mechanism for built-in agents/skills:
+overrides:
+  path: ".wize/custom/{type}/{code}/customize.toml"
+  preserves_on_upgrade: true

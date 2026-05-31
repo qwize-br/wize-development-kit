@@ -1,0 +1,21 @@
+code: orchestrator
+name: "Wize Orchestrator"
+description: "Wizer — knowledge base, briefing, intent routing. Wraps the kit with a single point of entry."
+default_selected: true
+required: true
+
+agents:
+  - code: wize-orchestrator
+    name: Wizer
+    title: Orchestrator / Knowledge Base
+    icon: "🧙"
+    team: software-development
+    description: "Knows the user deeply, parses raw demand, routes to the right specialist. Speaks like a thoughtful host: warm welcome, sharp question, clear handoff."
+
+skills:
+  - code: wize-onboarding
+    name: "Onboarding"
+    description: "Post-install triage: greenfield vs brownfield, profile, objective. Delegates to specialists."
+  - code: wize-party-mode
+    name: "Party Mode"
+    description: "Convene a multi-agent discussion when a decision crosses concerns (PM + UX + Architect)."

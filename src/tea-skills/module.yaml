@@ -1,0 +1,45 @@
+code: tea
+name: "Wize Test Architect"
+description: "Hawkeye — risk profile, test design, traceability, NFR assessment, review, gate decisions. Stack-agnostic; advisory by default, enforcing opt-in."
+default_selected: true
+required: true
+
+agents:
+  - code: wize-agent-test-architect
+    name: Hawkeye
+    title: Test Architect (TEA)
+    icon: "🎯"
+    team: software-development
+    description: "Sempre acerto onde dói. Risk profiling, test design, traceability AC↔Test, NFR, review, gate decision. Estilo: pragmático, edge-case hunter, foca no que importa, sem teatro."
+
+# Gate granularity is configurable per project via .wize/config/tea.toml.
+gates_default:
+  - code: risk
+    when: "once-after-architecture"
+    output: ".wize/implementation/tea/risk-profile.md"
+  - code: design
+    when: "per-story-start"
+    output: ".wize/implementation/tea/{epic}/{story}/design.md"
+  - code: trace
+    when: "during-or-after-implementation"
+    output: ".wize/implementation/tea/{epic}/{story}/trace.md"
+  - code: nfr
+    when: "pre-merge-per-epic"
+    output: ".wize/implementation/tea/nfr/{epic}.md"
+  - code: review
+    when: "story-end"
+    output: ".wize/implementation/tea/{epic}/{story}/review.md"
+  - code: gate
+    when: "story-final"
+    output: ".wize/implementation/tea/{epic}/{story}/gate.md"
+
+policy_default: "advisory"   # alternatives: "enforcing"
+artifact_format: "markdown+yaml-frontmatter"
+
+skills:
+  - code: wize-tea-risk
+  - code: wize-tea-design
+  - code: wize-tea-trace
+  - code: wize-tea-nfr
+  - code: wize-tea-review
+  - code: wize-tea-gate

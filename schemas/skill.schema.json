@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qwize.io/wize-dev-kit/schemas/skill.schema.json",
+  "title": "Wize Skill (frontmatter)",
+  "type": "object",
+  "required": ["code", "name"],
+  "additionalProperties": true,
+  "properties": {
+    "code": { "type": "string", "pattern": "^wize-[a-z0-9-]+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "module": { "type": "string" },
+    "status": { "enum": ["stub", "draft", "ready", "stable"] }
+  }
+}

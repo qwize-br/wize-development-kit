@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qwize.io/wize-dev-kit/schemas/agent.schema.json",
+  "title": "Wize Agent",
+  "type": "object",
+  "required": ["code", "name", "title", "module", "description"],
+  "additionalProperties": true,
+  "properties": {
+    "code": { "type": "string", "pattern": "^wize-(agent|orchestrator)-[a-z0-9-]+$|^wize-orchestrator$" },
+    "name": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "icon": { "type": "string" },
+    "team": { "type": "string" },
+    "module": { "enum": ["orchestrator", "method", "tea", "builder", "core", "web-overlay", "app-overlay", "custom"] },
+    "phase": { "type": "string" },
+    "description": { "type": "string", "minLength": 10 },
+    "style": {
+      "type": "object",
+      "properties": {
+        "voice": { "type": "string" },
+        "brevity": { "type": "string" },
+        "motto": { "type": "string" },
+        "approach": { "type": "string" }
+      }
+    },
+    "capabilities": { "type": "array", "items": { "type": "string" } },
+    "skills": { "type": "array", "items": { "type": "string" } },
+    "inputs": { "type": "array", "items": { "type": "string" } },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "absorbs": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+    "routes_to": { "type": "array", "items": { "type": "string" } },
+    "overlays_aware": { "type": "array", "items": { "type": "string" } },
+    "gates": { "type": "array", "items": { "enum": ["risk", "design", "trace", "nfr", "review", "gate"] } },
+    "policy": { "enum": ["advisory", "enforcing"] },
+    "format": { "type": "string" }
+  }
+}

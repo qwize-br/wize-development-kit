@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qwize.io/wize-dev-kit/schemas/workflow.schema.json",
+  "title": "Wize Workflow (frontmatter)",
+  "type": "object",
+  "required": ["code", "name"],
+  "additionalProperties": true,
+  "properties": {
+    "code": { "type": "string", "pattern": "^wize-[a-z0-9-]+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "phase": { "type": "string" },
+    "owner": { "type": "string" },
+    "absorbs": { "type": "string" },
+    "overlay": { "enum": ["web", "app"] },
+    "status": { "enum": ["stub", "draft", "ready", "stable"] },
+    "gate": { "enum": ["risk", "design", "trace", "nfr", "review", "gate"] },
+    "when": { "type": "string" }
+  }
+}

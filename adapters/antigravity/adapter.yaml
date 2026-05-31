@@ -1,0 +1,8 @@
+code: antigravity
+description: "Antigravity CLI + IDE."
+target_path: ".antigravity/agents/"
+file_pattern: "wize-*.md"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []

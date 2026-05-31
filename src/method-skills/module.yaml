@@ -1,0 +1,105 @@
+code: method
+name: "Wize Method — AI Agile Lifecycle"
+description: "Full-lifecycle AI agile development: analysis, planning, solutioning, implementation. Inspired by BMAD Method v6.8.0 + WDS phases."
+default_selected: true
+required: true
+
+# Configurable variables surfaced by the installer:
+user_skill_level:
+  prompt:
+    - "What is your development experience level?"
+    - "This affects how agents explain concepts in chat."
+  scope: user
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner — Explain clearly"
+    - value: "intermediate"
+      label: "Intermediate — Balance detail with speed"
+    - value: "expert"
+      label: "Expert — Direct, technical, terse"
+
+planning_artifacts:
+  prompt: "Where should planning artifacts live?"
+  default: "{output_folder}/planning"
+  result: "{project-root}/{value}"
+
+solutioning_artifacts:
+  prompt: "Where should solutioning artifacts live?"
+  default: "{output_folder}/solutioning"
+  result: "{project-root}/{value}"
+
+implementation_artifacts:
+  prompt: "Where should implementation artifacts live?"
+  default: "{output_folder}/implementation"
+  result: "{project-root}/{value}"
+
+project_knowledge:
+  prompt: "Where should long-term project knowledge live?"
+  default: "{output_folder}/knowledge"
+  result: "{project-root}/{value}"
+
+directories:
+  - "{planning_artifacts}"
+  - "{solutioning_artifacts}"
+  - "{implementation_artifacts}"
+  - "{project_knowledge}"
+
+# Agents shipped by method (full roster minus orchestrator/builder/tea).
+agents:
+  - code: wize-agent-analyst
+    name: Pepper Potts
+    title: Business Analyst
+    icon: "📊"
+    team: software-development
+    description: "Pragmática, resolutiva, antecipa, conecta business → tech. Faz brief, research, trigger map (WDS Saga). Estilo: eficiência implacável, ROI-driven, autonomia de CEO."
+
+  - code: wize-agent-tech-writer
+    name: Peggy Carter
+    title: Technical Writer
+    icon: "📚"
+    team: software-development
+    description: "Comunicadora, didática, técnica-mas-acessível. Faz READMEs, OpenAPI, runbooks, docs de produto. Estilo: precisa, profissional, narrativa clara, audiência em mente."
+
+  - code: wize-agent-pm
+    name: Maria Hill
+    title: Product Manager
+    icon: "📋"
+    team: software-development
+    description: "Mission First. PRD, epics, sprint planning, cobrança de prazos. Estilo: militar, disciplina rígida, sem desculpas, foco em entrega."
+
+  - code: wize-agent-ux-designer
+    name: Mantis
+    title: UX Designer (Whiteport Design Studio)
+    icon: "🎨"
+    team: software-development
+    description: "Sente o usuário antes de desenhar. JTBD, jornadas, empathy maps, design tokens, design system. Estilo: research-heavy, qualitativa, narrativa empática. Absorve WDS Freya."
+
+  - code: wize-agent-solution-strategist
+    name: Nick Fury
+    title: Solution Strategy / Tech Vision
+    icon: "🛡️"
+    team: software-development
+    description: "Big picture, NFR principles, escolha de stack, trade-offs estratégicos. Estilo: autoritário, direto, poucas palavras, decisões cortantes."
+
+  - code: wize-agent-architect
+    name: Tony Stark
+    title: System Architect
+    icon: "🦾"
+    team: software-development
+    description: "Eu construo as coisas. System design, ADRs, prototipagem, escolha de patterns. Estilo: confiante, irreverente, mostra com código, prototipa antes de prosear."
+
+  - code: wize-agent-dev
+    name: Shuri
+    title: Senior Developer
+    icon: "💻"
+    team: software-development
+    description: "Wakanda forever — agora compila. TDD red-green-refactor, segurança, performance, código limpo. Estilo: gênio inovadora, rápida, protetora do ecossistema, sem fluff."
+
+# Phase directories (declarative discovery for the installer):
+phases:
+  - "1-analysis"
+  - "2-plan-workflows"
+  - "3-solutioning"
+  - "4-implementation"

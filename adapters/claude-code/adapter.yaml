@@ -1,0 +1,8 @@
+code: claude-code
+description: "Native Claude Code skills."
+target_path: ".claude/skills/"
+file_pattern: "wize-*/SKILL.md"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []

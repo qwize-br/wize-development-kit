@@ -1,0 +1,27 @@
+code: core
+name: "Wize Core"
+description: "Shared utilities and primitives: elicitation, brainstorming, party-mode, help, doc-sharding, review."
+default_selected: true
+required: true
+
+# Variables exposed to every module:
+#   user_name, project_name, communication_language, document_output_language, output_folder
+
+agents: []   # Core ships no agents; it ships shared skills.
+
+skills:
+  - code: wize-advanced-elicitation
+    name: "Advanced Elicitation"
+    description: "Structured technique stack (laddering, 5-why, SCAMPER) callable by any agent."
+  - code: wize-brainstorming
+    name: "Brainstorming"
+    description: "Divergent-then-convergent ideation; produces idea-pool.md."
+  - code: wize-help
+    name: "Help"
+    description: "Routes user to the right agent/workflow based on intent."
+  - code: wize-shard-doc
+    name: "Shard Doc"
+    description: "Splits large markdown docs (PRD, architecture) into addressable shards."
+  - code: wize-review-adversarial
+    name: "Adversarial Review"
+    description: "Red-team review of artifacts — challenges assumptions, surfaces edge cases."

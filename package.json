@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "wize-dev-kit",
+  "version": "0.1.0",
+  "description": "Full-lifecycle AI-assisted development kit with Test Architect and Whiteport Design Studio embedded. Inspired by BMAD Method and WDS.",
+  "keywords": [
+    "ai",
+    "agile",
+    "agents",
+    "orchestrator",
+    "test-architect",
+    "whiteport",
+    "wize",
+    "development-kit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qwize/wize-dev-kit.git"
+  },
+  "license": "MIT",
+  "author": "Qwize <desenvolvimento@qwize.io>",
+  "main": "tools/installer/wize-cli.js",
+  "bin": {
+    "wize-dev-kit": "tools/installer/wize-cli.js"
+  },
+  "scripts": {
+    "install:wize": "node tools/installer/wize-cli.js install",
+    "uninstall:wize": "node tools/installer/wize-cli.js uninstall",
+    "validate": "node tools/installer/validators/run-all.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "src/",
+    "adapters/",
+    "tools/",
+    "schemas/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "ARCH.md",
+    "ROSTER.md",
+    "DECISIONS.md"
+  ]
+}

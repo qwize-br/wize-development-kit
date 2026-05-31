@@ -1,0 +1,7 @@
+test/
+.github/
+.vscode/
+*.log
+.cache/
+.tmp/
+INTERVIEW.md

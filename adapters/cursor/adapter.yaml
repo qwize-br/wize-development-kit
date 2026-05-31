@@ -1,0 +1,8 @@
+code: cursor
+description: "Cursor MDC rules."
+target_path: ".cursor/rules/"
+file_pattern: "wize-*.mdc"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []
