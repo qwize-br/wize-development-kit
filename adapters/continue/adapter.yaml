@@ -1,8 +1,8 @@
 code: continue
-description: "Continue agent slot."
-target_path: ".continue/agents/"
-file_pattern: "wize-*.md"
-file_format: markdown
+description: "Continue.dev slash commands (.continue/prompts/, .prompt files)."
+target_path: ".continue/prompts/"
+file_pattern: "wize-*.prompt"
+file_format: prompt
 hooks:
   pre_render: []
   post_render: []

@@ -1,5 +1,5 @@
 code: claude-code
-description: "Native Claude Code skills."
+description: "Native Claude Code skills (Anthropic SKILL.md format)."
 target_path: ".claude/skills/"
 file_pattern: "wize-*/SKILL.md"
 file_format: markdown

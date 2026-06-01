@@ -1,7 +1,7 @@
 code: kimi-code
-description: "Moonshot Kimi Code agents."
-target_path: ".kimi/agents/"
-file_pattern: "wize-*.md"
+description: "Moonshot Kimi Code skills (.kimi/skills/, Anthropic-compatible)."
+target_path: ".kimi/skills/"
+file_pattern: "wize-*/SKILL.md"
 file_format: markdown
 hooks:
   pre_render: []

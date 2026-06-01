@@ -1,6 +1,6 @@
 code: windsurf
-description: "Windsurf Cascade-friendly markdown agents."
-target_path: ".windsurf/agents/"
+description: "Windsurf Cascade rules (.windsurf/rules/, plain markdown)."
+target_path: ".windsurf/rules/"
 file_pattern: "wize-*.md"
 file_format: markdown
 hooks:

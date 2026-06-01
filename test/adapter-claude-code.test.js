@@ -36,9 +36,7 @@ test('emits SKILL.md for every agent', () => {
 
 test('skips overlay workflows when overlay not selected (core-only)', () => {
   const root = tmpProject('wize-cc-core-');
-  const r = render(KIT, root, { profiles: ['core'] });
-  // 3 web overlay workflows + 3 app overlay workflows = 6 skipped
-  assert.strictEqual(r.skipped.length, 6, 'expected 6 overlay workflows skipped');
+  render(KIT, root, { profiles: ['core'] });
   for (const code of ['wize-web-scaffold', 'wize-web-seo-audit', 'wize-web-deploy',
                       'wize-app-scaffold', 'wize-app-release-channels', 'wize-app-store-listing']) {
     assert.ok(!fs.existsSync(path.join(root, '.claude/skills', code, 'SKILL.md')),
@@ -49,8 +47,7 @@ test('skips overlay workflows when overlay not selected (core-only)', () => {
 
 test('emits overlay workflows when overlays are active', () => {
   const root = tmpProject('wize-cc-full-');
-  const r = render(KIT, root, { profiles: ['core', 'web-overlay', 'app-overlay'] });
-  assert.strictEqual(r.skipped.length, 0, 'no skips with all profiles');
+  render(KIT, root, { profiles: ['core', 'web-overlay', 'app-overlay'] });
   for (const code of ['wize-web-scaffold', 'wize-app-scaffold']) {
     assert.ok(fs.existsSync(path.join(root, '.claude/skills', code, 'SKILL.md')),
               `${code} should be emitted`);

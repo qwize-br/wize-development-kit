@@ -1,7 +1,7 @@
 code: antigravity
-description: "Antigravity CLI + IDE."
-target_path: ".antigravity/agents/"
-file_pattern: "wize-*.md"
+description: "Google Antigravity skills (.agent/skills, NOT .antigravitycli which is CLI state)."
+target_path: ".agent/skills/"
+file_pattern: "wize-*/SKILL.md"
 file_format: markdown
 hooks:
   pre_render: []

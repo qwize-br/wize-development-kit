@@ -5,6 +5,31 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.3] — 2026-06-01
+
+### Added
+
+- **All 9 IDE adapters now ship real renderers** (previously 8 of them were stub printers). Each adapter writes files at the canonical path each harness expects:
+  - **Claude Code** → `.claude/skills/wize-{code}/SKILL.md`
+  - **Antigravity (Google)** → `.agent/skills/wize-{code}/SKILL.md` (singular `.agent`; `.antigravitycli/` is the CLI's own state and is left untouched)
+  - **OpenAI Codex CLI** → `.agents/skills/wize-{code}/SKILL.md`
+  - **Moonshot Kimi Code** → `.kimi/skills/wize-{code}/SKILL.md`
+  - **Cursor** → `.cursor/rules/wize-{code}.mdc` (with `description`, `globs`, `alwaysApply` frontmatter)
+  - **Windsurf (Codeium)** → `.windsurf/rules/wize-{code}.md`
+  - **Continue.dev** → `.continue/prompts/wize-{code}.prompt` (`invokable: true` → slash command)
+  - **OpenCode (sst/opencode)** → `.opencode/agents/wize-{code}.md` (personas, with `mode: primary` for Wizer and `mode: subagent` for the others) + `.opencode/commands/wize-{code}.md` (workflows/skills as slash commands)
+  - **Generic fallback** → `.wize/agents/wize-{code}.md` + a root `AGENTS.md` baseline (read by Codex, Cursor, Windsurf and Antigravity even without their dedicated adapter)
+- New shared module `tools/installer/render-shared.js` centralizes kit traversal, asset parsing, and the Anthropic-style SKILL.md emitter reused by Claude Code, Antigravity, Codex and Kimi adapters.
+- Adapter test suite expanded from 12 → 25 passing tests, with one sanity test per adapter plus format-specific checks (Cursor frontmatter shape, Continue `invokable: true`, OpenCode primary/subagent mode split, generic AGENTS.md emission).
+
+### Fixed
+
+- Antigravity adapter previously created/touched nothing useful. It now emits skills at the correct location (`.agent/skills/`) and explicitly avoids `.antigravitycli/` (CLI state, owned by the Antigravity CLI itself).
+
+### Notes
+
+- Several harnesses inject custom skills at session startup; you may need to restart the IDE after `wize-dev-kit install` for slash commands to appear.
+
 ## [0.1.2] — 2026-05-31
 
 ### Added
@@ -58,7 +83,8 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qwize-br/wize-development-kit/releases/tag/v0.1.0

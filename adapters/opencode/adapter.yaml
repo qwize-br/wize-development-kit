@@ -1,7 +1,7 @@
 code: opencode
-description: "OpenCode CLI agents."
-target_path: ".opencode/agents/"
-file_pattern: "wize-*.md"
+description: "OpenCode agents + commands (.opencode/agents/ and .opencode/commands/)."
+target_path: ".opencode/"
+file_pattern: "agents/wize-*.md, commands/wize-*.md"
 file_format: markdown
 hooks:
   pre_render: []

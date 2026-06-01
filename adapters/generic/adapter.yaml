@@ -1,7 +1,7 @@
 code: generic
-description: "Generic markdown fallback for any AI agent runtime that can read a folder of markdown."
+description: "Generic markdown fallback (.wize/agents/) + AGENTS.md baseline."
 target_path: ".wize/agents/"
-file_pattern: "wize-*.md"
+file_pattern: "wize-*.md + AGENTS.md"
 file_format: markdown
 hooks:
   pre_render: []
