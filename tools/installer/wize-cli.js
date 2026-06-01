@@ -10,9 +10,11 @@
 'use strict';
 
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const readline = require('node:readline');
 const prompts = require('prompts');
+const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
 
 const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
 
@@ -228,7 +230,7 @@ function projectToml({ profiles, targets, communication_language, document_outpu
   const profileLine = profiles.map(p => `"${p.code}"`).join(', ');
   const targetLine = targets.map(t => `"${t.code}"`).join(', ');
   return `# Wize Development Kit — project config
-# Generated at install. Edit user-level customizations in user.toml.
+# Generated at install. Commit this file. Personal preferences live in user.toml.
 
 [project]
 name = "${project_name}"
@@ -239,7 +241,7 @@ profiles = [${profileLine}]
 ide_targets = [${targetLine}]
 
 [language]
-# Language used when agents talk to you in the IDE chat.
+# Language used when agents talk to the team in chat.
 communication = "${communication_language}"
 # Language used when agents write artifacts to disk
 # (brief.md, prd.md, architecture.md, gate.md, etc.).
@@ -268,12 +270,6 @@ trace   = { granularity = "per-story" }
 nfr     = { granularity = "per-epic" }
 review  = { granularity = "per-story" }
 gate    = { granularity = "per-story" }
-`;
-}
-
-function userToml() {
-  return `# Wize Development Kit — user-level customizations
-# This file is preserved on update; project.toml may be rewritten.
 `;
 }
 
@@ -336,18 +332,39 @@ async function cmdInstall(args) {
     communication_language
   );
 
+  // Personal touch — the user_name lands in .wize/config/user.toml (per-developer).
+  const defaultName = (os.userInfo().username || '').trim();
+  const user_name = (await prompt(
+    `How should the agents call you? [${defaultName || 'leave blank'}]: `
+  )).trim() || defaultName;
+
+  // Gitignore — opt-in, idempotent.
+  const wantsGitignore = await confirm(
+    'Add the suggested entries to .gitignore (user.toml + scratch + generated adapter outputs)?',
+    true
+  );
+
   console.log('\nCreating .wize/ skeleton...');
   for (const dir of WIZE_DIRS) mkdirp(path.join(cwd, dir));
 
   writeIfMissing(path.join(cwd, '.wize/config/project.toml'), projectToml({
     profiles, targets, communication_language, document_output_language, project_name
   }));
-  writeIfMissing(path.join(cwd, '.wize/config/user.toml'), userToml());
+  writeIfMissing(path.join(cwd, '.wize/config/user.toml'), generateUserToml({ name: user_name }));
   writeIfMissing(path.join(cwd, '.wize/config/tea.toml'), teaToml());
 
   console.log('✓ .wize/ created');
   console.log(`✓ profiles: ${profiles.map(p => p.code).join(', ')}`);
   console.log(`✓ ide targets: ${targets.map(t => t.code).join(', ')}`);
+  if (user_name) console.log(`✓ user.toml: agents will call you "${user_name}"`);
+
+  if (wantsGitignore) {
+    const r = applyGitignore(cwd);
+    if (r.changed) console.log(`✓ .gitignore ${r.mode} with the wize-dev-kit block`);
+    else           console.log(`= .gitignore already up to date`);
+  } else {
+    console.log('= .gitignore untouched (you opted out of suggested entries)');
+  }
 
   console.log('\nGenerating IDE adapters...');
   const renderResults = renderAdapters({

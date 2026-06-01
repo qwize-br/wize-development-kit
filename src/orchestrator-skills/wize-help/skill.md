@@ -26,6 +26,7 @@ Read these files if they exist (they may not — that's information too):
 | Path | Tells you |
 |---|---|
 | `.wize/config/project.toml` | Active profiles, IDE targets, communication & document languages, project name. |
+| `.wize/config/user.toml` | Per-developer preferences. Use `[user] name` to greet the user by name. Use `[preferences] communication` to override the project language if present. |
 | `.wize/config/tea.toml` | TEA gate policy (advisory vs enforcing). |
 | `.wize/planning/brief.md` | Whether Phase 1 (Pepper) started. |
 | `.wize/planning/research.md` | Whether research was done. |
@@ -63,13 +64,19 @@ For brownfield repos where `.wize/knowledge/document-project/` is missing, prepe
 
 ## Step 3 — respond
 
-Default response shape (3 lines):
+Default response shape (3 lines). When `user.toml` provides a `[user] name`, include it in the greeting:
 
 ```
-Welcome back. {project name} — {profiles, e.g., "Core + Web"}.
+Welcome back{{, <user.name> when present}}. {project name} — {profiles, e.g., "Core + Web"}.
 You're at: {phase + last completed artifact}.
 Next: /{next workflow} ({persona}).
 ```
+
+Concrete example with personalization filled in:
+
+> Welcome back, [USER_NAME]. wize-development-kit — Core + Web.
+> You're at: Phase 3 closeout — architecture signed, no risk profile yet.
+> Next: `/wize-tea-risk` (Hawkeye).
 
 For `status`, return a markdown table:
 
