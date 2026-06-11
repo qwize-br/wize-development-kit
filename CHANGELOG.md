@@ -5,6 +5,36 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-06-11
+
+Closes the "documentation always stale" gap: inline knowledge captures per story, Hawkeye enforces, sprint-end refresh consolidates. Plus auto-update nudges on the CLI and Wizer.
+
+### Added — knowledge stays current
+
+- **`wize-dev-story` step 8 — Knowledge update (inline).** After commits and before pre-PR check, Shuri checks whether the story touched any of the 5 baseline axes (architecture / conventions / risk-spots / dependencies / overview) and, if yes, adds 1–3 dated bullets to the matching `.wize/knowledge/document-project/*.md` file — same PR. ~60 seconds when applicable; skipped otherwise.
+- **`wize-quick-dev` step 5 — Knowledge update (only if applicable).** Quick-dev rarely touches axes; when it does (dep bump that shifts API, rename that breaks a contract), one line lands in the relevant doc.
+- **`wize-tea-review` step 5 — Knowledge update check.** Hawkeye walks the diff. Touched-but-not-updated stories get a `KN-NN` finding. `tea-review` frontmatter now carries `knowledge_axes_touched` + `knowledge_axes_updated`.
+- **`wize-tea-gate` decision rule extended.** When `knowledge_axes_touched ≠ knowledge_axes_updated`, recommendation flips to `CONCERNS` (advisory) or `FAIL` (enforcing). Example `KN-NN` finding shape documented in the canonical YAML.
+- **`wize-refresh-knowledge` (new workflow).** Sprint-end consolidation: Pepper + Peggy roll the dated bullets accumulated through the sprint into the narrative prose of each axis file, demote stale claims to a `Deprecated` section, freeze a snapshot at `.wize/knowledge/document-project/_history/{YYYY-Qn}/sprint-{N}.md`, and stamp `last_refreshed` in each file. Triggered when `wize-help next` detects the sprint emptied.
+- **`wize-document-project` — Update mode section.** Documents the two-cadence loop (inline-per-story + sprint-refresh) and the file frontmatter convention (`last_refreshed`).
+
+### Added — proactive nudges
+
+- **`wize-help` skill — version-skew detection.** Wizer now reads `kit_version` from `.wize/config/project.toml`, compares with the installed package version and (via Bash tool when available) the registry, and proactively suggests `npx wize-dev-kit@latest update` when behind. Worded as a single short line, never as a banner.
+- **`wize-help` skill — sprint-end detection.** Heuristic refined: when sprint-status shows all stories gated and no `ready-for-dev` left, the next-step recommendation is `wize-retrospective` + `wize-refresh-knowledge`, not just retro.
+- **CLI version check (camera 1).** `wize-dev-kit list / sync / agent / workflow / help` now print a one-line `↑ Update available: X → Y` at the top when a newer version sits in the npm registry. Cached for 1 hour, 1.5s network timeout, silent on offline / non-TTY / `WIZE_DISABLE_UPDATE_CHECK=1`. Never blocks. New module `tools/installer/version-check.js`.
+
+### Tests
+
+- Total: **104 passing** (was 94 in 0.2.1).
+- 10 new tests in `test/version-check.test.js` covering semver compare, cache freshness, fetch fallback (offline + non-2xx), TTY guard, env disable.
+
+### Files
+
+- `src/method-skills/1-analysis/wize-refresh-knowledge/workflow.md` (new).
+- `tools/installer/version-check.js` (new).
+- Edits to `wize-dev-story`, `wize-quick-dev`, `wize-tea-review`, `wize-tea-gate`, `wize-help` skill, `wize-document-project`, `tools/installer/wize-cli.js`.
+
 ## [0.2.1] — 2026-06-11
 
 Focused polish: brownfield baseline finally runs end-to-end through a detected harness CLI, CI publishes without the deprecated-config warning, and every release is now smoke-tested before going up.
@@ -200,7 +230,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...v0.2.0
 [0.1.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.4...v0.1.5

@@ -80,7 +80,19 @@ Append one line to `.wize/implementation/quick-dev-log.md`:
 2026-06-11 | shuri | rename UserService → AccountService | smoke PASS | PR #420
 ```
 
-### 5. Commit + open PR
+### 5. Knowledge update (only if applicable)
+
+Most quick-dev changes don't touch the baseline axes (copy edit, small refactor, dep bump in a stable lib). When they do — typically a **dependency bump** or a **rename that breaks a public contract** — add **one line** to the matching `document-project/*.md` file:
+
+```markdown
+## 2026-06-11
+- Dependencies: bump zod 3.22 → 3.23. No API changes; validateInviteEmail unaffected.
+- Conventions: `AccountService` replaces `UserService` (rename); imports updated repo-wide.
+```
+
+Heuristic: *"would a new dev hitting `document-project/*.md` next week be misled if I don't add this?"* Yes → write. No → skip.
+
+### 6. Commit + open PR
 
 Conventional commit. PR description: the paragraph from step 1.
 

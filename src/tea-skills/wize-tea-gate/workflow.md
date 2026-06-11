@@ -34,6 +34,7 @@ Hawkeye drives. The four inputs (`design`, `trace`, `review`, plus `nfr` at epic
 | Any AC `partial` | **CONCERNS** |
 | Any AC `not-met` | **FAIL** |
 | NFR `FAIL` on the epic (last story) | **FAIL** |
+| `tea-review` flagged `knowledge_axes_touched` ≠ `knowledge_axes_updated` (any axis touched without update) | **CONCERNS** (advisory mode) / **FAIL** (enforcing mode) — adds finding `KN-NN` |
 | Failing AC OR non-neg NFR with documented business rationale + senior signoff | **WAIVED** |
 
 Score (0–100): heuristic. `100 - (10 × high) - (5 × medium) - (2 × low)`. Floor 0.
@@ -82,6 +83,12 @@ findings:
     severity: low
     summary: "Empty-state copy slightly differs from Mantis' spec."
     recommendation: "Update `<EmptyTeamPanel>` heading in a follow-up."
+  - id: KN-01
+    severity: medium
+    summary: "Story added a new component (`<InviteForm>`) but architecture-snapshot.md was not updated."
+    recommendation: "Add 2 lines to `.wize/knowledge/document-project/architecture-snapshot.md` under a dated bullet referencing the new component + its public testid contract."
+    owner: shuri
+    blocking: false   # advisory mode; would be true under enforcing
 waived_by: null
 waived_reason: null
 created_at: 2026-06-11T20:30:00Z

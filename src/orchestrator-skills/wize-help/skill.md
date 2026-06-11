@@ -58,9 +58,33 @@ Apply this heuristic, top-down. Stop at the first match.
 12. **Has active sprint, oldest in-flight story has no `tea/.../design.md`.** → Next: **Hawkeye / `wize-tea-design`** for that story.
 13. **In-flight story exists, no implementation commits.** → Next: **Shuri / `wize-dev-story`** on that story.
 14. **In-flight story exists with code, no `gate.md`.** → Next: **Hawkeye / `wize-tea-trace` → `wize-tea-review` → `wize-tea-gate`** for that story.
-15. **All stories gated.** → Next: **Wizer / `wize-retrospective`** + plan next epic.
+15. **All sprint stories gated `PASS`/`CONCERNS`, backlog has no `ready-for-dev` left.** → Sprint ended. Next: **Wizer / `wize-retrospective`** + **Pepper+Peggy / `wize-refresh-knowledge`** (the inline knowledge notes pile up over the sprint; the refresh consolidates them into the baseline docs).
+16. **All stories gated and no new epic pulled.** → Plan next epic with Tony + Hill, or run a roadmap session.
 
 For brownfield repos where `.wize/knowledge/document-project/` is missing, prepend: "Run `wize-document-project` first to baseline the codebase."
+
+## Step 2.5 — version-skew detection (proactive)
+
+Before routing, compare:
+- `kit_version` in `.wize/config/project.toml`
+- The version of the installed kit (from `node_modules/wize-dev-kit/package.json` — *or* the version baked into the activated skills if you don't have a node-side check)
+
+If you have access to the user's terminal (Claude Code Bash tool, Codex exec, OpenCode), additionally check the npm registry with a 2-second timeout:
+
+```bash
+npm view wize-dev-kit version 2>/dev/null
+```
+
+Cases:
+- **Installed version > project.toml's `kit_version`** → suggest `npx wize-dev-kit update` (no `@latest` needed; the installed version is already newer).
+- **Registry > installed version** → suggest `npx wize-dev-kit@latest update` to pick up the newer release.
+- **All three match** → no message; carry on.
+
+Phrase it as one short line, not a banner. Example:
+
+> *"Heads up: registry has 0.2.3, you're on 0.2.2. Want me to run `npx wize-dev-kit@latest update`? (it preserves your `user.toml` and re-renders adapters)"*
+
+If the user says yes and you can execute Bash, run it in the project root and stream output. Otherwise, print the command for them to run.
 
 ## Step 3 — respond
 

@@ -17,6 +17,7 @@ const prompts = require('prompts');
 const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
 const { cmdUpdate } = require('./commands/update.js');
 const { detectHarnessCli, runHeadlessBaseline, manualInstructions, defaultPrompt } = require('./baseline.js');
+const { printUpdateHintIfAny } = require('./version-check.js');
 const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 
@@ -503,11 +504,21 @@ function cmdValidate() {
   require('./validators/run-all.js')(KIT_ROOT);
 }
 
+// Commands worth nudging the user about when a newer version exists. Skipped
+// for `update` (already updating), `install` (already setting up), `uninstall`
+// (already leaving), `validate` (developer-tool), and `version` (the user is
+// already asking about versions).
+const HINT_COMMANDS = new Set(['list', 'sync', 'agent', 'workflow', 'help']);
+
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   if (!cmd || cmd === 'help' || cmd === '--help' || cmd === '-h') {
+    await printUpdateHintIfAny(KIT_VERSION);
     console.log(HELP);
     return;
+  }
+  if (HINT_COMMANDS.has(cmd)) {
+    await printUpdateHintIfAny(KIT_VERSION);
   }
   switch (cmd) {
     case 'install':   return cmdInstall(rest);

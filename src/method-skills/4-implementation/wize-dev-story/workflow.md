@@ -81,7 +81,31 @@ feat(invite): validate email per AC-02-1 / AC-02-2
 
 Until every AC has at least one test + minimum code that makes it pass.
 
-### 8. Pre-PR self-check
+### 8. Knowledge update (inline, ~60s)
+
+Before opening the PR, ask: **did this story touch any of the 5 baseline axes** documented in `.wize/knowledge/document-project/`?
+
+| Axis | Touched when… | File to update |
+|---|---|---|
+| **Architecture** | new component, new sequence, changed data flow | `architecture-snapshot.md` |
+| **Conventions** | new naming/folder/test pattern published as public contract (incl. `testid`) | `conventions.md` |
+| **Risk-spots** | introduced a complexity hot spot OR resolved one | `risk-spots.md` |
+| **Dependencies** | added / removed / upgraded a runtime dep | `dependencies.md` |
+| **Overview** | new user-visible feature a new dev should know about | `overview.md` |
+
+If yes for any axis: open the file and add **1–3 lines** under a new dated bullet — in the same PR.
+
+```markdown
+## 2026-06-12 — E01-S03
+- Conventions: `data-testid="invite-*"` published as public contract; Hawkeye E2E depends on these.
+- Risk: R-1 (mailer) mitigation now confirmed (integration test covers retry policy).
+```
+
+If no axis was touched, you skip this step entirely — quick-dev-style changes don't need it. Hawkeye will check whether the call was correct in `tea-review`. A story that touched an axis but skipped the update gets a `KN-NN` finding in the gate (recommendation `CONCERNS` advisory, or `FAIL` enforcing).
+
+This is how the brownfield baseline stays alive instead of going stale 6 months in.
+
+### 9. Pre-PR self-check
 
 - All Hawkeye-declared tests exist + pass.
 - No `test.skip` / `.only` left.
@@ -91,15 +115,16 @@ Until every AC has at least one test + minimum code that makes it pass.
 - Story file frontmatter → `status: ready-for-review`.
 - Self-walk the screen (web) or smoke a tab on simulator (app).
 
-### 9. Open PR
+### 10. Open PR
 
 PR description includes:
 - Story link.
 - AC list with the test names that cover them.
 - Screenshots / recordings of happy + failure paths.
+- Knowledge update line (`Touched axis: <none|architecture|conventions|risk-spots|dependencies|overview>`).
 - TEA expected next: design → trace → review → gate.
 
-### 10. Address gate findings
+### 11. Address gate findings
 
 If `tea-review` flags issues, fix them in the same PR or open a follow-up if the story has shipped a separate value-bearing slice.
 

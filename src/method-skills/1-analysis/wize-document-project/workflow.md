@@ -150,6 +150,46 @@ Co-located with the file under test. `.spec.ts` for unit; `.e2e.ts` for end-to-e
 - Some files use `_test.ts` suffix instead of `.spec.ts` — older code.
 ```
 
+## Update mode (how the baseline stays alive)
+
+The first run of this workflow produces the **baseline**. Two complementary mechanisms keep it current after:
+
+### 1. Inline updates per story (the daily cadence)
+
+Every `wize-dev-story` ends with a Knowledge Update step (step 8). If the story touched any of the 5 axes (architecture, conventions, risk-spots, dependencies, overview), Shuri appends 1–3 dated bullets to the matching `document-project/*.md` file **in the same PR**. Hawkeye verifies in `tea-review`; a touched-but-not-updated story gets a `KN-NN` finding at gate.
+
+`wize-quick-dev` has a lighter version: only when a dep bump or a public rename actually shifts the baseline.
+
+This produces dated bullets like:
+
+```markdown
+## 2026-06-12 — E01-S03
+- Conventions: `data-testid="invite-*"` published as public contract.
+- Risk: R-1 (mailer) mitigation confirmed.
+```
+
+### 2. Sprint-end refresh (the narrative cadence)
+
+`wize-refresh-knowledge` runs at sprint end (triggered by `wize-help next` when it detects the sprint emptied). Pepper + Peggy consolidate the inline bullets into the narrative prose of each axis file, demote stale claims to a "Deprecated" section, freeze a sprint snapshot in `_history/{YYYY-Qn}/sprint-{N}.md`, and stamp `last_refreshed` in each file.
+
+Result: the baseline reads like a single coherent document, not a chronological log. New devs can read it linearly and form a mental model. Forensics readers (six months later, asking "when did X change?") consult `_history/`.
+
+### File frontmatter convention
+
+Each `document-project/*.md` file ships with:
+
+```yaml
+---
+status: baseline
+owner: Pepper Potts + Peggy Carter
+created: 2026-04-02
+last_refreshed: 2026-06-25
+sampled: "wkly + sprint refresh"
+---
+```
+
+`last_refreshed` tells the reader how much to trust the file vs the inline bullets accumulating since.
+
 ## Anti-patterns Pepper rejects
 
 - "TODO: document later." The baseline IS the documentation pass; later doesn't come.
@@ -157,6 +197,7 @@ Co-located with the file under test. `.spec.ts` for unit; `.e2e.ts` for end-to-e
 - Architecture diagrams that show what the team *wishes* exists. Diagram the real state.
 - Risk-spot table with no confidence label. Without confidence, readers can't act.
 - Open questions with no owner. They never get answered.
+- Treating the baseline as one-shot. The mode + refresh exist precisely because point-in-time docs lie within weeks.
 
 ## Hand-off
 

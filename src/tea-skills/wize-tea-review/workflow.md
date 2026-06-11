@@ -47,11 +47,22 @@ If the story touches any `R-x` from the risk profile, walk the mitigation contra
 
 Did the story stay within its declared scope? Any out-of-scope item that crept in is flagged in the review (and either moved to a new story or backed out).
 
-### 5. Findings
+### 5. Knowledge update check
+
+Did this story touch any of the 5 `document-project` axes (architecture / conventions / risk-spots / dependencies / overview)? If yes, walk the PR diff and confirm the corresponding `.wize/knowledge/document-project/*.md` got 1–3 new lines this commit.
+
+Decision:
+- **Touched + updated** → record as PASS, no finding.
+- **Touched + NOT updated** → record finding `KN-NN` (severity `medium`); recommendation: `gate CONCERNS` (advisory mode) or `gate FAIL` (enforcing).
+- **Not touched** → write `knowledge: n/a` in the body, move on.
+
+This is what keeps the brownfield baseline alive instead of stale. Without it, `document-project` is honest in week 1 and obsolete in week 24.
+
+### 6. Findings
 
 For each issue, write: severity (`low / medium / high`), what, why it matters, what to do.
 
-### 6. Recommend gate outcome
+### 7. Recommend gate outcome
 
 Review doesn't *make* the gate decision (that's `tea-gate`); it recommends. Possible recommendations:
 - `gate PASS`
@@ -73,6 +84,8 @@ ac_check:
   - id: AC-02-2
     met: true
     evidence: "InviteForm.spec.tsx::error region announces"
+knowledge_axes_touched: [conventions, risk-spots]
+knowledge_axes_updated: [conventions, risk-spots]   # leave empty array if axes touched but no update happened
 findings:
   - id: REV-01
     severity: low
