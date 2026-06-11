@@ -5,6 +5,29 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-06-11
+
+Focused polish: brownfield baseline finally runs end-to-end through a detected harness CLI, CI publishes without the deprecated-config warning, and every release is now smoke-tested before going up.
+
+### Added
+
+- **Brownfield baseline runs real now.** When the installer detects existing code and you accept the `Run wize-document-project?` prompt, it now scans your PATH for an AI harness CLI (Claude Code, then Codex, then OpenCode), prioritizes whichever you selected as an IDE target, asks you to confirm the headless invocation, and spawns it with the right flags (`claude -p`, `codex exec`, `opencode run`). If no harness CLI is on PATH, the installer prints the exact command you can run later in your IDE. Set `WIZE_SKIP_BASELINE=1` to disable the headless run entirely (used by CI and unattended setups).
+- `tools/installer/baseline.js` — exports `detectHarnessCli`, `runHeadlessBaseline`, `manualInstructions`, `defaultPrompt`. Self-contained, no extra deps; uses a manual PATH walk for hermetic, cross-platform detection.
+- 7 new unit tests covering detection priority, PATH isolation, the skip-baseline env, and instruction strings.
+
+### Fixed
+
+- CI publish workflow now strips the deprecated `always-auth=false` line from the runner's `.npmrc` before installing. Removes the `npm warn Unknown user config "always-auth"` noise that appeared in every 0.2.0 publish log. See actions/setup-node#1129.
+
+### Added — CI
+
+- **Smoke E2E before publish.** The workflow now packs the tarball, installs it in a temp git repo via `npx`, and asserts that `.wize/`, the Claude adapter SKILL.md, generic AGENTS-equivalent, `kit_version` in `project.toml`, `update`, and `agent list` all work — exactly like a user would experience. Fails the release if anything is off, so we never publish a broken tarball again.
+- Sets `WIZE_SKIP_BASELINE=1` in the smoke step so the harness-run prompt doesn't try to spawn `claude` inside GitHub's runner.
+
+### Tests
+
+- Total now **94 passing** (was 87 in 0.2.0).
+
 ## [0.2.0] — 2026-06-11
 
 First release that delivers the lifecycle end-to-end. Workflows have real bodies; CLI commands work for real; the team has a Walkthrough to follow.
@@ -177,7 +200,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...v0.2.0
 [0.1.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.3...v0.1.4

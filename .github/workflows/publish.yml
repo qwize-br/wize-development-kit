@@ -34,6 +34,18 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
+      - name: Strip deprecated always-auth from generated .npmrc
+        # setup-node@v4 still writes `always-auth=false` to the runner's
+        # .npmrc, which npm v11+ flags as a deprecated config (see
+        # actions/setup-node#1129). The line is cosmetic for our flow;
+        # remove it so the publish log stays warning-free.
+        run: |
+          NPMRC="${HOME}/.npmrc"
+          if [ -f "$NPMRC" ]; then
+            sed -i '/^always-auth/d' "$NPMRC"
+            echo "Stripped always-auth from $NPMRC"
+          fi
+
       - name: Install dependencies
         run: npm ci
 
@@ -53,6 +65,46 @@ jobs:
 
       - name: Run structural validators
         run: npm run validate
+
+      - name: Smoke E2E — install + update + agent list on a fresh tarball
+        env:
+          WIZE_SKIP_BASELINE: '1'   # don't try to run a harness CLI in CI
+        run: |
+          set -euo pipefail
+          TARBALL=$(npm pack --silent | tail -1)
+          ABS_TARBALL="${GITHUB_WORKSPACE}/${TARBALL}"
+
+          SMOKE_DIR="$(mktemp -d)"
+          cd "$SMOKE_DIR"
+          git init -q
+          git config user.email "smoke@wize.dev"
+          git config user.name "Smoke"
+
+          # Non-TTY install — falls back to number-based prompts and uses defaults.
+          # Order of newlines mirrors cmdInstall prompts: project_name, profiles,
+          # ide_targets, communication_language, document_output_language, user_name,
+          # gitignore_confirm. Greenfield repo (no signals beyond .git), so no
+          # brownfield prompt is asked.
+          printf 'smoke-test\n\n\n\n\nSmoke\n\n' | npx --yes "$ABS_TARBALL" install
+
+          # Hard assertions: the install produced what it promised.
+          test -d .wize || (echo "::error::.wize/ not created"; exit 1)
+          test -f .wize/config/project.toml || (echo "::error::project.toml missing"; exit 1)
+          test -f .wize/config/user.toml || (echo "::error::user.toml missing"; exit 1)
+          test -f .claude/skills/wize-orchestrator/SKILL.md || (echo "::error::claude adapter missing"; exit 1)
+          test -f .wize/agents/wize-orchestrator.md || (echo "::error::generic adapter missing"; exit 1)
+          grep -q '^kit_version' .wize/config/project.toml || (echo "::error::kit_version not written"; exit 1)
+
+          # update is idempotent and reports kit version.
+          npx --yes "$ABS_TARBALL" update | tee /tmp/update.log
+          grep -q 'Wize Dev Kit update' /tmp/update.log || (echo "::error::update did not run"; exit 1)
+
+          # agent list returns built-ins + custom block.
+          npx --yes "$ABS_TARBALL" agent list | tee /tmp/agentlist.log
+          grep -q 'wize-orchestrator' /tmp/agentlist.log
+          grep -q 'Custom / override agents' /tmp/agentlist.log
+
+          echo "::notice::Smoke E2E passed"
 
       - name: Publish to npm (Trusted Publishing + provenance)
         if: ${{ inputs.dry_run != true }}

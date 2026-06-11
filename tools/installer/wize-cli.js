@@ -16,6 +16,7 @@ const readline = require('node:readline');
 const prompts = require('prompts');
 const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
 const { cmdUpdate } = require('./commands/update.js');
+const { detectHarnessCli, runHeadlessBaseline, manualInstructions, defaultPrompt } = require('./baseline.js');
 const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 
@@ -385,7 +386,34 @@ async function cmdInstall(args) {
   if (detection.brownfield) {
     const baseline = await confirm('\nRun `wize-document-project` to baseline the existing repo now?', true);
     if (baseline) {
-      console.log('(stub) Pepper + Peggy would now produce the baseline docs in .wize/knowledge/document-project/.');
+      const preferIde = targets.map(t => t.code);
+      const harnesses = detectHarnessCli({ preferIde });
+      if (process.env.WIZE_SKIP_BASELINE === '1') {
+        console.log('\nWIZE_SKIP_BASELINE=1 — not running the baseline.');
+        console.log(manualInstructions(harnesses[0]));
+      } else if (harnesses.length === 0) {
+        console.log(manualInstructions(null));
+      } else {
+        const chosen = harnesses[0];
+        console.log(`\nDetected harness: ${chosen.binary} (${chosen.path}).`);
+        const confirmRun = await confirm(
+          `Run /wize-document-project via ${chosen.binary} now?`,
+          true
+        );
+        if (confirmRun) {
+          const r = runHeadlessBaseline({
+            harness: chosen,
+            projectRoot: cwd,
+            prompt: defaultPrompt()
+          });
+          if (!r.ok && !r.skipped) {
+            console.log(`\n${chosen.binary} exited with code ${r.exitCode}. You can re-run later with:`);
+            console.log(manualInstructions(chosen));
+          }
+        } else {
+          console.log(manualInstructions(chosen));
+        }
+      }
     }
   }
 
