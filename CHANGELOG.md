@@ -5,6 +5,44 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-06-11
+
+First release that delivers the lifecycle end-to-end. Workflows have real bodies; CLI commands work for real; the team has a Walkthrough to follow.
+
+### Added — CLI
+
+- **`wize-dev-kit update`** — refreshes an installed kit to the version resolved by `node_modules/wize-dev-kit`. Re-runs every active IDE adapter, preserves `.wize/config/user.toml`, re-applies the suggested `.gitignore` block, and writes the new `kit_version` into `.wize/config/project.toml`. Prints the relevant CHANGELOG excerpt between the previous and current version.
+- **`wize-dev-kit sync`** — re-renders adapter outputs for whatever `ide_targets` the project opted into. Cheap idempotent call after editing config or running `agent create`.
+- **`wize-dev-kit agent list`** — lists every built-in agent (9) plus any custom or override agents the project added.
+- **`wize-dev-kit agent create`** — interactive scaffold of a new custom agent. Validates `code` shape, checks for collisions with built-ins, does a dry-run write+read, then persists to `.wize/custom/agents/{code}/{agent.yaml, persona.md}`. Non-TTY callers can pass a spec via API (`fromSpec`).
+- **`wize-dev-kit agent edit <code>`** — writes a `customize.toml` override for an existing built-in agent into `.wize/custom/agents/{code}/`.
+
+### Added — UX
+
+- **End-of-install message** now ends with: "Restart your IDE — many harnesses load skills only at startup." plus a quick-reference to the new CLI commands (`update`, `sync`, `agent list`).
+- **README walkthrough** — a complete end-to-end slash-command map from `/wize-orchestrator` through `/wize-tea-gate`, plus a new "CLI commands" reference section.
+
+### Changed — workflows now have real bodies
+
+22 workflows that were ≈ 30–50-line stubs in 0.1.x now ship 100–250 lines of working method, examples, anti-patterns, and YAML schemas. Tone aligned with the 0.1.5 playbooks (dense, opinionated, citable).
+
+- **Analysis (Pepper):** `wize-product-brief`, `wize-trigger-map`, `wize-research`, `wize-prfaq`, `wize-document-project`.
+- **Plan (Maria Hill + Mantis):** `wize-create-prd`, `wize-validate-prd`, `wize-ux-scenarios`, `wize-ux-design`.
+- **Strategy + Solutioning (Fury + Tony + Mantis):** `wize-tech-vision`, `wize-nfr-principles`, `wize-create-architecture`, `wize-design-system`, `wize-create-epics-and-stories`, `wize-check-implementation-readiness`.
+- **TEA gates (Hawkeye):** `wize-tea-risk`, `wize-tea-design`, `wize-tea-trace`, `wize-tea-nfr`, `wize-tea-review`, `wize-tea-gate` — each with canonical YAML frontmatter + concrete examples.
+- **Implementation (Shuri + Hill + Wizer):** `wize-create-story`, `wize-dev-story`, `wize-quick-dev`, `wize-sprint-planning`, `wize-sprint-status`, `wize-retrospective`, `wize-code-review`.
+
+### Added — engineering
+
+- `tools/installer/commands/{update,sync,agent}.js` — modular command implementations with a minimal TOML reader for the `project.toml` subset.
+- `test/cli-commands.test.js` — coverage for update / sync / agent list / agent create / agent edit (10 tests).
+- `test/workflow-bodies.test.js` — guards that every workflow.md has ≥ 1.5 KB body and ≥ 4 H2 sections, with an explicit allow-list for intentionally short workflows (overlay scaffolds, builder helpers, orchestrator helpers).
+- Test count: **87 passing** (was 33).
+
+### Notes
+
+This release closes JTBD backlog categories 3 (CLI commands real) and 2 (workflows with body) plus 4 (end-of-install UX, README walkthrough). Categories 5 (CI hygiene incl. smoke E2E) and 6 (monorepo routing, TEA enforcing helper) remain on the roadmap.
+
 ## [0.1.5] — 2026-06-01
 
 ### Added — promises kept
@@ -139,7 +177,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...v0.2.0
 [0.1.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.2...v0.1.3

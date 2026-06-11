@@ -72,6 +72,55 @@ See [`ROSTER.md`](ROSTER.md) for personas, styles and BMAD equivalences.
 
 ---
 
+## Walkthrough — a full project, end to end
+
+Below is the canonical flow Wizer drives in a real session. Each step is a slash command in your IDE; each persona reads the previous artifact before writing its own. Nothing is mocked.
+
+```
+1.  /wize-orchestrator          Wizer greets, reads .wize/config/{project,user}.toml.
+                                Detects the project state and routes you.
+
+2.  /wize-product-brief         Pepper turns raw demand into brief.md.
+    /wize-trigger-map           Pepper maps user psychology → business goals (WDS).
+    /wize-research              Pepper synthesizes external evidence (optional).
+
+3.  /wize-create-prd            Maria Hill writes prd.md (goals, scope, ACs).
+    /wize-validate-prd          Maria Hill (+ Mantis/Fury) signs off.
+
+4.  /wize-ux-scenarios          Mantis runs the 8-question WDS dialog.
+    /wize-ux-design             Mantis writes page specs (one .md per screen).
+
+5.  /wize-tech-vision           Fury picks the stack family + non-negotiables.
+    /wize-nfr-principles        Fury writes the NFR budget (perf, sec, a11y…).
+
+6.  /wize-create-architecture   Tony writes architecture.md + ADRs.
+    /wize-design-system         Mantis writes design-system/ (tokens + components).
+    /wize-create-epics-and-stories
+                                Tony slices epics → stories (each has ACs).
+
+7.  /wize-tea-risk              Hawkeye builds the global risk profile.
+    /wize-tea-design            Hawkeye writes test design for the next story.
+    /wize-dev-story             Shuri implements (TDD, AC IDs in commits).
+    /wize-tea-trace             Hawkeye maps each AC → tests.
+    /wize-tea-review            Hawkeye runs story review.
+    /wize-tea-gate              Hawkeye emits PASS / CONCERNS / FAIL / WAIVED.
+
+8.  /wize-sprint-status         Maria Hill keeps the daily snapshot updated.
+    /wize-retrospective         Wizer facilitates retro at end of each sprint.
+    /wize-tea-nfr               Hawkeye assesses NFRs at epic boundary.
+
+Cross-cutting:
+    /wize-help                  Wizer figures out where you are and proposes
+                                the next step (use anytime).
+    /wize-quick-dev             Shuri takes a small fix without the full ride.
+    /wize-party-mode            Wizer convenes multi-persona for hard calls.
+```
+
+> Use `/wize-help next` whenever you're unsure — it inspects `.wize/` and tells
+> you the single next action.
+
+---
+
 ## Output layout (in the target repo)
 
 ```
@@ -82,6 +131,21 @@ See [`ROSTER.md`](ROSTER.md) for personas, styles and BMAD equivalences.
 ├── implementation/     # sprint-status, retrospective, tea/{gates}
 ├── knowledge/          # long-lived docs and references
 └── custom/             # agents/skills/workflows created by Agent Builder
+```
+
+---
+
+## CLI commands
+
+```bash
+npx wize-dev-kit install         # interactive setup
+npx wize-dev-kit update          # bring an installed kit up to the current package version
+npx wize-dev-kit sync            # re-render IDE adapters after editing config
+npx wize-dev-kit agent list      # list built-in + custom agents
+npx wize-dev-kit agent create    # scaffold a new custom agent (validated + dry-run)
+npx wize-dev-kit agent edit <code>  # override a built-in via .wize/custom/agents/<code>/customize.toml
+npx wize-dev-kit validate        # structural checks on the kit assets
+npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 ```
 
 ---

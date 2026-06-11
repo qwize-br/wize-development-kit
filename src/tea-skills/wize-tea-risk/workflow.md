@@ -4,36 +4,125 @@ name: TEA Risk Profile
 gate: risk
 owner: wize-agent-test-architect   # Hawkeye
 when: once-after-architecture
-status: stub
+status: ready
 ---
 
 # TEA — Risk Profile
 
-**Goal.** Build the probability × impact matrix that prioritizes the rest of TEA's work.
+**Goal.** Build the **probability × impact** matrix that prioritizes the rest of TEA's work. Areas in `HIGH` get deep test design; areas in `LOW` get smoke. Without a risk profile, every story is tested the same — wasteful, and unsafe.
+
+Hawkeye drives. Tony co-signs. Runs **once**, right after architecture is signed off; revisit only on significant scope or architecture changes.
 
 ## Inputs
+
 - `.wize/solutioning/architecture.md`
 - `.wize/solutioning/epics/`
+- `.wize/planning/nfr-principles.md`
+- `.wize/knowledge/document-project/risk-spots.md` (brownfield)
 
 ## Output
+
 - `.wize/implementation/tea/risk-profile.md`
 
+## Steps
+
+### 1. List candidate hot spots
+
+For every architectural component + every epic, ask: *"If this misbehaves, what hurts?"*. Write candidates without filtering.
+
+### 2. Score each
+
+| Axis | Levels |
+|---|---|
+| Probability | `low` (would be a surprise), `medium` (could happen), `high` (likely without explicit work) |
+| Impact | `low` (cosmetic / opex), `medium` (user friction / revenue dent), `high` (data loss / outage / regulatory) |
+
+Composite score:
+- `low × low` = LOW
+- `low × medium`, `medium × low`, `medium × medium` = MEDIUM
+- anything touching `high` = HIGH
+
+### 3. For each finding, write the mitigation contract
+
+Per row:
+- **What test makes us confident?** Unit / integration / E2E / NFR / manual.
+- **Who owns the mitigation?** Shuri / Tony / external service.
+- **When is it verified?** Story-level / epic-level / pre-launch.
+
+### 4. Hand off
+
+Hawkeye uses this in every `tea-design.md`. Tony respects it when picking ADR options.
+
 ## YAML frontmatter (canonical)
+
 ```yaml
 ---
 gate: risk
 status: PASS | CONCERNS | FAIL | WAIVED
 score: 0-100
-created_at: ISO-8601
+created_at: 2026-06-11T12:00:00Z
 findings:
   - id: R-1
-    area: …
-    probability: low | medium | high
-    impact: low | medium | high
-    rationale: …
-    mitigation: …
+    area: "Outbox / mailer"
+    probability: high
+    impact: medium
+    rationale: "Sign-up flow depends on email delivery; first impression failure is high-cost."
+    mitigation: "Integration test against Resend sandbox; outbox retry with backoff; on-call alert on delivery failure rate > 5%."
+    owner: shuri + tony
+    verified_when: story E01-S04 + NFR per epic
+  - id: R-2
+    area: "Database migrations under load"
+    probability: medium
+    impact: high
+    rationale: "Future migrations must be rolled out without lock contention."
+    mitigation: "Online schema changes; canary on staging with synthetic load; ADR-006 process."
+    owner: tony
+    verified_when: pre-launch
+  - id: R-3
+    area: "Auth: token refresh during long-running tabs"
+    probability: medium
+    impact: medium
+    rationale: "Cookie refresh race in RSC + edge can sign user out unexpectedly."
+    mitigation: "E2E covering > 1h tab; refresh strategy ADR-008; on-call alert on `auth_session_expired_unexpected`."
+    owner: shuri
+    verified_when: story E04-S02 + post-launch monitoring
 ---
 ```
 
-## Body
-Narrative summary; the structured data is the YAML.
+## Body of `risk-profile.md`
+
+The narrative explains the matrix; the YAML is the structured truth. Hawkeye writes 1–2 lines per finding explaining the *why*.
+
+```markdown
+## Matrix
+
+| | Impact LOW | Impact MEDIUM | Impact HIGH |
+|---|---|---|---|
+| **Prob HIGH** | R-7 | R-1 | R-2 |
+| **Prob MEDIUM** | R-4 | R-3 | R-5 |
+| **Prob LOW** | — | R-6 | — |
+
+## Top-3 (drive test design)
+
+1. **R-2** — Database migrations under load. Pre-launch verification mandatory.
+2. **R-1** — Outbox/mailer. Story E01-S04 covers; epic NFR re-verifies.
+3. **R-5** — Payment idempotency. Story E03-S02 covers.
+
+## What this means for `tea-design.md`
+
+- E01-S04 (mailer): 1 unit (retry policy), 1 integration (Resend sandbox), 1 E2E (sign-up arrives within 5min).
+- E03-S02 (payments): 2 integration (Stripe idempotency keys), 1 E2E (double-click guard).
+- Other stories follow the default 70/20/10 split.
+```
+
+## Anti-patterns Hawkeye rejects
+
+- **Findings without mitigation.** A finding without a contract is a wish.
+- **Mitigation owned by "the team."** Name a persona/human.
+- **HIGH impact, MEDIUM probability, no NFR re-check.** Wire it into epic NFR gate.
+- **Cosmetic risks scored HIGH.** Calibration. Reserve HIGH for data, outage, regulatory.
+- **Risk profile rewritten per sprint.** Run once; revise on real architecture changes.
+
+## Hand-off
+
+> Risk profile at `.wize/implementation/tea/risk-profile.md`. Top-3 drive deep `tea-design.md` for E01-S04, E03-S02, plus pre-launch migration drill. Default 70/20/10 split for the rest.

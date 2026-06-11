@@ -15,6 +15,9 @@ const path = require('node:path');
 const readline = require('node:readline');
 const prompts = require('prompts');
 const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
+const { cmdUpdate } = require('./commands/update.js');
+const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
+const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 
 const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
 
@@ -386,7 +389,19 @@ async function cmdInstall(args) {
     }
   }
 
-  console.log('\nDone. Activate Wizer in your IDE and say: "Brief me on this project."');
+  console.log('\n──────────────────────────────────────────────────────────────');
+  console.log('Done.');
+  console.log('');
+  console.log('Next steps:');
+  console.log('  1. ⚠  Restart your IDE — many harnesses load skills only at startup.');
+  console.log('  2. Activate Wizer and say: "Brief me on this project."');
+  console.log('     (or use any /wize-* slash command from the auto-complete list)');
+  console.log('');
+  console.log('Keep the kit in sync over time:');
+  console.log('  • `npx wize-dev-kit update`  refresh adapters after a new kit version');
+  console.log('  • `npx wize-dev-kit sync`    re-render adapters after editing config');
+  console.log('  • `npx wize-dev-kit agent list | create | edit <code>`  manage agents');
+  console.log('──────────────────────────────────────────────────────────────');
 }
 
 async function cmdUninstall() {
@@ -432,17 +447,18 @@ function cmdList() {
 }
 
 function cmdSync() {
-  console.log('(stub) Sync would regenerate IDE adapter files for active targets in .wize/config/project.toml.');
+  return cmdSyncReal({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
 }
 
 function cmdAgent(args) {
   const sub = args[0] || 'list';
-  if (sub === 'list') return cmdList();
-  if (sub === 'create') {
-    console.log('(stub) Interactive agent creation. See src/builder-skills/wize-create-agent/workflow.md.');
-    return;
-  }
+  const rest = args.slice(1);
+  const ctx = { kitRoot: KIT_ROOT, projectRoot: process.cwd() };
+  if (sub === 'list')   return cmdAgentList(ctx);
+  if (sub === 'create') return cmdAgentCreate(ctx);
+  if (sub === 'edit')   return cmdAgentEdit({ ...ctx, code: rest[0] });
   console.log(`Unknown agent subcommand: ${sub}`);
+  console.log('Available: list | create | edit <code>');
 }
 
 function cmdWorkflow(args) {
@@ -467,7 +483,7 @@ async function main() {
   }
   switch (cmd) {
     case 'install':   return cmdInstall(rest);
-    case 'update':    console.log('(stub) Update: diff + preserve customizations. Not yet implemented.'); return;
+    case 'update':    return cmdUpdate({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
     case 'uninstall': return cmdUninstall();
     case 'list':      return cmdList();
     case 'sync':      return cmdSync();
