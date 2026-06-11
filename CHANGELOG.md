@@ -5,6 +5,18 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.3] — 2026-06-11
+
+Hotfix: 0.2.1 and 0.2.2 publish workflows hung because `test/version-check.test.js` had a sync/async bug in its test scaffolding. CI's smoke E2E never started for those releases. This release fixes the test and re-runs the same smoke for 0.2.2 + 0.2.3.
+
+### Fixed
+
+- `withTempCacheHome` helper in `test/version-check.test.js` was synchronous (`return fn(dir)`), so its `finally` block restored the env var before the async callback's `writeCache` resolved. The cache lookup inside the callback then landed in the real `~/.cache/wize-dev-kit/`, contaminating subsequent test runs and intermittently failing the `getLatestVersion returns the cached value when fresh` assertion. Fix: make the helper `async` and `return await fn(dir)`. Confirmed locally + ensures CI doesn't get a stuck cache file across tags.
+
+### Notes
+
+No surface area changed; behavior of `wize-dev-kit` itself is identical to 0.2.2. The bump exists only so the publish workflow re-runs cleanly.
+
 ## [0.2.2] — 2026-06-11
 
 Closes the "documentation always stale" gap: inline knowledge captures per story, Hawkeye enforces, sprint-end refresh consolidates. Plus auto-update nudges on the CLI and Wizer.
@@ -230,7 +242,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...v0.2.0

@@ -18,13 +18,16 @@ function freshModule() {
   return require(modulePath);
 }
 
-function withTempCacheHome(fn) {
+async function withTempCacheHome(fn) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-vc-'));
   const hadOrig = Object.hasOwn(process.env, 'XDG_CACHE_HOME');
   const orig = process.env.XDG_CACHE_HOME;
   process.env.XDG_CACHE_HOME = dir;
   try {
-    return fn(dir);
+    // Must be `await` (not `return`) — otherwise the finally below restores
+    // env before fn's promise resolves, and writeCache inside fn lands in the
+    // real ~/.cache/wize-dev-kit instead of the temp dir.
+    return await fn(dir);
   } finally {
     if (hadOrig) process.env.XDG_CACHE_HOME = orig;
     else delete process.env.XDG_CACHE_HOME;     // never restore literal "undefined"
@@ -44,16 +47,22 @@ test('getLatestVersion returns the cached value when fresh', async () => {
   await withTempCacheHome(async (dir) => {
     const m = freshModule();
     m.writeCache({ version: '9.9.9', fetched_at: Date.now() });
-    // Even if fetch would normally fire, the cache hit should short-circuit it.
+    // The cache hit must short-circuit the fetch — if fetch is even called,
+    // it throws (and the function silently returns null, which we'd catch).
     const orig = global.fetch;
     global.fetch = async () => { throw new Error('should not be called'); };
     try {
       const v = await m.getLatestVersion();
-      assert.strictEqual(v, '9.9.9');
+      assert.strictEqual(v, '9.9.9', 'cached value should win when fresh');
     } finally {
       global.fetch = orig;
     }
-    assert.ok(fs.existsSync(m.cacheFile()));
+    // Don't assert existsSync — some CI filesystems return stale negative
+    // results just after a write; readCache() is the semantically-meaningful
+    // confirmation that the value is persisted and re-readable.
+    const persisted = m.readCache();
+    assert.ok(persisted, 'cache should be readable after the write');
+    assert.strictEqual(persisted.version, '9.9.9');
   });
 });
 
