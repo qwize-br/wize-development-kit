@@ -19,14 +19,18 @@ jobs:
   publish:
     name: Test, validate & publish
     runs-on: ubuntu-latest
+    # Node 24 / npm v11+ is required for the OIDC handshake the npm registry
+    # expects from trusted publishers (see npm/cli issues #9088, #8730 — Node
+    # 20/22 ship npm v10 which sends an older handshake, registry refuses with
+    # a misleading "404 not in this registry" instead of a clearer 401/403).
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Confirm tag matches package.json version
