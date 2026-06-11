@@ -5,6 +5,43 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.5] — 2026-06-01
+
+### Added — promises kept
+
+All files that previous releases declared in `module.yaml` but never shipped are now in the kit, with real content (not placeholders).
+
+**Web overlay playbooks** (`src/web-overlay/playbooks/`):
+
+- `wcag-aa.md` — WCAG 2.2 AA checklist for Mantis, with the newer SCs (2.4.11, 2.5.7, 2.5.8, 3.2.6, 3.3.7, 3.3.8) and an audit toolchain.
+- `responsive-breakpoints.md` — mobile-first stack with container queries, fluid typography (`clamp`), layout primitives (Stack/Cluster/Switcher/Sidebar/Grid/Cover/Frame), image strategy.
+- `semantic-html.md` — landmarks, headings, the 12 must-reach-first elements, ARIA rules, common widget patterns with minimum ARIA, anti-patterns.
+- `playwright-vitest.md` — Hawkeye's split (70/20/10), Vitest + Testing Library + MSW setup, Playwright POM pattern, selector hierarchy (role → label → text → testid), CI sketch, anti-patterns.
+- `web-perf-budgets.md` — Core Web Vitals targets, baseline budgets per resource class, image/font strategy, third-party audit checklist, critical rendering path snippet, lighthouse-ci config, field measurement via `web-vitals` beacon.
+
+**App overlay playbooks** (`src/app-overlay/playbooks/`):
+
+- `apple-hig.md` — POUR-equivalent four principles, layout (status bar/nav/tab/safe-area), navigation patterns, SF Symbols, Dynamic Type, motion, common idioms, iPad specifics, do-not list.
+- `material-design-3.md` — pillars, color/type/shape tokens, elevation-by-color, component starter set, adaptive windows (Compact/Medium/Expanded/Large), motion + reduced motion, Material You theming.
+- `touch-targets-and-gestures.md` — minimums per platform (iOS 44pt / Android 48dp / web 24px), hit-area snippets per stack, thumb reach zones, reserved gestures, multi-touch, drag-and-drop with keyboard fallback, haptics, reduce-motion.
+- `permissions-ux.md` — the four states (not-determined/granted/denied/limited), pre-flight pattern, per-permission guidance (camera/photos/location/notifications/contacts/BLE/health/tracking), denied-state UI + Settings deep-link, copy template.
+- `detox-maestro.md` — when to pick each, Maestro YAML + cloud, Detox config + `testID` discipline, cross-platform CI sketch, flakiness rules, critical journeys to cover.
+- `mobile-perf-budgets.md` — cold/warm start, TTI, FPS, jank, app size, memory, battery; per-platform targets; size reductions that work; build-time + field measurement.
+- `device-matrix.md` — three buckets (floor/volume/ceiling), 2026 iOS + Android matrices, cloud farm comparison, accessibility runs, network conditions, locale coverage.
+
+**Stack catalogs**:
+
+- `src/web-overlay/stack-catalog.md` — Tony's reference for the web architecture interview: frameworks (Next/Nuxt/SvelteKit/Astro/Remix/SPA/Laravel-Inertia), back-end (Supabase/PlanetScale/Drizzle/Prisma/tRPC/GraphQL), auth, hosting, styling, state, forms; ADR record path.
+- `src/app-overlay/stack-catalog.md` — Tony's mobile architecture reference: frameworks (RN+Expo / RN bare / Flutter / SwiftUI / Compose / Compose-Multiplatform / Capacitor / native+KMP), build & release, auth, data/sync, state, storage, push, analytics, anti-patterns; ADR record path.
+
+### Added — tests
+
+- `test/playbooks-and-catalogs.test.js`: guards that every playbook declared in an overlay `module.yaml` exists on disk, has frontmatter, and is non-trivial (> 400 chars). Stack catalog presence + size also asserted. Total tests now: **39** (was 33).
+
+### Notes
+
+This release closes Category 1 of the backlog ("promessas vazias"). Categories 2–6 (workflow bodies, `update`/`sync`/`agent create` CLI, polish, Node-24 CI, OIDC return, monorepo & TEA-enforcing) remain on the roadmap.
+
 ## [0.1.4] — 2026-06-01
 
 ### Added
@@ -102,7 +139,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.1...v0.1.2

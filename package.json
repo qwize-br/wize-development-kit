@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "wize-dev-kit",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Full-lifecycle AI-assisted development kit with Test Architect and Whiteport Design Studio embedded. Inspired by BMAD Method and WDS.",
   "keywords": [
     "ai",
