@@ -91,9 +91,41 @@ function logo() {
   ].join('\n');
 }
 
+// Pipe-safe line reader.
+//
+// `readline.question()` has two bugs that bite us when stdin is a pipe (e.g.
+// `printf ... | wize-dev-kit install` or our CI smoke test):
+//   1. Opening a new createInterface per call closes stdin on .close().
+//   2. Even with a shared interface, the second `question` after a single
+//      empty line ("\n") never resolves — readline's question machinery
+//      stalls in non-TTY mode.
+//
+// We replace it with an event-based queue: subscribe to `line` once, push
+// resolved promises in order. Empty lines are propagated as `""`. EOF is
+// treated as end of the queue (remaining waiters resolve with `""`).
+let _rl = null;
+let _queue = [];
+let _waiters = [];
+
+function getRl() {
+  if (_rl) return _rl;
+  _rl = readline.createInterface({ input: process.stdin, terminal: false });
+  _rl.on('line', (line) => {
+    if (_waiters.length) _waiters.shift()(line);
+    else _queue.push(line);
+  });
+  _rl.on('close', () => {
+    while (_waiters.length) _waiters.shift()('');
+  });
+  process.on('exit', () => { if (_rl) { _rl.close(); _rl = null; } });
+  return _rl;
+}
+
 function prompt(question) {
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise(resolve => rl.question(question, ans => { rl.close(); resolve(ans.trim()); }));
+  process.stdout.write(question);
+  getRl();
+  if (_queue.length) return Promise.resolve(_queue.shift().trim());
+  return new Promise(resolve => _waiters.push((line) => resolve(line.trim())));
 }
 
 async function confirm(question, defaultYes = true) {

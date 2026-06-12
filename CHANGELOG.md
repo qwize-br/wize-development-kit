@@ -5,6 +5,18 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.5] — 2026-06-12
+
+Fixes a real install-time bug that bit non-TTY users (CI smoke + anyone piping input into `wize-dev-kit install`).
+
+### Fixed
+
+- **Non-TTY prompt stall.** The CLI's `prompt()` helper created a new `readline.createInterface` per call and used `rl.question()`. Both choices misbehave in pipe mode: per-call interfaces close stdin on the first `rl.close()`, and even with a shared interface `readline.question` stalls when it has to read an empty line in non-TTY mode (Node 24 behavior). After step 1 of `install` (project name), every subsequent prompt would hang silently. Replaced with an event-based line reader: subscribe once to `line`, push waiters in order, propagate empty lines as `""`, treat EOF as "remaining waiters resolve empty". `printf '...\n\n\n\n\nName\n\n' | wize-dev-kit install` now runs cleanly to completion.
+
+### Notes
+
+This was the actual cause behind the CI smoke E2E loop. The 0.2.4 fix to the smoke script (using `npm install <tarball>` instead of `npx <tarball>`) was correct, but the underlying CLI couldn't accept piped input either, so the smoke kept failing at the second prompt. With both fixed, the smoke runs end-to-end.
+
 ## [0.2.4] — 2026-06-12
 
 CI-only hotfix to actually unblock the publish pipeline. Surface area of wize-dev-kit unchanged.
@@ -250,7 +262,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.4...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.1...v0.2.2
