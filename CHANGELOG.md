@@ -5,6 +5,14 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.4] — 2026-06-12
+
+CI-only hotfix to actually unblock the publish pipeline. Surface area of wize-dev-kit unchanged.
+
+### Fixed
+
+- Smoke E2E step used `npx --yes "$tarball" install`. On the GitHub Actions runner that path is interpreted as a shell command, which tries to **execute the tarball directly** before npx ever extracts it — exit code 126, `Permission denied`. Rewrote the step to: install the tarball into a throwaway project via `npm install <tarball>`, then invoke `$NODE_MODULES/.bin/wize-dev-kit` directly. `npm install` extracts the archive properly and sets the bin executable bit, so the rest of the smoke (`install` → assertions → `update` → `agent list`) runs cleanly. Same coverage, named-per-check error messages, and now also sets `WIZE_DISABLE_UPDATE_CHECK=1` so the registry isn't probed mid-smoke.
+
 ## [0.2.3] — 2026-06-11
 
 Hotfix: 0.2.1 and 0.2.2 publish workflows hung because `test/version-check.test.js` had a sync/async bug in its test scaffolding. CI's smoke E2E never started for those releases. This release fixes the test and re-runs the same smoke for 0.2.2 + 0.2.3.
@@ -242,7 +250,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.0...v0.2.1

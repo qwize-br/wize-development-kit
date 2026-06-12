@@ -68,12 +68,30 @@ jobs:
 
       - name: Smoke E2E — install + update + agent list on a fresh tarball
         env:
-          WIZE_SKIP_BASELINE: '1'   # don't try to run a harness CLI in CI
+          WIZE_SKIP_BASELINE: '1'              # don't try to run a harness CLI in CI
+          WIZE_DISABLE_UPDATE_CHECK: '1'       # don't ping the registry mid-smoke
         run: |
           set -euo pipefail
+
+          # 1. Pack the kit.
           TARBALL=$(npm pack --silent | tail -1)
           ABS_TARBALL="${GITHUB_WORKSPACE}/${TARBALL}"
 
+          # 2. Install the tarball into a clean throwaway project. We deliberately
+          #    avoid `npx <tarball>` — npx attempts to execute the tarball path
+          #    directly as a script before extracting, which fails with
+          #    "Permission denied" (exit 126) on the runner. `npm install <tarball>`
+          #    extracts properly and sets the bin executable bit.
+          TOOLS_DIR="$(mktemp -d)"
+          (
+            cd "$TOOLS_DIR"
+            npm init -y --silent >/dev/null
+            npm install --silent --no-audit --no-fund "$ABS_TARBALL"
+          )
+          WIZE="$TOOLS_DIR/node_modules/.bin/wize-dev-kit"
+          test -x "$WIZE" || { echo "::error::wize-dev-kit bin not executable at $WIZE"; ls -la "$TOOLS_DIR/node_modules/.bin"; exit 1; }
+
+          # 3. Run install against an empty greenfield repo.
           SMOKE_DIR="$(mktemp -d)"
           cd "$SMOKE_DIR"
           git init -q
@@ -85,24 +103,24 @@ jobs:
           # ide_targets, communication_language, document_output_language, user_name,
           # gitignore_confirm. Greenfield repo (no signals beyond .git), so no
           # brownfield prompt is asked.
-          printf 'smoke-test\n\n\n\n\nSmoke\n\n' | npx --yes "$ABS_TARBALL" install
+          printf 'smoke-test\n\n\n\n\nSmoke\n\n' | "$WIZE" install
 
-          # Hard assertions: the install produced what it promised.
-          test -d .wize || (echo "::error::.wize/ not created"; exit 1)
-          test -f .wize/config/project.toml || (echo "::error::project.toml missing"; exit 1)
-          test -f .wize/config/user.toml || (echo "::error::user.toml missing"; exit 1)
-          test -f .claude/skills/wize-orchestrator/SKILL.md || (echo "::error::claude adapter missing"; exit 1)
-          test -f .wize/agents/wize-orchestrator.md || (echo "::error::generic adapter missing"; exit 1)
-          grep -q '^kit_version' .wize/config/project.toml || (echo "::error::kit_version not written"; exit 1)
+          # 4. Hard assertions: the install produced what it promised.
+          test -d .wize                                       || { echo "::error::.wize/ not created";          exit 1; }
+          test -f .wize/config/project.toml                   || { echo "::error::project.toml missing";       exit 1; }
+          test -f .wize/config/user.toml                      || { echo "::error::user.toml missing";          exit 1; }
+          test -f .claude/skills/wize-orchestrator/SKILL.md   || { echo "::error::claude adapter missing";     exit 1; }
+          test -f .wize/agents/wize-orchestrator.md           || { echo "::error::generic adapter missing";    exit 1; }
+          grep -q '^kit_version' .wize/config/project.toml    || { echo "::error::kit_version not written";    exit 1; }
 
-          # update is idempotent and reports kit version.
-          npx --yes "$ABS_TARBALL" update | tee /tmp/update.log
-          grep -q 'Wize Dev Kit update' /tmp/update.log || (echo "::error::update did not run"; exit 1)
+          # 5. update is idempotent and reports kit version.
+          "$WIZE" update | tee /tmp/update.log
+          grep -q 'Wize Dev Kit update' /tmp/update.log       || { echo "::error::update did not run";         exit 1; }
 
-          # agent list returns built-ins + custom block.
-          npx --yes "$ABS_TARBALL" agent list | tee /tmp/agentlist.log
-          grep -q 'wize-orchestrator' /tmp/agentlist.log
-          grep -q 'Custom / override agents' /tmp/agentlist.log
+          # 6. agent list returns built-ins + custom block.
+          "$WIZE" agent list | tee /tmp/agentlist.log
+          grep -q 'wize-orchestrator'    /tmp/agentlist.log   || { echo "::error::agent list missing orchestrator"; exit 1; }
+          grep -q 'Custom / override agents' /tmp/agentlist.log || { echo "::error::agent list missing custom block"; exit 1; }
 
           echo "::notice::Smoke E2E passed"
 
