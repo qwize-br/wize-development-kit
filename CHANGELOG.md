@@ -5,6 +5,40 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-06-12
+
+Adds a single-command diagnostic plus traceable GitHub Releases on every tag.
+
+### Added — `wize-dev-kit doctor`
+
+Single-command snapshot of kit + project + environment, plus a ranked list of suggestions. Designed to be the first command a new developer runs in an unfamiliar wize-enabled repo, and the go-to command when something looks off. Sections covered:
+
+- **Kit versions** (installed, project-pinned in `kit_version`, registry-latest) — flags drift between any of them.
+- **Project** — name, profiles, IDE targets, languages, current phase (heuristic: brief → trigger-map → PRD → UX → tech-vision → architecture → stories → risk profile → sprint planning → implementation).
+- **IDE Adapters** — file count per target (`.claude/skills/`, `.cursor/rules/`, etc.). Flags adapters that didn't render and points at `wize-dev-kit sync`.
+- **TEA gates** — counts PASS / CONCERNS / FAIL / WAIVED across `gate.md` files in `.wize/implementation/tea/`. Flags any FAIL or CONCERNS.
+- **Knowledge baseline** — `last_refreshed` age per `document-project/*.md` file, plus inline-note count in `_pending.md`. Suggests `wize-refresh-knowledge` when files go stale (> 60 days) or pending notes pile up (≥ 5).
+- **Harness CLIs on PATH** — claude / codex / opencode, with detected install paths.
+- **Git** — branch / head, repo presence.
+
+Implementation in `tools/installer/commands/doctor.js`. 11 new unit tests cover phase detection, gate counting, knowledge parsing, adapter path mapping, and end-to-end run on a minimal install.
+
+Output is plain text (no colors) so it's grep-friendly and pipe-friendly. Section headers are stable for editors / dashboards to parse.
+
+### Added — GitHub Release on every tag
+
+After a successful `npm publish` from a `v*` tag, the workflow now:
+
+1. Extracts the matching version's CHANGELOG entry (`## [VERSION]` to the next `## [`) with a small awk filter.
+2. Creates a GitHub Release at the tag using `softprops/action-gh-release@v2`, with the CHANGELOG entry as the release body.
+3. If no CHANGELOG entry is found for the version, falls back to GitHub's auto-generated notes.
+
+Pre-release tags (`-alpha`, `-beta`, `-rc`) are marked as pre-release automatically. Requires `permissions: contents: write` (added to the publish job).
+
+### Tests
+
+- Total: **115 passing** (was 104).
+
 ## [0.2.5] — 2026-06-12
 
 Fixes a real install-time bug that bit non-TTY users (CI smoke + anyone piping input into `wize-dev-kit install`).
@@ -262,7 +296,8 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.5...v0.3.0
 [0.2.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.2...v0.2.3

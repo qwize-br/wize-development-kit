@@ -144,6 +144,7 @@ npx wize-dev-kit sync            # re-render IDE adapters after editing config
 npx wize-dev-kit agent list      # list built-in + custom agents
 npx wize-dev-kit agent create    # scaffold a new custom agent (validated + dry-run)
 npx wize-dev-kit agent edit <code>  # override a built-in via .wize/custom/agents/<code>/customize.toml
+npx wize-dev-kit doctor          # diagnose kit / project / adapters / gates and suggest fixes
 npx wize-dev-kit validate        # structural checks on the kit assets
 npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 ```
