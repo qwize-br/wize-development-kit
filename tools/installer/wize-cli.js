@@ -128,9 +128,14 @@ function getRl() {
 function prompt(question) {
   process.stdout.write(question);
   getRl();
-  // Discard any residual lines left by previous prompts (e.g. prompts library)
-  // so that this prompt always waits for fresh user input.
-  _queue = [];
+  // In interactive mode, discard any residual lines left by previous
+  // prompts (e.g. the prompts library) so this prompt always waits for
+  // fresh user input. In non-TTY / piped mode, those queued lines are
+  // intentional input and must be consumed in order.
+  if (INTERACTIVE) {
+    _queue = [];
+  }
+  if (_queue.length) return Promise.resolve(_queue.shift().trim());
   return new Promise(resolve => _waiters.push((line) => resolve(line.trim())));
 }
 

@@ -5,6 +5,16 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-06-13
+
+### Fixed
+
+- Installer no longer skips the "How should the agents call you?" prompt due to residual input from previous `prompts`-library questions.
+
+### Added
+
+- Interactive install now detects AI harness CLIs on PATH and offers to launch `/wize-orchestrator` directly, showing the exact command (e.g. `claude -p /wize-orchestrator`).
+
 ## [0.4.0] — 2026-06-13
 
 Adapts four BMAD Method step-based flows into the Wize universe: spec, architecture, code review, and research.
