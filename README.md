@@ -83,6 +83,9 @@ Below is the canonical flow Wizer drives in a real session. Each step is a slash
 2.  /wize-product-brief         Pepper turns raw demand into brief.md.
     /wize-trigger-map           Pepper maps user psychology → business goals (WDS).
     /wize-research              Pepper synthesizes external evidence (optional).
+                                Or run a focused pass:
+                                /wize-market-research, /wize-domain-research,
+                                /wize-technical-research.
 
 3.  /wize-create-prd            Maria Hill writes prd.md (goals, scope, ACs).
     /wize-validate-prd          Maria Hill (+ Mantis/Fury) signs off.
@@ -93,7 +96,8 @@ Below is the canonical flow Wizer drives in a real session. Each step is a slash
 5.  /wize-tech-vision           Fury picks the stack family + non-negotiables.
     /wize-nfr-principles        Fury writes the NFR budget (perf, sec, a11y…).
 
-6.  /wize-create-architecture   Tony writes architecture.md + ADRs.
+6.  /wize-create-architecture   Tony writes architecture.md + ADRs via 8 steps
+                                (context → decisions → patterns → structure → validation).
     /wize-design-system         Mantis writes design-system/ (tokens + components).
     /wize-create-epics-and-stories
                                 Tony slices epics → stories (each has ACs).
@@ -113,6 +117,9 @@ Cross-cutting:
     /wize-help                  Wizer figures out where you are and proposes
                                 the next step (use anytime).
     /wize-quick-dev             Shuri takes a small fix without the full ride.
+    /wize-code-review           Shuri runs an adversarial peer review (Blind Hunter,
+                                Edge Case Hunter, Acceptance Auditor) before Hawkeye's TEA review.
+    /wize-spec                  Distill any intent into a canonical five-field spec.
     /wize-party-mode            Wizer convenes multi-persona for hard calls.
 ```
 
@@ -163,7 +170,7 @@ npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 
 ## Status
 
-**v0.3.0+ — beta.** The core lifecycle is scaffolded and the `document-project` engine is wired: quick baseline, initial/full/deep scans, project-type classification, resume state, and IDE adapters for Claude Code, Cursor, Windsurf, and others. The CLI commands listed above are executable and tested. Production-readiness target remains v0.5.0.
+**v0.3.0+ — beta.** The core lifecycle is scaffolded, the `document-project` engine is wired, and selected BMAD step flows have been adapted into Wize skills: `wize-spec`, `wize-create-architecture` (8-step), `wize-code-review` (adversarial triage), and vertical research skills (`wize-market-research`, `wize-domain-research`, `wize-technical-research`). IDE adapters for Claude Code, Cursor, Windsurf, and others are regenerated automatically. Production-readiness target remains v0.5.0.
 
 ---
 

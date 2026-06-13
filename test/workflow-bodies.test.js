@@ -33,7 +33,11 @@ const SHORT_ALLOWED = new Set([
   'wize-app-store-listing',
   // Orchestrator helpers — handlers are short by intent
   'wize-onboarding',
-  'wize-party-mode'
+  'wize-party-mode',
+  // Research dispatchers — full body lives in step files + templates
+  'wize-market-research',
+  'wize-domain-research',
+  'wize-technical-research'
 ]);
 
 const workflowFiles = [
