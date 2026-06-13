@@ -8,112 +8,57 @@ alwaysApply: false
 
 # Code Review
 
-**Goal.** Audit **code health** on the PR. Separate from Hawkeye's `tea-review` (which audits AC fulfillment). Both run on every story PR; they're complementary.
+**Goal.** Review code changes adversarially using parallel review layers and structured triage into actionable categories.
 
-Shuri reviews peer PRs. Tony reviews when architecture is at stake.
+This is **Shuri's peer code review** — separate from Hawkeye's `wize-tea-review` (which audits AC fulfillment). Both run on every story PR; they are complementary.
 
 ## When to run
 
-Every PR that ships code. Quick-dev PRs get a lighter review (skip code-architecture checks unless they touched architecture).
+Every PR that ships code. Quick-dev PRs get a lighter review (skip architecture checks unless they touched architecture).
 
 ## Inputs
 
-- The PR (diff + tests).
-- Story file (for context — what the PR is supposed to accomplish).
-- Linked design system (when components change).
+- The diff, PR, branch, or commit range to review.
+- The spec/story file for context (optional but recommended).
+- Existing code style and project context from `.wize/knowledge/document-project/`.
 
-## Output
+## Outputs
 
-- Inline comments on the PR.
-- Final review verdict: `approve` / `request-changes` / `comment`.
+- Inline-style findings presented in the conversation.
+- Optional patch application if the user chooses to fix findings now.
+- Updated story file with a `### Review Findings` section when a spec file is provided.
+- Updated sprint status when a story key is discovered.
 
-## What this checks
+## Workflow architecture
 
-### Naming + structure
-- Are types, functions, variables named for **what they are**, not **how they're used**?
-- Are files in the right folder per the architecture?
-- Are exports minimal? Module boundaries respected?
-- Are there new abstractions justified by the story or premature?
+This skill uses **step-file architecture**:
 
-### Tests
-- Do tests cover the changed behavior (not just coverage %)?
-- Are they fast and isolated?
-- Are mocks at the boundary, not inside the unit?
-- Any `test.skip` / `.only` left in?
+- Each step is self-contained and followed exactly.
+- Sequential enforcement: complete steps in order, no skipping.
+- State tracked in frontmatter variables set at runtime.
+- Append-only building of findings.
 
-### Security (obvious-misses)
-- Input validation at boundaries.
-- Tokens / secrets / PII never logged.
-- SQL parameterized, not concatenated.
-- New deps audited; no known CVEs introduced.
-- Auth context checked on every server entry point.
+## Critical rules
 
-### Performance (obvious-misses)
-- No N+1 queries.
-- No `await` in tight loops without batching.
-- No new sync I/O on hot paths.
-- Bundle delta acceptable (size of new front-end imports).
+- **Read completely** each step file before acting.
+- **Never** load multiple step files simultaneously.
+- **Always** halt at checkpoints and wait for human input.
+- Use CWD-relative `path:line` for every code reference.
 
-### Architectural drift
-- Story didn't quietly introduce a new layer / new pattern.
-- If it did, an ADR was opened or a comment justifies it.
-- Components reused from design system; new components added to system if reusable.
+## On activation
 
-### Style + convention
-- Follows lint / format / type rules.
-- Comments explain *why*, not *what*.
-- Dead code removed.
-- TODOs have an owner + a ticket.
+1. Load `.wize/config/project.toml` and `.wize/config/user.toml`.
+2. Resolve `user_name`, `communication_language`, `document_output_language`, `implementation_artifacts`, `planning_artifacts`.
+3. Greet the user in `communication_language`.
+4. Read fully and follow `./steps/step-01-gather-context.md`.
 
-## What this does NOT check
+## Steps
 
-- Whether ACs are met — that's Hawkeye's `tea-review`.
-- Whether the design is right — that's reviewed in pull-request walk-through, ADR review, or party-mode.
-
-Don't conflate. Two reviewers, two scopes.
-
-## Comment style
-
-Use these prefixes:
-
-| Prefix | Meaning |
-|---|---|
-| `nit:` | Cosmetic; non-blocking |
-| `q:` | Question; might be a misunderstanding |
-| `praise:` | Real call-outs; teams need them |
-| `suggestion:` | Idea, the author decides |
-| `blocking:` | Must change before merge |
-| `out-of-scope:` | Real issue, separate story |
-
-Never `LGTM` without scanning. Never `LGTM` with `blocking:` open.
-
-## Verdict
-
-- **approve** — all blockings resolved.
-- **request-changes** — at least one `blocking:`.
-- **comment** — reviewed, no opinion (rare; used for early-draft PRs).
-
-## PR-open checklist (Shuri's self-review)
-
-Before opening, Shuri runs through:
-
-- [ ] CI green locally.
-- [ ] Lint + format clean.
-- [ ] Type-check clean.
-- [ ] No `console.log` / `dbg!` / debug printf.
-- [ ] No `test.skip` / `.only`.
-- [ ] Reading the diff right now, can I explain every line?
-- [ ] Self-walk: open the changed screen / call the changed endpoint.
-- [ ] Story status flipped to `ready-for-review`.
-
-## Anti-patterns Shuri rejects in herself
-
-- Approving without reading.
-- Approving on the basis of green CI alone.
-- "Big PR; will trust" — refuse and ask for slicing.
-- Inline suggestions for full rewrites — open a follow-up instead.
-- Demanding stylistic preferences not in the lint config.
+1. `step-01-gather-context.md` — identify the diff source, construct `{diff_output}`, set `{review_mode}` and `{spec_file}`.
+2. `step-02-review.md` — launch parallel review layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor).
+3. `step-03-triage.md` — normalize, deduplicate, and classify findings into `decision_needed`, `patch`, `defer`, `dismiss`.
+4. `step-04-present.md` — present findings, resolve decisions, apply patches, update story status.
 
 ## Hand-off
 
-> Reviewed PR #418 (E02-S02). 2 nits, 1 blocking on auth-context check missing in one new route. Shuri to fix; re-review needed; then Hawkeye runs `tea-review`.
+> Code review complete for `{story_key or change}`. `{decision_needed}` decision(s), `{patch}` patch(es), `{defer}` deferred, `{dismissed}` dismissed as noise. Next: re-run review or continue to `wize-tea-review` (Hawkeye).

@@ -22,3 +22,7 @@ skills:
   - code: wize-review-adversarial
     name: "Adversarial Review"
     description: "Red-team review of artifacts — challenges assumptions, surfaces edge cases."
+  - code: wize-spec
+    name: "Spec"
+    description: "Distills any intent input into a canonical five-field spec kernel + companions."
+

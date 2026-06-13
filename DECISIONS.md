@@ -136,6 +136,19 @@
 - **D7.5 — Localização das custom:** `.wize/custom/agents/{code}/`, `.wize/custom/skills/{code}/`, `.wize/custom/workflows/{code}/`. Estrutura espelha a do kit core.
 - **D7.6 — Ponto de entrada:** `wize-dev-kit agent create` no CLI + skill nativo `wize-create-agent` chamável pelo Wizer dentro do IDE.
 
+### Fase 8 — Importação de fluxos Steps do BMAD
+
+- **D8.1 — Seleção:** dos fluxos de Steps do BMAD ainda não importados, selecionamos quatro para adaptação imediata:
+  - `bmad-spec` → `wize-spec` (core skill).
+  - `bmad-create-architecture` → `wize-create-architecture` reescrito em 8 steps (micro-file architecture).
+  - `bmad-code-review` → `wize-code-review` reescrito em 4 steps com triagem adversarial.
+  - Research do BMAD (`bmad-market-research`, `bmad-domain-research`, `bmad-technical-research`) → três skills verticais Wize em `src/method-skills/1-analysis/`.
+- **D8.2 — Micro-file architecture:** workflows substituídos por step files auto-contidos em `steps/` ou `{vertical}-steps/`. Cada step controla frontmatter `stepsCompleted` e só avança com confirmação do usuário.
+- **D8.3 — Manter dispatcher genérico:** `wize-research` continua existindo como skill genérico, mas as três vertentes oferecem passos estruturados e templates próprios.
+- **D8.4 — Versionamento dos workflows antigos:** cópias dos `workflow.md` monolíticos de `wize-create-architecture` e `wize-code-review` são arquivadas em `.wize/knowledge/decisions/` para referência, não mantidas em produção.
+- **D8.5 — Registro em catálogos:** skills adicionados a `src/core-skills/module.yaml` e `src/method-skills/module.yaml`; fluxos refletidos no `README.md`.
+
 ## Perguntas em aberto
 
 _(serão preenchidas conforme a entrevista avança)_
+

@@ -1,0 +1,20 @@
+# Wize Dev Kit — overrides for the built-in skill "wize-spec".
+# DO NOT EDIT in the installed kit; copy to .wize/custom/skills/wize-spec/
+# for project-level overrides.
+
+[workflow]
+
+# Steps to run before standard activation (config load, greet).
+activation_steps_prepend = []
+
+# Steps to run after greet but before the workflow begins.
+activation_steps_append = []
+
+# Persistent facts the skill keeps in mind for the whole run.
+persistent_facts = [
+  "file:{project-root}/.wize/knowledge/document-project/conventions.md",
+]
+
+# Scalar executed when the spec is finalized and the decision-log verdict is written.
+# Override wins. Leave empty for no custom post-completion behavior.
+on_complete = ""

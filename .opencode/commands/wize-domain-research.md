@@ -1,0 +1,49 @@
+---
+description: "1-analysis: Domain Research"
+---
+
+# Domain Research
+
+# Domain Research
+
+**Goal.** Conduct domain and industry research to ground the product in its business, regulatory, and technical context.
+
+Pepper Potts drives. Peggy Carter edits prose. Output lands in `.wize/planning/research/domain-{slug}-research-{date}.md`.
+
+## When to use
+
+- "I need domain research on..."
+- "What are the regulations in this industry?"
+- "What are the technical trends in this sector?"
+
+## Inputs
+
+- Open questions from `.wize/planning/brief.md`
+- User-provided domain or industry
+- Web search access
+
+## Outputs
+
+- `.wize/planning/research/domain-{slug}-research-{date}.md`
+
+## Workflow architecture
+
+Step-file architecture with six steps:
+
+1. Scope confirmation
+2. Domain analysis
+3. Competitive landscape
+4. Regulatory focus
+5. Technical trends
+6. Research synthesis
+
+## On activation
+
+1. Load `.wize/config/project.toml` and `.wize/config/user.toml`.
+2. Ask for the domain/industry topic if not provided.
+3. Derive `{research_topic_slug}` and create the output file from `research.template.md`.
+4. Read fully and follow `./domain-steps/step-01-init.md`.
+
+## Hand-off
+
+> Domain research is in `.wize/planning/research/`. Hill can use it for PRD constraints; open questions route back to Wizer.

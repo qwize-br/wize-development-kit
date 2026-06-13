@@ -27,6 +27,27 @@ Skip:
 - `git log --since="1 year ago" --oneline | wc -l` to scope.
 - Any prior README / ARCHITECTURE / docs that exist.
 
+## CLI usage
+
+```bash
+wize-dev-kit document-project                # quick baseline (default)
+wize-dev-kit document-project quick          # same as default
+wize-dev-kit document-project initial_scan   # pattern-only initial scan
+wize-dev-kit document-project initial_scan deep       # reads critical directories
+wize-dev-kit document-project initial_scan exhaustive  # reads all source files in batches
+wize-dev-kit document-project full_rescan    # archives old state, re-runs initial_scan
+wize-dev-kit document-project deep_dive --target src/tools/installer
+```
+
+## Modes
+
+| Mode | What it does | Scan levels |
+|---|---|---|
+| `quick` | Writes the 6 baseline files. Does not read source files. | `quick` only |
+| `initial_scan` | Classifies project type, writes index + overview + source tree + conditional docs. | `quick`, `deep`, `exhaustive` |
+| `full_rescan` | Archives `project-scan-report.json` and re-runs `initial_scan`. | `quick`, `deep`, `exhaustive` |
+| `deep_dive` | Exhaustive analysis of a specific folder/file/feature. | `exhaustive` |
+
 ## Outputs
 
 - `.wize/knowledge/document-project/overview.md` — what the project is, who uses it, how big it is.
@@ -35,6 +56,8 @@ Skip:
 - `.wize/knowledge/document-project/dependencies.md` — runtime deps + dev deps + their roles.
 - `.wize/knowledge/document-project/risk-spots.md` — areas of concentrated complexity, undocumented behavior, or known fragility.
 - `.wize/knowledge/document-project/open-questions.md` — things the code doesn't answer; route to humans.
+- `.wize/knowledge/document-project/index.md` — master navigation with `_(To be generated)_` markers for missing conditional docs.
+- `.wize/knowledge/document-project/project-scan-report.json` — resume state.
 
 ## Steps
 
