@@ -21,6 +21,7 @@ const { printUpdateHintIfAny } = require('./version-check.js');
 const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 const { cmdDoctor } = require('./commands/doctor.js');
+const { cmdDocumentProject } = require('./commands/document-project.js');
 
 const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
 
@@ -74,6 +75,7 @@ Commands:
   workflow <create|list>  Manage workflows.
   validate                Run schema + lint + dry-run validators.
   doctor                  Diagnose the kit + project state, suggest fixes.
+  document-project        Document the current repo (quick | initial_scan | full_rescan | deep_dive).
   help                    Show this message.
 
 Documentation:
@@ -542,7 +544,7 @@ function cmdValidate() {
 // for `update` (already updating), `install` (already setting up), `uninstall`
 // (already leaving), `validate` (developer-tool), and `version` (the user is
 // already asking about versions).
-const HINT_COMMANDS = new Set(['list', 'sync', 'agent', 'workflow', 'help', 'doctor']);
+const HINT_COMMANDS = new Set(['list', 'sync', 'agent', 'workflow', 'help', 'doctor', 'document-project']);
 
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
@@ -564,6 +566,13 @@ async function main() {
     case 'workflow':  return cmdWorkflow(rest);
     case 'validate':  return cmdValidate();
     case 'doctor':    return cmdDoctor({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
+    case 'document-project':
+      return cmdDocumentProject({
+        kitRoot: KIT_ROOT,
+        projectRoot: process.cwd(),
+        args: rest,
+        opts: { log: console.log }
+      });
     case 'version':
     case '--version':
     case '-v':
