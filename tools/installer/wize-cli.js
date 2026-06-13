@@ -21,6 +21,7 @@ const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 const { cmdDoctor } = require('./commands/doctor.js');
 const { cmdDocumentProject } = require('./commands/document-project.js');
+const { detectHarnessCli, manualInstructions } = require('./baseline.js');
 
 const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
 
@@ -127,7 +128,9 @@ function getRl() {
 function prompt(question) {
   process.stdout.write(question);
   getRl();
-  if (_queue.length) return Promise.resolve(_queue.shift().trim());
+  // Discard any residual lines left by previous prompts (e.g. prompts library)
+  // so that this prompt always waits for fresh user input.
+  _queue = [];
   return new Promise(resolve => _waiters.push((line) => resolve(line.trim())));
 }
 
@@ -458,6 +461,32 @@ async function cmdInstall(args) {
       } else {
         console.log('\nSkipped documentation. Run `wize-dev-kit document-project` later.');
       }
+    }
+  }
+
+  // Offer to open a detected AI harness interactively.
+  if (INTERACTIVE) {
+    const ideTargetCodes = targets.map(t => t.code);
+    const harnesses = detectHarnessCli({ preferIde: ideTargetCodes });
+    if (harnesses.length) {
+      const primary = harnesses[0];
+      const { cmd, args } = primary.buildCmd('/wize-orchestrator');
+      const shown = `${cmd} ${args.map(a => /\s/.test(a) ? '"' + a + '"' : a).join(' ')}`;
+      const openHarness = await confirm(
+        `\nA harness was detected: ${primary.code} (${primary.path}).\n` +
+        `Open it now with Wizer? (runs: ${shown})`,
+        true
+      );
+      if (openHarness) {
+        const { spawnSync } = require('node:child_process');
+        console.log(`\nLaunching ${shown}...`);
+        spawnSync(cmd, args, { cwd, stdio: 'inherit' });
+      } else {
+        console.log(manualInstructions(primary).replace('/wize-document-project', '/wize-orchestrator'));
+      }
+    } else {
+      console.log('\nNo AI harness CLI detected on PATH (claude / codex / opencode).');
+      console.log('Open your IDE in this repo and run: /wize-orchestrator');
     }
   }
 
