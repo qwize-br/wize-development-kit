@@ -1,0 +1,20 @@
+# Wize Dev Kit — overrides for the built-in workflow "wize-create-architecture".
+# DO NOT EDIT in the installed kit; copy to .wize/custom/workflows/wize-create-architecture/
+# for project-level overrides.
+
+[workflow]
+
+# Steps to run before standard activation (config load, greet).
+activation_steps_prepend = []
+
+# Steps to run after greet but before the workflow begins.
+activation_steps_append = []
+
+# Persistent facts the workflow keeps in mind for the whole run.
+persistent_facts = [
+  "file:{project-root}/.wize/knowledge/document-project/conventions.md",
+]
+
+# Scalar executed when Step 8 (Architecture Completion & Handoff) finishes.
+# Override wins. Leave empty for no custom post-completion behavior.
+on_complete = ""
