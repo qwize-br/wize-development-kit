@@ -1,0 +1,12 @@
+# Wize Development Kit — user-level customizations.
+# This file is per-developer; the kit places it in .gitignore so each member
+# of the team gets their own copy. Do NOT commit.
+
+[user]
+name = "andrefrd"
+# role = "developer"          # optional — "developer", "PM", "designer", etc.
+
+[preferences]
+# Override project-level language if you prefer another locally:
+# communication   = "pt-BR"
+# document_output = "en"

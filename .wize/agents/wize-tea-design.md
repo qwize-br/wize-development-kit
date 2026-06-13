@@ -1,0 +1,124 @@
+# TEA Test Design
+
+> design: TEA Test Design
+
+# TEA — Test Design
+
+**Goal.** For **one story**: declare the test split, the fixtures, the mocks, the environments, and the assertion targets. This is Hawkeye's contract Shuri implements against. No story enters dev without one.
+
+Hawkeye drives. Runs at the start of every story (advisory; can be relaxed only when `tea.toml` says so).
+
+## Inputs
+
+- `.wize/solutioning/stories/{epic}/{story}.md`
+- `.wize/solutioning/architecture.md`
+- `.wize/implementation/tea/risk-profile.md`
+- Overlay test playbooks if active:
+  - `web-overlay/playbooks/playwright-vitest.md`
+  - `app-overlay/playbooks/detox-maestro.md`
+
+## Output
+
+- `.wize/implementation/tea/{epic}/{story}/design.md`
+
+## Steps
+
+### 1. Read the story; map every AC
+
+For each AC, write **one assertion-shape sentence**: *"There will be a {kind} test that does {what} and expects {observable}."*
+
+### 2. Pick the test split
+
+Defaults (from `playwright-vitest.md` / `detox-maestro.md`):
+- **Low-risk story:** 70% unit / 20% integration / 10% E2E.
+- **Risk-profile flagged story (R-1..R-3):** add 1–2 dedicated E2E + integration for the risk area.
+- **UI-only story:** 60% unit / 30% component (Testing Library) / 10% E2E.
+- **Server-only story:** 80% unit / 20% integration; no E2E unless an upstream consumer story bundles it.
+
+### 3. Declare fixtures + mocks
+
+- Fixtures: known users, known DB rows, known files.
+- Mocks: external services at the network boundary (MSW). Don't mock the unit under test.
+
+### 4. Environment
+
+- Where it runs (local sim, headless emulator, real device farm).
+- Network conditions (offline / 3G slow / lossy WiFi).
+- OS / browser matrix (from `device-matrix.md` or playwright projects).
+
+### 5. Edge cases (cheap; pay back × 10)
+
+List 3–7 edge cases the ACs don't name but the user might hit:
+- Empty / max-length inputs.
+- IME / paste / autofill.
+- Offline mid-action.
+- Concurrent users on the same resource.
+- Time-zone / DST.
+- Localized number/currency.
+
+Each gets a test of its own (usually unit).
+
+### 6. Hand off
+
+Mark `status: ready-for-dev` in the design.md frontmatter. Shuri reads before starting.
+
+## YAML frontmatter (canonical)
+
+```yaml
+---
+gate: design
+story_id: E01-S03
+ac_ids: [AC-02-1, AC-02-2]
+status: PASS
+created_at: 2026-06-11T12:00:00Z
+test_split:
+  unit: { count: 4, description: "validation, server-action contract, error mapper, mailer payload" }
+  integration: { count: 1, description: "server action calls mailer with right args, against MSW" }
+  e2e: { count: 1, description: "happy path; Playwright @chromium @ios" }
+fixtures:
+  - "new-admin user"
+  - "empty team"
+mocks:
+  - "Resend via MSW"
+  - "Auth session via fixture cookie"
+environment: "local + Playwright project chromium + ios"
+risk_links: [R-1]
+edges:
+  - "invalid email rules: blank, missing @, weird IME chars"
+  - "duplicate teammate email"
+  - "offline at submit time"
+---
+```
+
+## Body of `design.md`
+
+```markdown
+## Per-AC assertion shapes
+
+- **AC-02-1**: Vitest unit on `validateInviteEmail()` → returns `{ ok: true }` for `name+tag@example.com`. Vitest integration on `inviteTeammate()` server action → asserts `mailer.send` called once with `{ to: 'name@example.com', template: 'team-invite' }`. Playwright E2E → clicks "Send invite", asserts `[data-testid="invite-sent-banner"]` appears within 1s.
+
+- **AC-02-2**: Vitest unit on `validateInviteEmail()` → returns `{ ok: false, code: 'invalid_format', field: 'email' }` for empty/no-@. Component test (Testing Library) on `<InviteForm>` → asserts the input's `aria-describedby` error region announces "Enter a valid email."
+
+## Edge cases (additional tests)
+
+- E1: Empty email — `validateInviteEmail('')` → `invalid_format`.
+- E2: 254-char local part — boundary check; expect graceful clipping.
+- E3: Same email submitted twice — second call hits `inviteTeammate()`, asserts second insert is a no-op (idempotency key based on `(team_id, email)`).
+- E4: Offline at submit — Playwright `context.setOffline(true)` after click; banner shows "We'll retry when you're back online."
+
+## Run plan
+- On every PR: full unit + integration; E2E `@smoke` tag only (≤ 30s).
+- Nightly: full E2E suite + Lighthouse baseline.
+```
+
+## Anti-patterns Hawkeye rejects
+
+- **`design.md` written after dev started.** Then the story slipped through; flag.
+- **One test per AC, no edges.** Edges are where users live.
+- **Mocking the unit under test.** You'd be testing the mock.
+- **E2E that test the happy path only.** Cover failure too.
+- **Selectors by visible text in a multilingual app.** Use `data-testid` or `role` with locale-aware patterns.
+
+## Hand-off
+
+> Test design for E01-S03 at `.wize/implementation/tea/E01-S03/design.md`. 4 unit, 1 integration, 1 E2E, plus 4 edges. Shuri can start; I'll check `tea-trace.md` against this when the PR opens.

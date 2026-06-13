@@ -16,11 +16,11 @@ const readline = require('node:readline');
 const prompts = require('prompts');
 const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
 const { cmdUpdate } = require('./commands/update.js');
-const { detectHarnessCli, runHeadlessBaseline, manualInstructions, defaultPrompt } = require('./baseline.js');
 const { printUpdateHintIfAny } = require('./version-check.js');
 const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 const { cmdDoctor } = require('./commands/doctor.js');
+const { cmdDocumentProject } = require('./commands/document-project.js');
 
 const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
 
@@ -74,6 +74,7 @@ Commands:
   workflow <create|list>  Manage workflows.
   validate                Run schema + lint + dry-run validators.
   doctor                  Diagnose the kit + project state, suggest fixes.
+  document-project        Document the current repo (quick | initial_scan | full_rescan | deep_dive).
   help                    Show this message.
 
 Documentation:
@@ -135,6 +136,23 @@ async function confirm(question, defaultYes = true) {
   const ans = (await prompt(`${question} ${hint} `)).toLowerCase();
   if (!ans) return defaultYes;
   return ans.startsWith('y');
+}
+
+async function select(label, choices, defaultValue) {
+  if (INTERACTIVE) {
+    const initial = choices.findIndex(c => c.value === defaultValue);
+    const { picked } = await prompts({
+      type: 'select',
+      name: 'picked',
+      message: label,
+      choices: choices.map(c => ({ title: c.title, value: c.value, description: c.description })),
+      initial: initial === -1 ? 0 : initial
+    });
+    if (picked === undefined) process.exit(130);
+    return picked;
+  }
+  // Non-TTY fallback: return default.
+  return defaultValue;
 }
 
 async function selectLanguage(label, defaultCode = 'en') {
@@ -419,35 +437,26 @@ async function cmdInstall(args) {
   }
 
   if (detection.brownfield) {
-    const baseline = await confirm('\nRun `wize-document-project` to baseline the existing repo now?', true);
-    if (baseline) {
-      const preferIde = targets.map(t => t.code);
-      const harnesses = detectHarnessCli({ preferIde });
-      if (process.env.WIZE_SKIP_BASELINE === '1') {
-        console.log('\nWIZE_SKIP_BASELINE=1 — not running the baseline.');
-        console.log(manualInstructions(harnesses[0]));
-      } else if (harnesses.length === 0) {
-        console.log(manualInstructions(null));
+    if (process.env.WIZE_SKIP_BASELINE === '1') {
+      console.log('\nWIZE_SKIP_BASELINE=1 — not running the baseline.');
+    } else if (!INTERACTIVE) {
+      console.log('\nNon-interactive install detected; running quick baseline...');
+      cmdDocumentProject({ kitRoot: KIT_ROOT, projectRoot: cwd, args: ['quick'], opts: { log: console.log } });
+    } else {
+      const mode = await select(
+        'Document the existing repo now?',
+        [
+          { title: 'Quick baseline (default, 6 files)', value: 'quick' },
+          { title: 'Initial scan (pattern + conditional docs)', value: 'initial_scan' },
+          { title: 'Full rescan (archive old state, re-run)', value: 'full_rescan' },
+          { title: 'Skip documentation for now', value: 'skip' }
+        ],
+        'quick'
+      );
+      if (mode !== 'skip') {
+        cmdDocumentProject({ kitRoot: KIT_ROOT, projectRoot: cwd, args: [mode], opts: { log: console.log } });
       } else {
-        const chosen = harnesses[0];
-        console.log(`\nDetected harness: ${chosen.binary} (${chosen.path}).`);
-        const confirmRun = await confirm(
-          `Run /wize-document-project via ${chosen.binary} now?`,
-          true
-        );
-        if (confirmRun) {
-          const r = runHeadlessBaseline({
-            harness: chosen,
-            projectRoot: cwd,
-            prompt: defaultPrompt()
-          });
-          if (!r.ok && !r.skipped) {
-            console.log(`\n${chosen.binary} exited with code ${r.exitCode}. You can re-run later with:`);
-            console.log(manualInstructions(chosen));
-          }
-        } else {
-          console.log(manualInstructions(chosen));
-        }
+        console.log('\nSkipped documentation. Run `wize-dev-kit document-project` later.');
       }
     }
   }
@@ -542,7 +551,7 @@ function cmdValidate() {
 // for `update` (already updating), `install` (already setting up), `uninstall`
 // (already leaving), `validate` (developer-tool), and `version` (the user is
 // already asking about versions).
-const HINT_COMMANDS = new Set(['list', 'sync', 'agent', 'workflow', 'help', 'doctor']);
+const HINT_COMMANDS = new Set(['list', 'sync', 'agent', 'workflow', 'help', 'doctor', 'document-project']);
 
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
@@ -564,6 +573,13 @@ async function main() {
     case 'workflow':  return cmdWorkflow(rest);
     case 'validate':  return cmdValidate();
     case 'doctor':    return cmdDoctor({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
+    case 'document-project':
+      return cmdDocumentProject({
+        kitRoot: KIT_ROOT,
+        projectRoot: process.cwd(),
+        args: rest,
+        opts: { log: console.log }
+      });
     case 'version':
     case '--version':
     case '-v':
