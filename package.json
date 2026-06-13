@@ -47,7 +47,8 @@
     "CHANGELOG.md",
     "ARCH.md",
     "ROSTER.md",
-    "DECISIONS.md"
+    "DECISIONS.md",
+    "AGENTS.md"
   ],
   "dependencies": {
     "prompts": "^2.4.2"
