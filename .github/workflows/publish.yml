@@ -122,6 +122,19 @@ jobs:
           grep -q 'wize-orchestrator'    /tmp/agentlist.log   || { echo "::error::agent list missing orchestrator"; exit 1; }
           grep -q 'Custom / override agents' /tmp/agentlist.log || { echo "::error::agent list missing custom block"; exit 1; }
 
+          # 7. document-project quick produces the 6 baseline files in a brownfield repo.
+          DOC_DIR="$(mktemp -d)"
+          cd "$DOC_DIR"
+          npm init -y --silent >/dev/null
+          git init -q
+          git config user.email "smoke@wize.dev"
+          git config user.name "Smoke"
+          printf 'smoke-doc\n\n\n\n\nSmoke\n\n' | "$WIZE" install
+          "$WIZE" document-project quick
+          for f in overview.md architecture-snapshot.md conventions.md dependencies.md risk-spots.md open-questions.md; do
+            test -f ".wize/knowledge/document-project/$f" || { echo "::error::missing baseline file: $f"; exit 1; }
+          done
+
           echo "::notice::Smoke E2E passed"
 
       - name: Publish to npm (Trusted Publishing + provenance)

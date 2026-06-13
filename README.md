@@ -146,6 +146,8 @@ npx wize-dev-kit agent create    # scaffold a new custom agent (validated + dry-
 npx wize-dev-kit agent edit <code>  # override a built-in via .wize/custom/agents/<code>/customize.toml
 npx wize-dev-kit doctor          # diagnose kit / project / adapters / gates and suggest fixes
 npx wize-dev-kit validate        # structural checks on the kit assets
+npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--target <path>]
+                                 # document the current repo; quick baseline by default
 npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 ```
 
@@ -161,7 +163,7 @@ npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 
 ## Status
 
-**Alpha — v0.1.0.** This release is a working skeleton: directory tree, agent descriptors, workflow stubs, installer scaffolding, and IDE adapter placeholders. The core flow (brief → PRD → architecture → story → TEA gates) is **scaffolded but not yet wired end-to-end**. Production-readiness target: v0.5.0.
+**v0.3.0+ — beta.** The core lifecycle is scaffolded and the `document-project` engine is wired: quick baseline, initial/full/deep scans, project-type classification, resume state, and IDE adapters for Claude Code, Cursor, Windsurf, and others. The CLI commands listed above are executable and tested. Production-readiness target remains v0.5.0.
 
 ---
 

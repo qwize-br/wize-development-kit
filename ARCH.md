@@ -210,7 +210,43 @@ wize-dev-kit sync     # regera adapters IDE
 
 ---
 
-## 8. Overlays Web e App
+## 8. Document Project Engine
+
+`wize-dev-kit document-project` é a ferramenta de baseline e documentação brownfield do kit.
+
+### Modos
+
+| Modo | O que faz | Nível de scan |
+|---|---|---|
+| `quick` | Gera 6 arquivos de baseline leves (`overview.md`, `architecture-snapshot.md`, `conventions.md`, `dependencies.md`, `risk-spots.md`, `open-questions.md`). | `quick` apenas |
+| `initial_scan` | Classifica o tipo do projeto, gera `index.md` + docs condicionais conforme o tipo. | `quick`, `deep`, `exhaustive` |
+| `full_rescan` | Arquiva o estado anterior e re-executa `initial_scan` do zero. | `quick`, `deep`, `exhaustive` |
+| `deep_dive` | Análise exaustiva de uma pasta, arquivo, feature, api_group ou component_group. | `exhaustive` |
+
+### Arquivo de estado
+
+- `.wize/knowledge/document-project/project-scan-report.json` mantém progresso, passos completados e instruções de resume.
+- Arquivos antigos são arquivados em `.wize/knowledge/document-project/_archive/`.
+- `--resume` continua a partir do `current_step`.
+
+### Index mestre
+
+- `index.md` lista toda a documentação gerada e documentação existente.
+- Docs condicionais que ainda não foram gerados aparecem com `_(To be generated)_`.
+- Re-gerar o index remove os marcadores conforme os arquivos são produzidos.
+
+### Componentes de código
+
+- `tools/installer/commands/document-project.js` — dispatcher CLI e parsing de args.
+- `tools/installer/document-project/modes/{quick,initial-scan,full-rescan,deep-dive}.js` — implementação dos modos.
+- `tools/installer/document-project/classify.js` — classificador de tipo de projeto via CSV.
+- `tools/installer/document-project/batch-scanner.js` — varredura em batches para evitar estouro de contexto.
+- `tools/installer/document-project/render-index.js` — renderizador do `index.md`.
+- `tools/installer/document-project/state.js` — leitura/escrita do `project-scan-report.json`.
+- `src/method-skills/1-analysis/wize-document-project/templates/` — templates markdown/Handlebars para cada doc condicional.
+- `src/method-skills/1-analysis/wize-document-project/documentation-requirements.csv` — regras de tipo de projeto e flags de scan.
+
+## 9. Overlays Web e App
 
 ### Wize Web Dev (overlay)
 
@@ -228,7 +264,7 @@ wize-dev-kit sync     # regera adapters IDE
 
 ---
 
-## 9. Agent Builder
+## 10. Agent Builder
 
 - 3 skills meta: `wize-create-agent`, `wize-create-skill`, `wize-create-workflow`.
 - Customização de built-ins via `.wize/custom/{tipo}/{code}/customize.toml` (override sem fork).
@@ -237,7 +273,7 @@ wize-dev-kit sync     # regera adapters IDE
 
 ---
 
-## 10. Onboarding pós-install (Wizer)
+## 11. Onboarding pós-install (Wizer)
 
 1. Wizer triages: greenfield vs brownfield, perfil, objetivo do projeto.
 2. Se brownfield: oferece rodar `wize-document-project` (Tony + Peggy geram baseline).
@@ -246,7 +282,7 @@ wize-dev-kit sync     # regera adapters IDE
 
 ---
 
-## 11. Estrutura do repo `wize-dev-kit/` (source code do kit)
+## 12. Estrutura do repo `wize-dev-kit/` (source code do kit)
 
 ```
 wize-dev-kit/

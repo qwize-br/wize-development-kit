@@ -107,6 +107,32 @@ test('knowledgeStatus parses last_refreshed and counts _pending lines', () => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 
+test('knowledgeStatus counts To be generated markers and scan report age', () => {
+  const root = tmpProject('wize-doc-kn-markers-');
+  const dir = path.join(root, '.wize/knowledge/document-project');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'index.md'),
+    '# Index\n- [Architecture](./architecture.md) _(To be generated)_\n- [Guide](./guide.md) _(To be generated)_\n', 'utf-8');
+  fs.writeFileSync(path.join(dir, 'project-scan-report.json'),
+    JSON.stringify({ workflow_version: '0.3.1', timestamps: { last_updated: new Date().toISOString() } }), 'utf-8');
+  const k = knowledgeStatus(root);
+  assert.strictEqual(k.toBeGeneratedMarkers, 2);
+  assert.strictEqual(k.stateExists, true);
+  assert.strictEqual(k.stateAgeDays, 0);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('knowledgeStatus handles missing index and scan report', () => {
+  const root = tmpProject('wize-doc-kn-empty-');
+  const dir = path.join(root, '.wize/knowledge/document-project');
+  fs.mkdirSync(dir, { recursive: true });
+  const k = knowledgeStatus(root);
+  assert.strictEqual(k.toBeGeneratedMarkers, 0);
+  assert.strictEqual(k.stateExists, false);
+  assert.strictEqual(k.stateAgeDays, null);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
 test('gitInfo detects branch when .git/HEAD is a ref', () => {
   const root = tmpProject('wize-doc-git-');
   fs.mkdirSync(path.join(root, '.git'), { recursive: true });

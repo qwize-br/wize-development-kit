@@ -1,0 +1,156 @@
+---
+description: "4-implementation: Dev Story"
+globs:
+alwaysApply: false
+---
+
+# Dev Story
+
+# Dev Story
+
+**Goal.** Implement one story under TDD discipline. Tests first; minimum code to pass; refactor with green. Each commit cites an AC ID. The PR ends in a clean gate, not a "looks good to me."
+
+Shuri drives. Hawkeye observes (test design is binding). Tony stays available for architectural questions.
+
+## Inputs
+
+- `.wize/solutioning/stories/{epic}/{story}.md`
+- `.wize/solutioning/architecture.md`
+- `.wize/solutioning/design-system/` (use existing components)
+- `.wize/implementation/tea/{epic}/{story}/design.md` (the test contract)
+
+## Outputs
+
+- Code + tests in the target repo.
+- Commit messages reference AC IDs.
+- Story file updated to `status: ready-for-review`.
+
+## The loop (TDD, story-scoped)
+
+### 1. Read
+
+Story ACs, out-of-scope, notes, `tea-design.md`. Confirm the test split. If the design doesn't match the story (mismatch on test count, mock, environment), ping Hawkeye **before** writing code.
+
+### 2. Slice the story into micro-cycles
+
+Each cycle is one AC (or part of one) and produces a green test + small code change. Don't try to ship the whole story in one commit.
+
+### 3. Red
+
+Write the failing test first. Match the assertion shape in `design.md`. Don't write code yet.
+
+```ts
+// red — first run, fails
+test('valid email returns ok', () => {
+  expect(validateInviteEmail('a@b.co')).toEqual({ ok: true });
+});
+```
+
+### 4. Green
+
+Write the **minimum** code that turns the test green. No anticipated branches; no "just-in-case" handling.
+
+```ts
+// green — minimum to pass
+export const validateInviteEmail = (s: string) => ({ ok: /@/.test(s) });
+```
+
+### 5. Refactor
+
+Now harden, with the test as safety net.
+
+```ts
+// refactor — same green tests, real logic
+import { z } from 'zod';
+const schema = z.string().email();
+export const validateInviteEmail = (s: string) =>
+  schema.safeParse(s).success ? { ok: true } : { ok: false, code: 'invalid_format', field: 'email' };
+```
+
+### 6. Commit
+
+Conventional commits, AC IDs referenced.
+
+```
+feat(invite): validate email per AC-02-1 / AC-02-2
+- add validateInviteEmail with zod
+- add 4 unit tests covering valid + invalid rules
+```
+
+### 7. Repeat
+
+Until every AC has at least one test + minimum code that makes it pass.
+
+### 8. Knowledge update (inline, ~60s)
+
+Before opening the PR, ask: **did this story touch any of the 5 baseline axes** documented in `.wize/knowledge/document-project/`?
+
+| Axis | Touched when… | File to update |
+|---|---|---|
+| **Architecture** | new component, new sequence, changed data flow | `architecture-snapshot.md` |
+| **Conventions** | new naming/folder/test pattern published as public contract (incl. `testid`) | `conventions.md` |
+| **Risk-spots** | introduced a complexity hot spot OR resolved one | `risk-spots.md` |
+| **Dependencies** | added / removed / upgraded a runtime dep | `dependencies.md` |
+| **Overview** | new user-visible feature a new dev should know about | `overview.md` |
+
+If yes for any axis: open the file and add **1–3 lines** under a new dated bullet — in the same PR.
+
+```markdown
+## 2026-06-12 — E01-S03
+- Conventions: `data-testid="invite-*"` published as public contract; Hawkeye E2E depends on these.
+- Risk: R-1 (mailer) mitigation now confirmed (integration test covers retry policy).
+```
+
+If no axis was touched, you skip this step entirely — quick-dev-style changes don't need it. Hawkeye will check whether the call was correct in `tea-review`. A story that touched an axis but skipped the update gets a `KN-NN` finding in the gate (recommendation `CONCERNS` advisory, or `FAIL` enforcing).
+
+This is how the brownfield baseline stays alive instead of going stale 6 months in.
+
+### 9. Pre-PR self-check
+
+- All Hawkeye-declared tests exist + pass.
+- No `test.skip` / `.only` left.
+- Lint + format clean.
+- Type-check clean.
+- `data-testid` matches story's "notes for Hawkeye".
+- Story file frontmatter → `status: ready-for-review`.
+- Self-walk the screen (web) or smoke a tab on simulator (app).
+
+### 10. Open PR
+
+PR description includes:
+- Story link.
+- AC list with the test names that cover them.
+- Screenshots / recordings of happy + failure paths.
+- Knowledge update line (`Touched axis: <none|architecture|conventions|risk-spots|dependencies|overview>`).
+- TEA expected next: design → trace → review → gate.
+
+### 11. Address gate findings
+
+If `tea-review` flags issues, fix them in the same PR or open a follow-up if the story has shipped a separate value-bearing slice.
+
+## Security + perf during implementation
+
+Shuri thinks both at write time, not at review time:
+
+- Auth context on every server entry point — confirm via Tony's middleware pattern.
+- Tokens never logged.
+- Inputs validated at the boundary; trusted by the time they reach domain.
+- Network calls in handlers wrapped with timeout + retry policy from architecture.
+- Don't `await` in a loop without batching.
+- Don't ship dead code (`isFooEnabled = true` always).
+
+## Quick-dev exception
+
+If the work is small / well-scoped and Wizer invoked `wize-quick-dev` instead of this workflow, the design step is replaced by smoke-test-only commitment and the gate is a single one-line entry in `quick-dev-log.md`.
+
+## Anti-patterns Shuri rejects in her own work
+
+- Writing code first and tests "after the bug fix" — that's not TDD; that's regression-tests.
+- Commits that don't cite an AC.
+- "Refactor while green" turning into "rewrite while green."
+- Bundling cross-cutting refactors into the story PR. Split.
+- Editing tests so they pass instead of editing code so tests pass.
+
+## Hand-off
+
+> Story E01-S03 implemented. All ACs covered by tests; CI green. PR opened (#412). Hawkeye, ready for trace + review. Notes section of the story has the testid map you'll use.

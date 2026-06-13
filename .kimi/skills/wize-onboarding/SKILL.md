@@ -1,0 +1,28 @@
+---
+name: wize-onboarding
+description: "workflow: Onboarding"
+---
+
+# Onboarding
+
+# Onboarding
+
+**Goal.** Post-install triage. Decide greenfield vs brownfield, profile(s), objective, then delegate.
+
+## Inputs
+- `.wize/config/project.toml` (just-created)
+- Repo state (git log, presence of `src/`, `package.json` etc.)
+
+## Outputs
+- Updates to `.wize/config/project.toml`
+- A first task handed off to the right agent
+
+## Steps
+1. **Greet.** "What are we working on?"
+2. **Detect.** Brownfield? Offer `wize-document-project`.
+3. **Profile check.** Confirm Core/+Web/+App and ask if changes needed.
+4. **Objective.** One sentence: what does success look like in 30 days?
+5. **Route.** 
+   - No brief? → call Pepper (`wize-product-brief`).
+   - Has brief? → call Maria Hill (`wize-create-prd`).
+   - Mid-flight? → resume where we left off (`sprint-status.md`).

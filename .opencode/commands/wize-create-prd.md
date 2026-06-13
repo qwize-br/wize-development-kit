@@ -1,0 +1,164 @@
+---
+description: "2-plan: Create PRD"
+---
+
+# Create PRD
+
+# Create PRD
+
+**Goal.** Turn brief + research + trigger map into a Product Requirements Document the team can build from. The PRD names *what* and *why* with measurable boundaries. Mantis, Fury, Tony will read it. Shuri ships against the acceptance criteria.
+
+Maria Hill drives. Peggy edits prose. Output lands in `.wize/planning/prd.md`.
+
+## Inputs
+
+- `.wize/planning/brief.md` (vision, audience, success criteria).
+- `.wize/planning/research.md` (when present).
+- `.wize/planning/ux/trigger-map.md` (every PRD goal references rows of this map).
+- `.wize/planning/prfaq.md` (when present — PRD scope mirrors FAQ Q5 "what's in/out").
+
+## Outputs
+
+- `.wize/planning/prd.md`
+- `.wize/solutioning/epics/` — coarse epic outlines Tony refines later.
+
+## Steps
+
+### 1. Goals (3–5)
+
+Pull the success criteria from the brief; restate as PRD goals. Each goal is:
+- One sentence.
+- Measurable (named metric + target + deadline).
+- Tied to a trigger-map row.
+
+Example: *"Reduce signup time from 3.5min to 1min by Q3 (signal: `signup_completed` median; row 1)."*
+
+### 2. Scope — in / out (explicit)
+
+| In | Out (for now) |
+|---|---|
+| First-team signup flow | Multi-team admin roles |
+| Self-serve invite | SSO via SAML |
+| English (US) | Other locales |
+
+If a stakeholder asked for it and it isn't here, they will ask again at gate review. Put their item in **Out** with a one-line reason, not silence.
+
+### 3. User stories backbone
+
+Coarse stories that map to scope items. "As a {role}, I want to {action}, so that {outcome}." Each story will be sliced finer by Tony in `wize-create-epics-and-stories`.
+
+Use the trigger-map rows as backbone:
+- Row 1 (Sign up) → "As a team admin, I want to sign up with my work email, so that I can invite my team within 5 minutes."
+
+### 4. Acceptance criteria per scope item
+
+For every In-scope item, write 3–7 ACs Hawkeye can test.
+
+Format: `Given … When … Then …` or a numbered behavioral list.
+
+ACs are **observable**. ✓ "If the user enters an invalid email, the input shows error text within 200ms." ✗ "The form validates emails correctly."
+
+Each AC gets an ID: `AC-{epic}-{n}`. Hawkeye references these in `tea-trace.md`.
+
+### 5. Constraints + assumptions
+
+Pull constraints from the brief. Add:
+- **Assumptions** that, if wrong, change scope.
+- **Dependencies** on other teams/services with name + deadline.
+
+Each assumption is one line + verification plan. *"Assumption: Stripe Connect onboarding average 7 days. Verification: confirm with Stripe by 2026-07-01."*
+
+### 6. NFR pointer
+
+Don't redefine NFRs in the PRD. Reference `.wize/planning/nfr-principles.md` (Fury's) once. Note any project-specific tightening.
+
+### 7. Open questions
+
+What still needs deciding before solutioning starts. Each with an owner + deadline. Blockers can't carry into Phase 3.
+
+### 8. Hand off
+
+- Mark `status: ready-for-validation`.
+- Run `wize-validate-prd` (Maria Hill + Mantis + Fury sign-off).
+- Then Mantis starts `wize-ux-scenarios`.
+
+## Output template
+
+```markdown
+---
+status: draft | ready-for-validation | validated
+owner: Maria Hill
+created: YYYY-MM-DD
+---
+
+# PRD — {{project_name}}
+
+## Goals
+1. {{goal}} (metric: …, target: …, deadline: …, trigger-map row: …)
+2. …
+
+## Scope
+
+### In scope
+- {{item}} — {{2–3 lines of detail}}
+
+### Out of scope
+- {{item}} — {{one-line reason: not now / not us / not yet}}
+
+## Backbone (coarse stories)
+- E01: As a {{role}}, I want to {{action}}, so that {{outcome}}.
+- E02: …
+
+## Acceptance criteria
+
+### E01 — Sign-up
+- **AC-01-1:** Given a new visitor on `/signup`, When they submit a valid work email + password, Then an account is created and they land on `/onboarding` within 1.5s.
+- **AC-01-2:** Given an invalid email, When the user blurs the field, Then error text appears within 200ms identifying which rule failed.
+- **AC-01-3:** Given a duplicate email, When the user submits, Then they see a "Sign in instead?" CTA and the request returns HTTP 409.
+- …
+
+## Constraints
+- Deadline: …
+- Budget: …
+- Compliance: GDPR, LGPD, SOC2.
+
+## Assumptions
+- Stripe Connect onboarding ≤ 7 days avg. — verify by …
+- Auth0 free tier sufficient for first 6 months. — verify by …
+
+## Dependencies
+- Design system tokens from Mantis by {{date}}.
+- Database from infra team by {{date}}.
+
+## NFR pointer
+See `.wize/planning/nfr-principles.md`. Project tightening: p95 LCP ≤ 2.0s (vs. global 2.5s) on signup pages.
+
+## Open questions
+- [ ] (blocker) Pricing tier exposed pre-payment? — *owner: NAME, by: DATE*
+- [ ] (important) Brazil-only beta or global launch? — *owner: NAME, by: DATE*
+```
+
+## INVEST checklist (per AC group)
+
+Maria Hill validates every story's ACs against INVEST:
+
+- **I**ndependent: no implicit dependency on another story being built first.
+- **N**egotiable: details can move; intent can't.
+- **V**aluable: a real outcome to a real user.
+- **E**stimable: Tony can size it.
+- **S**mall: ≤ 1 PR worth (sliced finer in Phase 3 if not).
+- **T**estable: every AC is observable.
+
+If any letter fails, fix the story before it leaves Plan.
+
+## Anti-patterns Maria Hill rejects
+
+- **PRD as wishlist.** Pages of "the system shall…" with no Out-of-Scope. Force the cut.
+- **ACs as descriptions.** "The form is responsive." → no. *"At 360px, the form fits in the viewport with no horizontal scroll."*
+- **Open questions with no owner / no deadline.** They never get answered.
+- **Constraint hidden in prose.** Pull to its own bullet.
+- **PRD without a version + status.** Reviewers can't tell what they're reviewing.
+
+## Hand-off
+
+> PRD draft is at `.wize/planning/prd.md`. Two open blockers; CEO and Sales Lead have until Friday. Mantis — once we're `validated`, you start with the trigger map + PRD. Fury — your call on stack family.

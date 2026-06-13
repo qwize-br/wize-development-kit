@@ -5,6 +5,32 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.1] — 2026-06-13
+
+Expands `wize-document-project` from a single lightweight baseline into a multi-mode documentation engine with project-type classification, resume state, and BMAD-equivalent templates.
+
+### Added — `wize-document-project` engine
+
+- **CLI modes:** `quick`, `initial_scan`, `full_rescan`, `deep_dive` via `wize-dev-kit document-project [mode]`.
+- **Project-type classification:** `documentation-requirements.csv` with 12 types + `classifyProject()` module; detects monolith, multi-part repos, and the kit itself as `cli` + `library`.
+- **JSON state file:** `project-scan-report.json` with schema, init/load/update/archive helpers, and `--resume` support.
+- **Batch scanner:** subfolder-sized scans that skip noise directories and flag files >5000 LOC.
+- **Master index renderer:** `index.md` with links + `_(To be generated)_` markers for missing conditional docs.
+- **Deep-dive mode:** folder, file, feature, `api_group`, `component_group` targets with typed resolution.
+- **11 BMAD-equivalent templates:** index, project-overview, source-tree-analysis, architecture, component-inventory, development-guide, api-contracts, data-models, deployment-guide, contribution-guide, deep-dive.
+
+### Added — integration
+
+- `doctor` now reports scan-state age, `index.md` "To be generated" marker count, and suggests `document-project` / `wize-refresh-knowledge` when stale.
+- Brownfield installer prompts for documentation mode (quick / initial_scan / full_rescan / skip) with non-TTY fallback to quick.
+- `wize-tea-risk` workflow adds documentation gaps as a risk category.
+- CI smoke E2E now runs `wize-dev-kit document-project quick` and asserts the 6 baseline files.
+- `README.md` and `ARCH.md` updated to describe the new engine and current maturity.
+
+### Tests
+
+- Total: **219 passing** (was 115).
+
 ## [0.3.0] — 2026-06-12
 
 Adds a single-command diagnostic plus traceable GitHub Releases on every tag.

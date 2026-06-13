@@ -100,7 +100,7 @@ test('cmdDocumentProject accepts explicit mode', () => {
   });
 
   assert.strictEqual(r.mode, 'initial_scan');
-  assert.strictEqual(r.changed, false, 'non-quick modes are stubs in this story');
+  assert.strictEqual(r.changed, true);
 
   fs.rmSync(root, { recursive: true, force: true });
 });

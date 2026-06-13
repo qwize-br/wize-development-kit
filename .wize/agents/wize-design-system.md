@@ -1,0 +1,191 @@
+# Design System
+
+> 3-solutioning: Design System
+
+# Design System
+
+**Goal.** Establish design tokens and a baseline component library Shuri implements consistently. Mantis defines what; Tony picks the runtime; Shuri builds. Hawkeye verifies a11y and consistency at gate.
+
+Mantis drives. Output lands in `.wize/solutioning/design-system/`.
+
+## Inputs
+
+- `.wize/planning/ux/ux-design/` (every component the specs use)
+- `.wize/planning/nfr-principles.md` (a11y and perf budgets)
+- Overlay playbooks (active):
+  - `web-overlay/playbooks/wcag-aa.md`, `responsive-breakpoints.md`, `semantic-html.md`
+  - `app-overlay/playbooks/apple-hig.md`, `material-design-3.md`, `touch-targets-and-gestures.md`
+
+## Outputs
+
+- `.wize/solutioning/design-system/tokens.json` — single source of truth.
+- `.wize/solutioning/design-system/components/{Component}.md` — one per component.
+- `.wize/solutioning/design-system/README.md` — index + theming guide.
+
+## Tokens (the only acceptable way to ship styles)
+
+Mantis defines the tokens; Tony picks the runtime (Tailwind, CSS modules, Vanilla Extract, Compose theme, SwiftUI tokens). The names below are framework-agnostic.
+
+### Color (semantic + raw scale)
+
+| Semantic | Light | Dark | Contrast pair |
+|---|---|---|---|
+| `surface.base` | #FFFFFF | #0B0F14 | text.primary |
+| `surface.raised` | #F5F7FA | #121821 | text.primary |
+| `text.primary` | #0B0F14 | #E5E7EB | surface.base |
+| `text.secondary` | #4B5563 | #9CA3AF | surface.base |
+| `accent.brand` | #6F49FF | #8B6FFF | text.onAccent |
+| `text.onAccent` | #FFFFFF | #FFFFFF | accent.brand |
+| `success` | #058E5C | #34D399 | text.onSuccess |
+| `warning` | #C9621E | #F59E0B | text.onWarning |
+| `error` | #B42318 | #FCA5A5 | text.onError |
+| `border.default` | #E5E7EB | #2A313A | — |
+| `border.focus` | accent.brand | accent.brand | — |
+
+Validate every pair against WCAG AA (≥ 4.5:1 normal, ≥ 3:1 large). Run before you commit.
+
+### Typography
+
+| Token | Family | Size | Weight | Line | Letter |
+|---|---|---|---|---|---|
+| `display.l` | Inter Display | clamp(2.5rem, 5vw, 3.5rem) | 700 | 1.05 | -0.02em |
+| `display.m` | Inter Display | clamp(2rem, 4vw, 2.5rem) | 700 | 1.1 | -0.01em |
+| `heading.l` | Inter | clamp(1.5rem, 3vw, 2rem) | 600 | 1.2 | -0.01em |
+| `heading.m` | Inter | 1.25rem | 600 | 1.3 | 0 |
+| `heading.s` | Inter | 1rem | 600 | 1.4 | 0 |
+| `body.l` | Inter | 1.125rem | 400 | 1.6 | 0 |
+| `body.m` | Inter | 1rem | 400 | 1.55 | 0 |
+| `body.s` | Inter | 0.875rem | 400 | 1.5 | 0 |
+| `caption` | Inter | 0.75rem | 500 | 1.4 | 0.01em |
+
+Use rem for body; clamp() for fluid headings (see `responsive-breakpoints.md`).
+
+### Spacing scale (4px base, geometric)
+
+`0` 0 · `1` 4 · `2` 8 · `3` 12 · `4` 16 · `5` 24 · `6` 32 · `7` 48 · `8` 64 · `9` 96 · `10` 128
+
+### Radius
+
+`none` 0 · `sm` 4 · `md` 8 · `lg` 12 · `xl` 16 · `pill` 999.
+
+### Elevation
+
+| Token | Light | Dark (tonal) |
+|---|---|---|
+| `e1` | 0 1px 2px rgba(0,0,0,.06) | surface.raised |
+| `e2` | 0 2px 4px rgba(0,0,0,.08) | surface.raised + 4% |
+| `e3` | 0 4px 12px rgba(0,0,0,.10) | surface.raised + 8% |
+| `e4` | 0 12px 24px rgba(0,0,0,.12) | surface.raised + 12% |
+
+App overlay: prefer tonal elevation per Material 3.
+
+### Motion
+
+| Token | Duration | Easing |
+|---|---|---|
+| `motion.micro` | 100ms | `ease-out` |
+| `motion.transition` | 200ms | `cubic-bezier(0.2, 0, 0, 1)` |
+| `motion.page` | 300ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
+| `motion.spring.subtle` | (spring) | mass 1, stiff 350, damp 30 |
+
+Honor `prefers-reduced-motion`. Replace transforms with fades.
+
+## Components — the baseline set
+
+Each component has its own `.md` doc with: purpose, anatomy, states (default/hover/focus/active/disabled/loading), variants, accessibility, do/don't, snippets.
+
+| Component | Mandatory states | Notes |
+|---|---|---|
+| Button | default, hover, focus, active, disabled, loading | variants: primary, secondary, tertiary, destructive, ghost |
+| Input | default, focus, error, disabled, success | always has visible label |
+| Select | default, open, focus, disabled | native first; custom only when needed |
+| Textarea | as Input | auto-grow optional |
+| Checkbox | unchecked, checked, indeterminate, focus, disabled | native input + custom skin |
+| Radio | unchecked, checked, focus, disabled | grouped under fieldset |
+| Toggle/Switch | off, on, focus, disabled | `role="switch" aria-checked` |
+| Card | default, raised, interactive | elevation tokens |
+| Modal / Dialog | open, closing | focus trap + ESC + restore |
+| Sheet (app) | half / full | drag handle |
+| Tabs | active, inactive, focus | keyboard arrows |
+| Accordion | collapsed, expanded, focus | `<details>` when possible |
+| Toast / Snackbar | info, success, warning, error | `role="status"` or `alert` |
+| Tooltip | hidden, visible | `aria-describedby`, touch alt |
+| Menu | closed, open, focus | keyboard navigation |
+| Dropdown | (synonym of Menu / Combobox) | follow ARIA combobox |
+| Badge | default, success, warning, error | contrast ≥ 4.5:1 |
+| Avatar | image, initials, placeholder | 1:1 ratio, alt text |
+| Skeleton | static, shimmer | respect reduced-motion |
+| Empty state | default | message + primary action |
+| Loading | spinner / progress | accessible announcement |
+
+## Component template (one per component)
+
+```markdown
+---
+component: Button
+status: ready
+owner: Mantis
+linked_screens: [signup-empty, team-list-empty, …]
+---
+
+# Button
+
+## Purpose
+Trigger an action. Never use for navigation between routes.
+
+## Anatomy
+[icon?] [label] [icon?] · padding by size · radius `md`
+
+## Variants
+- `primary` — main action; one per screen region.
+- `secondary` — alternative action.
+- `tertiary` — text-only.
+- `destructive` — irreversible action.
+- `ghost` — minimal chrome, e.g., toolbar.
+
+## Sizes
+- `sm` (height 32, label `body.s`)
+- `md` (height 40, label `body.m`)
+- `lg` (height 48, label `body.m`)
+
+## States
+
+| State | Treatment |
+|---|---|
+| default | accent.brand bg, text.onAccent label |
+| hover | accent.brand 10% darker |
+| focus | 2px outline `border.focus`, offset 2px |
+| active | accent.brand 15% darker |
+| disabled | opacity 0.4, `aria-disabled="true"`, cursor not-allowed |
+| loading | spinner replaces icon; label unchanged; click ignored |
+
+## Accessibility
+- Native `<button>`.
+- `aria-label` when icon-only.
+- Visible focus ring always (don't override).
+- 24×24 px hit area minimum (web), 44pt (iOS), 48dp (Android).
+- Min contrast on label ≥ 4.5:1.
+
+## Don't
+- Use `<div onclick>`.
+- Remove the focus ring without replacement.
+- Use destructive for "Continue".
+- Stack > 2 primary buttons on a screen.
+```
+
+## Theming + overlays
+
+- **Web overlay:** tokens emit as CSS custom properties; dark mode toggled via `[data-theme="dark"]` on `<html>`.
+- **App overlay (iOS):** tokens as SwiftUI environment values; dark mode auto.
+- **App overlay (Android):** tokens as Compose `MaterialTheme` extensions; honor `dynamicColorScheme` when allowed.
+
+## Anti-patterns Mantis rejects
+
+- **Hex in components.** Everything via tokens.
+- **One-off components shipped without doc.** Add to the system or refuse to merge.
+- **Component matrix without states.** A button without disabled+loading isn't a button.
+- **Component that fails axe.** Failed at definition; don't ship.
+
+## Hand-off
+
+> Tokens + 20 components at `.wize/solutioning/design-system/`. Tony picks the runtime (Tailwind / Vanilla Extract / SwiftUI tokens / Compose theme); Shuri implements. Hawkeye references this in `tea-design.md`: a11y + visual regression hooks point at these tokens.

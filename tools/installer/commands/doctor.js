@@ -130,7 +130,21 @@ function knowledgeStatus(projectRoot) {
   const pendingLines = fileExists(pendingFile)
     ? readSafe(pendingFile).split('\n').filter(l => l.trim() && !l.startsWith('#')).length
     : 0;
-  return { exists: true, files: refreshed, pendingLines };
+
+  const indexPath = path.join(root, 'index.md');
+  const indexContent = fileExists(indexPath) ? readSafe(indexPath) : '';
+  const toBeGeneratedMarkers = (indexContent.match(/_\(To be generated\)_/g) || []).length;
+
+  const statePath = path.join(root, 'project-scan-report.json');
+  const stateExists = fileExists(statePath);
+  const stateContent = stateExists ? readSafe(statePath) : '';
+  let stateAgeDays = null;
+  try {
+    const state = JSON.parse(stateContent);
+    stateAgeDays = daysAgo(state.timestamps && state.timestamps.last_updated);
+  } catch (_) {}
+
+  return { exists: true, files: refreshed, pendingLines, toBeGeneratedMarkers, stateExists, stateAgeDays };
 }
 
 function gitInfo(projectRoot) {
@@ -246,6 +260,18 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
       if (knowledge.pendingLines >= 5) {
         suggestions.push({ level: 'info', text: `${knowledge.pendingLines} notes piled up in _pending.md. Time to run \`wize-refresh-knowledge\`.` });
       }
+    }
+    const markerText = knowledge.toBeGeneratedMarkers > 0 ? `${knowledge.toBeGeneratedMarkers} marker(s)` : 'none';
+    log(`  To be generated markers:    ${markerText}`);
+    if (knowledge.toBeGeneratedMarkers >= 5) {
+      suggestions.push({ level: 'warn', text: `${knowledge.toBeGeneratedMarkers} docs marked "To be generated" in index.md. Run \`wize-dev-kit document-project initial_scan deep\` to fill them.` });
+    }
+    const stateText = knowledge.stateExists
+      ? (knowledge.stateAgeDays == null ? 'project-scan-report.json exists (age unknown)' : `project-scan-report.json ${knowledge.stateAgeDays}d old`)
+      : 'no project-scan-report.json';
+    log(`  Scan state:                 ${stateText}`);
+    if (!knowledge.stateExists) {
+      suggestions.push({ level: 'info', text: 'No scan state file found. Run `wize-dev-kit document-project quick` to create a baseline + state.' });
     }
   }
 
