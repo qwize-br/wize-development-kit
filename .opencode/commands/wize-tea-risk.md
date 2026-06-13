@@ -16,6 +16,7 @@ Hawkeye drives. Tony co-signs. Runs **once**, right after architecture is signed
 - `.wize/solutioning/epics/`
 - `.wize/planning/nfr-principles.md`
 - `.wize/knowledge/document-project/risk-spots.md` (brownfield)
+- `.wize/knowledge/document-project/index.md` (documentation gap markers)
 
 ## Output
 
@@ -111,6 +112,16 @@ The narrative explains the matrix; the YAML is the structured truth. Hawkeye wri
 - E03-S02 (payments): 2 integration (Stripe idempotency keys), 1 E2E (double-click guard).
 - Other stories follow the default 70/20/10 split.
 ```
+
+## Documentation gap risk category
+
+In brownfield repos, missing or stale documentation is an operational risk: new contributors make unsafe assumptions, AI agents hallucinate context, and reviews miss implicit contracts. Hawkeye treats it as a first-class risk area.
+
+| Symptom | Severity | Rationale | Mitigation |
+|---|---|---|---|
+| `index.md` contains `_(To be generated)_` markers | medium | Conditional docs were skipped; the baseline is incomplete. | Schedule `wize-document-project initial_scan` for the next cooldown. |
+| Baseline files older than 60 days | medium | Docs may no longer reflect the codebase. | Run `wize-refresh-knowledge` at sprint end. |
+| No baseline exists in a brownfield repo | high | Team is flying blind; architecture and conventions are tribal knowledge. | Run `wize-dev-kit document-project quick` immediately. |
 
 ## Anti-patterns Hawkeye rejects
 
