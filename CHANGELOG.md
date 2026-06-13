@@ -5,6 +5,30 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-06-13
+
+Adapts four BMAD Method step-based flows into the Wize universe: spec, architecture, code review, and research.
+
+### Added
+
+- **`wize-spec`** (core skill) — distills any intent input into a canonical five-field `SPEC.md` (Why, Capabilities, Constraints, Non-goals, Success signal) plus optional companion files. Includes template and headless response schemas.
+- **Vertical research skills** under `src/method-skills/1-analysis/`:
+  - `wize-market-research` — 6-step competition and customer research.
+  - `wize-domain-research` — 6-step industry, regulatory, and trend research.
+  - `wize-technical-research` — 6-step technology and architecture research.
+- Registered new skills in `src/core-skills/module.yaml` and `src/method-skills/module.yaml`.
+
+### Changed
+
+- **`wize-create-architecture`** rewritten as an 8-step micro-file workflow: init → context → starter → decisions → patterns → structure → validation → complete. Old monolithic body archived in `.wize/knowledge/decisions/`.
+- **`wize-code-review`** rewritten as a 4-step adversarial triage workflow: gather-context → review (Blind Hunter, Edge Case Hunter, Acceptance Auditor) → triage → present. Integrates with existing `wize-review-adversarial` and `wize-review-edge-case-hunter`.
+- `README.md`, `DECISIONS.md`, and `.wize/knowledge/decisions/ADR-001-bmad-steps-import.md` document the import rationale and scope.
+- `test/workflow-bodies.test.js` allowlists the short research dispatcher workflows.
+
+### Tests
+
+- Total: **222 passing**.
+
 ## [0.3.1] — 2026-06-13
 
 Expands `wize-document-project` from a single lightweight baseline into a multi-mode documentation engine with project-type classification, resume state, and BMAD-equivalent templates.
