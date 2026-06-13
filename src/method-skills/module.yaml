@@ -97,9 +97,28 @@ agents:
     team: software-development
     description: "Wakanda forever — agora compila. TDD red-green-refactor, segurança, performance, código limpo. Estilo: gênio inovadora, rápida, protetora do ecossistema, sem fluff."
 
+# Notable skills shipped by method (discovery is automatic via workflow.md/skill.md walkers).
+skills:
+  - code: wize-market-research
+    name: "Market Research"
+    description: "Competition and customer research for the product brief and PRD."
+  - code: wize-domain-research
+    name: "Domain Research"
+    description: "Industry, regulatory, and technical-trend research."
+  - code: wize-technical-research
+    name: "Technical Research"
+    description: "Technology, architecture, and implementation-pattern research."
+  - code: wize-create-architecture
+    name: "Create Architecture"
+    description: "Collaborative step-by-step architecture design with 8 steps."
+  - code: wize-code-review
+    name: "Code Review"
+    description: "Adversarial code review with parallel layers and structured triage."
+
 # Phase directories (declarative discovery for the installer):
 phases:
   - "1-analysis"
   - "2-plan-workflows"
   - "3-solutioning"
   - "4-implementation"
+

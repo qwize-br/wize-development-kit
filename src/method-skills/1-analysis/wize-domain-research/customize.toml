@@ -1,0 +1,14 @@
+# Wize Dev Kit — overrides for the built-in workflow "wize-domain-research".
+# DO NOT EDIT in the installed kit; copy to .wize/custom/workflows/wize-domain-research/
+# for project-level overrides.
+
+[workflow]
+
+activation_steps_prepend = []
+activation_steps_append = []
+
+persistent_facts = [
+  "file:{project-root}/.wize/planning/brief.md",
+]
+
+on_complete = ""
