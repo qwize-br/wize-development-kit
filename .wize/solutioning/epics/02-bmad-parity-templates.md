@@ -1,6 +1,6 @@
 ---
 epic_id: E02
-status: ready
+status: done
 owner: Tony Stark + Peggy Carter
 linked_prd: document-project-expansion
 priority: 2

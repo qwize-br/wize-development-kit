@@ -1,6 +1,6 @@
 ---
 epic_id: E03
-status: ready
+status: done
 owner: Hawkeye + Shuri
 linked_prd: document-project-expansion
 priority: 3

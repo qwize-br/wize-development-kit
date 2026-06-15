@@ -1,6 +1,6 @@
 ---
 epic_id: E01
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: document-project-expansion
 priority: 1
