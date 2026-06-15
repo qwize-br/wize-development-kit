@@ -7,3 +7,26 @@ dist/
 .cache/
 coverage/
 .tmp/
+
+# >>> wize-dev-kit (managed) >>>
+# Managed by `npx wize-dev-kit install`. Re-running install will update
+# the lines between the markers below; lines outside are untouched.
+
+# Personal / per-developer (do NOT commit)
+.wize/config/user.toml
+.wize/scratch/
+.wize/.local/
+.wize/implementation/quick-dev-log.md
+
+# Generated IDE adapter outputs (regenerate with `npx wize-dev-kit install`)
+.claude/skills/wize-*
+.agent/skills/wize-*
+.agents/skills/wize-*
+.kimi/skills/wize-*
+.cursor/rules/wize-*.mdc
+.windsurf/rules/wize-*.md
+.continue/prompts/wize-*.prompt
+.opencode/agents/wize-*.md
+.opencode/commands/wize-*.md
+.wize/agents/wize-*.md
+# <<< wize-dev-kit (managed) <<<
