@@ -7,14 +7,15 @@
 - **P1** = bloqueia o ciclo canônico ou a experiência de primeiro uso.
 - **P2** = melhora a operação do dia a dia.
 - **P3** = refinamento / cobertura de casos edge.
+- ✅ = implementado no kit.
 
-## P1 — Ciclo básico ou onboarding
+## ✅ P1 — Ciclo básico ou onboarding (Sprint 2)
 
-| ID | Demanda | Onde fica | Porque |
+| ID | Demanda | Onde fica | Status |
 |---|---|---|---|
-| P1-1 | Implementar `wize-onboarding` real | `src/orchestrator-skills/wize-onboarding/workflow.md` | Hoje é `status: stub` (28 linhas). É a primeira interação pós-install; precisa triar brownfield, perfis, objetivo e rotear. |
-| P1-2 | Criar `wize-correct-course` | `src/method-skills/4-implementation/wize-correct-course/workflow.md` | Não existe. Quando sprint desvia, não há workflow formal para cortar scope ou re-route. |
-| P1-3 | Criar `wize-edit-prd` | `src/method-skills/2-plan-workflows/wize-edit-prd/workflow.md` | Só existe `wize-create-prd` e `wize-validate-prd`. PRD vive mudando; precisa de edição sem reescrever. |
+| ✅ P1-1 | Implementar `wize-onboarding` real | `src/orchestrator-skills/wize-onboarding/workflow.md` | `status: ready` |
+| ✅ P1-2 | Criar `wize-correct-course` | `src/method-skills/4-implementation/wize-correct-course/workflow.md` | `status: ready` |
+| ✅ P1-3 | Criar `wize-edit-prd` | `src/method-skills/2-plan-workflows/wize-edit-prd/workflow.md` | `status: ready` |
 
 ## P2 — Operacional
 
@@ -36,5 +37,5 @@
 
 ## Próxima sprint sugerida
 
-- **P1-1** (`wize-onboarding` real) + **P1-3** (`wize-edit-prd`) + **P2-1** (`wize-project-context`).
-- Essas três desbloqueiam o ciclo canônico e reduzem o esforço de contexto para todos os outros agentes.
+- **P2-1** (`wize-project-context`) + **P2-3** (`wize-investigate`) + **P2-2** (`wize-checkpoint-preview`).
+- Reduzem o esforço de contexto para todos os outros agentes e dão ao Shuri ferramentas de debug de rotina.

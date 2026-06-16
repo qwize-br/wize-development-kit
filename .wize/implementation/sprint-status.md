@@ -1,5 +1,36 @@
 # Sprint Status
 
+## Sprint 2 — 2026-06-15 → 2026-06-15
+
+**Capacity:** 1 person-day (focused burst)
+**Goal:** Implement P1 backlog (onboarding real + correct-course + edit-prd).
+
+**Pulled:**
+- E04-S01 — M — owner: Shuri — gate: PASS
+- E04-S02 — M — owner: Shuri + Hill — gate: PASS
+- E04-S03 — M — owner: Hill — gate: PASS
+
+**Out (deferred):**
+- None.
+
+**Risks flagged:**
+- None — all 3 stories shipped clean.
+
+### Final day (2026-06-15)
+**Trend:** Closed. P1 backlog shipped.
+
+**Blockers:**
+- (none)
+
+**Stories:**
+- E04-S01 — gate-PASS — shipped (wize-onboarding now `status: ready`, not stub).
+- E04-S02 — gate-PASS — shipped (wize-correct-course created with 5 sections).
+- E04-S03 — gate-PASS — shipped (wize-edit-prd created with 4 edit types + changelog).
+
+**Decisions:**
+- Installer name prompt: always ask, never silently accept OS username.
+- Backlog P2 remains queued (project-context, checkpoint-preview, investigate, qa-generate-e2e-tests).
+
 ## Sprint 1 — 2026-06-11 → 2026-06-14
 
 **Capacity:** 3 person-days (1 engineer × 3 days focused burst)
