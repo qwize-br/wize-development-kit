@@ -171,6 +171,38 @@ async function promptText(question, defaultValue = '') {
   return ans || defaultValue;
 }
 
+async function promptTextMandatory(question, defaultValue = '') {
+  if (INTERACTIVE) {
+    if (defaultValue) {
+      const { keep } = await prompts({
+        type: 'confirm',
+        name: 'keep',
+        message: `${question} (use "${defaultValue}"?)`,
+        initial: true
+      });
+      if (keep === undefined) process.exit(130);
+      if (keep) return defaultValue;
+    }
+    const { value } = await prompts({
+      type: 'text',
+      name: 'value',
+      message: question
+    });
+    if (value === undefined) process.exit(130);
+    const trimmed = value.trim();
+    if (trimmed) return trimmed;
+    if (defaultValue) return defaultValue;
+    return promptTextMandatory(question, defaultValue);
+  }
+  // Non-TTY: keep asking until non-empty.
+  for (;;) {
+    const ans = (await prompt(`${question}: `)).trim();
+    if (ans) return ans;
+    if (defaultValue) return defaultValue;
+    console.log('Please provide a value.');
+  }
+}
+
 async function select(label, choices, defaultValue) {
   if (INTERACTIVE) {
     const initial = choices.findIndex(c => c.value === defaultValue);
@@ -423,11 +455,13 @@ async function cmdInstall(args) {
   );
 
   // Personal touch — the user_name lands in .wize/config/user.toml (per-developer).
+  // Always ask; do not silently accept the OS username, because the install must
+  // feel personal and avoid misnaming the user in agent conversations.
   const defaultName = (os.userInfo().username || '').trim();
-  const user_name = (await promptText(
+  const user_name = await promptTextMandatory(
     'How should the agents call you?',
     defaultName
-  )).trim() || defaultName;
+  );
 
   // Gitignore — opt-in, idempotent.
   const wantsGitignore = await confirm(
