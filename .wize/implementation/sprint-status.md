@@ -1,5 +1,38 @@
 # Sprint Status
 
+## Sprint 4 — 2026-06-17
+
+**Capacity:** 1 person-day (focused burst)
+**Goal:** Implement P3 backlog (edge-case-hunter + index-docs + editorial-review-* + customize).
+
+**Pulled:**
+- E06-S01 — M — owner: Shuri + Hawkeye — gate: PASS
+- E06-S02 — M — owner: Wizer + Peggy — gate: PASS
+- E06-S03 — M — owner: Peggy — gate: PASS (covers both editorial-review-prose and editorial-review-structure)
+- E06-S04 — M — owner: Wizer + Tony — gate: PASS
+
+**Out (deferred):**
+- None.
+
+**Risks flagged:**
+- None — all 4 stories shipped clean.
+
+### Final day (2026-06-17)
+**Trend:** Closed. P3 backlog shipped. Backlog fully drained.
+
+**Blockers:**
+- (none)
+
+**Stories:**
+- E06-S01 — gate-PASS — shipped (wize-review-edge-case-hunter; 4 hunt areas).
+- E06-S02 — gate-PASS — shipped (wize-index-docs; rebuilds .wize/knowledge/index.md).
+- E06-S03 — gate-PASS — shipped (wize-editorial-review-prose + wize-editorial-review-structure).
+- E06-S04 — gate-PASS — shipped (wize-customize; guided override of built-ins).
+
+**Decisions:**
+- Backlog P1+P2+P3 all done. Total: 10 stories / 5 skills+workflows this cycle.
+- Next: plan a new epic based on real usage (vs. parity with BMAD).
+
 ## Sprint 3 — 2026-06-16
 
 **Capacity:** 1 person-day (focused burst)

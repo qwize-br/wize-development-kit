@@ -25,6 +25,10 @@ created_at: 2026-06-15
 | R-11 | `wize-investigate` proposes fix without verification | Medium | High | Step 4 (Verify) is mandatory before Step 5 (Conclude) | Mitigated |
 | R-12 | `wize-checkpoint-preview` pivot changes story ACs | Low | High | Pivots open a follow-up story; never edit the current story | Mitigated |
 | R-13 | `wize-qa-generate-e2e-tests` invents selectors not in design system | Medium | Medium | New selectors are flagged in a "proposed testids" section; Mantis signs off | Mitigated |
+| R-14 | `wize-review-edge-case-hunter` produces noise (50+ cases) | Medium | Low | Cap at 15 total; top 5 are P0 | Mitigated |
+| R-15 | `wize-index-docs` includes IDE target folders | Low | Medium | Walker skips `.claude/`, `.cursor/`, `.kimi/`, etc. by config | Mitigated |
+| R-16 | `wize-editorial-review-*` auto-edits source | Medium | High | Both skills suggest only; never write | Mitigated |
+| R-17 | `wize-customize` overwrites existing customize.toml | Low | High | Skill reads + merges; never overwrites without confirmation | Mitigated |
 
 ## Risk-Test Mapping
 
@@ -33,10 +37,10 @@ created_at: 2026-06-15
 - R-3 → `test/document-project-batch-scanner.test.js`
 - R-4 → `test/adapter-*.test.js`
 - R-5, R-6 → `test/cli-commands.test.js`, CI smoke
-- R-7, R-8, R-9, R-10, R-11, R-12, R-13 → no automated tests (workflow-only). Mitigated by step-by-step design + human gate.
+- R-7, R-8, R-9, R-10, R-11, R-12, R-13, R-14, R-15, R-16, R-17 → no automated tests (workflow-only). Mitigated by step-by-step design + human gate.
 
 ## Notes
 
 - All HIGH-impact risks are mitigated.
 - No blockers for next epic.
-- Backlog P3 (review-edge-case-hunter, index-docs, editorial-review, customize) remains queued.
+- Backlog P1+P2+P3 fully drained. Next epic should be driven by real usage, not parity.

@@ -26,17 +26,21 @@
 | ✅ P2-3 | Criar `wize-investigate` | `src/method-skills/4-implementation/wize-investigate/workflow.md` | `status: ready` |
 | ✅ P2-4 | Criar `wize-qa-generate-e2e-tests` | `src/tea-skills/wize-qa-generate-e2e-tests/workflow.md` | `status: ready` |
 
-## P3 — Polimento
+## ✅ P3 — Polimento (Sprint 4)
 
-| ID | Demanda | Onde fica | Porque |
+| ID | Demanda | Onde fica | Status |
 |---|---|---|---|
-| P3-1 | Criar `wize-review-edge-case-hunter` separado | `src/core-skills/wize-review-edge-case-hunter/skill.md` | Hoje `wize-code-review` menciona a camada, mas não é skill callable. |
-| P3-2 | Criar `wize-index-docs` | `src/core-skills/wize-index-docs/skill.md` | Manter índice canônico de todo `.wize/` conforme artefatos são criados. |
-| P3-3 | Criar `wize-editorial-review-prose` e `wize-editorial-review-structure` | `src/core-skills/wize-editorial-review-*/skill.md` | Peggy atua como tech-writer transversal, mas não tem skills callable. |
-| P3-4 | Criar `wize-customize` | `src/core-skills/wize-customize/skill.md` | Guiar o usuário a fazer overrides em `.wize/custom/` sem fork. |
+| ✅ P3-1 | Criar `wize-review-edge-case-hunter` separado | `src/core-skills/wize-review-edge-case-hunter/skill.md` | `status: ready` |
+| ✅ P3-2 | Criar `wize-index-docs` | `src/core-skills/wize-index-docs/skill.md` | `status: ready` |
+| ✅ P3-3 | Criar `wize-editorial-review-prose` e `wize-editorial-review-structure` | `src/core-skills/wize-editorial-review-*/skill.md` | `status: ready` |
+| ✅ P3-4 | Criar `wize-customize` | `src/core-skills/wize-customize/skill.md` | `status: ready` |
 
 ## Próxima sprint sugerida
 
-- **P3-1** (`wize-review-edge-case-hunter`) + **P3-2** (`wize-index-docs`).
-- P3-3 e P3-4 podem entrar juntos em uma sprint só.
-- Última fronteira: cobertura de Peggy como tech-writer + skill de customize.
+Backlog drenado. Próximo epic deve ser dirigido por uso real:
+
+- Após um projeto real (ex.: `site-qwize`), rodar `/wize-investigate` em problemas observados.
+- Coletar feedback dos agentes (qual skill pediu mais clarificações?).
+- Adicionar demandas conforme necessário.
+
+Até lá, foco em polimento: testar o ciclo completo em um projeto real, ajustar o que quebrar.

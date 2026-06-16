@@ -25,8 +25,8 @@
 # - Stories can be worked in parallel if team capacity allows
 # - Developer typically creates next story after previous one is 'done'
 
-generated: 2026-06-16
-last_updated: 2026-06-16
+generated: 2026-06-17
+last_updated: 2026-06-17
 project: wize-dev-kit
 project_key: WDK
 tracking_system: file-system
@@ -72,4 +72,10 @@ development_status:
   E05-S03: done
   E05-S04: done
   epic-5-retrospective: done
+  epic-6: done
+  E06-S01: done
+  E06-S02: done
+  E06-S03: done
+  E06-S04: done
+  epic-6-retrospective: done
 
