@@ -140,10 +140,35 @@ function prompt(question) {
 }
 
 async function confirm(question, defaultYes = true) {
+  if (INTERACTIVE) {
+    const { value } = await prompts({
+      type: 'confirm',
+      name: 'value',
+      message: question,
+      initial: defaultYes
+    });
+    if (value === undefined) process.exit(130);
+    return value;
+  }
   const hint = defaultYes ? '[Y/n]' : '[y/N]';
   const ans = (await prompt(`${question} ${hint} `)).toLowerCase();
   if (!ans) return defaultYes;
   return ans.startsWith('y');
+}
+
+async function promptText(question, defaultValue = '') {
+  if (INTERACTIVE) {
+    const { value } = await prompts({
+      type: 'text',
+      name: 'value',
+      message: question,
+      initial: defaultValue
+    });
+    if (value === undefined) process.exit(130);
+    return value.trim();
+  }
+  const ans = (await prompt(`${question} [${defaultValue}]: `)).trim();
+  return ans || defaultValue;
 }
 
 async function select(label, choices, defaultValue) {
@@ -384,7 +409,7 @@ async function cmdInstall(args) {
     console.log('\nGreenfield repo detected.');
   }
 
-  const project_name = (await prompt(`Project name [${path.basename(cwd)}]: `)) || path.basename(cwd);
+  const project_name = (await promptText(`Project name`, path.basename(cwd))) || path.basename(cwd);
   const profiles = await multiSelect('Select profile(s) to install', PROFILES);
   const targets = await multiSelect('Select IDE target(s)', TARGETS);
 
@@ -399,8 +424,9 @@ async function cmdInstall(args) {
 
   // Personal touch — the user_name lands in .wize/config/user.toml (per-developer).
   const defaultName = (os.userInfo().username || '').trim();
-  const user_name = (await prompt(
-    `How should the agents call you? [${defaultName || 'leave blank'}]: `
+  const user_name = (await promptText(
+    'How should the agents call you?',
+    defaultName
   )).trim() || defaultName;
 
   // Gitignore — opt-in, idempotent.
