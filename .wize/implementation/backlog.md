@@ -17,14 +17,14 @@
 | ✅ P1-2 | Criar `wize-correct-course` | `src/method-skills/4-implementation/wize-correct-course/workflow.md` | `status: ready` |
 | ✅ P1-3 | Criar `wize-edit-prd` | `src/method-skills/2-plan-workflows/wize-edit-prd/workflow.md` | `status: ready` |
 
-## P2 — Operacional
+## ✅ P2 — Operacional (Sprint 3)
 
-| ID | Demanda | Onde fica | Porque |
+| ID | Demanda | Onde fica | Status |
 |---|---|---|---|
-| P2-1 | Criar `wize-project-context` | `src/method-skills/3-solutioning/wize-project-context/workflow.md` | Consolida brief+prd+ux+architecture+decisions em `.wize/knowledge/project-context.md` para agentes carregarem contexto de uma só fonte. |
-| P2-2 | Criar `wize-checkpoint-preview` | `src/method-skills/4-implementation/wize-checkpoint-preview/workflow.md` | Para stories M/L, pausar no meio e validar direção antes de continuar. |
-| P2-3 | Criar `wize-investigate` | `src/method-skills/4-implementation/wize-investigate/workflow.md` | Debug/RCA: falhas de teste, regressões, comportamentos inesperados. |
-| P2-4 | Criar `wize-qa-generate-e2e-tests` | `src/tea-skills/wize-qa-generate-e2e-tests/workflow.md` | Hawkeye gera casos de teste E2E completos a partir de ux-design. |
+| ✅ P2-1 | Criar `wize-project-context` | `src/method-skills/3-solutioning/wize-project-context/workflow.md` | `status: ready` |
+| ✅ P2-2 | Criar `wize-checkpoint-preview` | `src/method-skills/4-implementation/wize-checkpoint-preview/workflow.md` | `status: ready` |
+| ✅ P2-3 | Criar `wize-investigate` | `src/method-skills/4-implementation/wize-investigate/workflow.md` | `status: ready` |
+| ✅ P2-4 | Criar `wize-qa-generate-e2e-tests` | `src/tea-skills/wize-qa-generate-e2e-tests/workflow.md` | `status: ready` |
 
 ## P3 — Polimento
 
@@ -37,5 +37,6 @@
 
 ## Próxima sprint sugerida
 
-- **P2-1** (`wize-project-context`) + **P2-3** (`wize-investigate`) + **P2-2** (`wize-checkpoint-preview`).
-- Reduzem o esforço de contexto para todos os outros agentes e dão ao Shuri ferramentas de debug de rotina.
+- **P3-1** (`wize-review-edge-case-hunter`) + **P3-2** (`wize-index-docs`).
+- P3-3 e P3-4 podem entrar juntos em uma sprint só.
+- Última fronteira: cobertura de Peggy como tech-writer + skill de customize.

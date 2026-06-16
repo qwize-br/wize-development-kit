@@ -21,6 +21,10 @@ created_at: 2026-06-15
 | R-7 | Onboarding launches next workflow without user confirmation | Medium | Medium | Wizer is told to never auto-launch; always hand off with explicit command | Mitigated |
 | R-8 | `wize-edit-prd` drifts from `prd-changelog.md` history | Low | Medium | One-edit-per-run rule + changelog row mandatory | Mitigated |
 | R-9 | `wize-correct-course` cuts scope without confirming trade-off | Medium | High | Step 4 mandatory human confirmation; no auto-cut | Mitigated |
+| R-10 | `wize-project-context` drifts from source artifacts | Medium | Medium | Workflow is the only writer; manual edits are rejected by hand-rolled convention | Mitigated |
+| R-11 | `wize-investigate` proposes fix without verification | Medium | High | Step 4 (Verify) is mandatory before Step 5 (Conclude) | Mitigated |
+| R-12 | `wize-checkpoint-preview` pivot changes story ACs | Low | High | Pivots open a follow-up story; never edit the current story | Mitigated |
+| R-13 | `wize-qa-generate-e2e-tests` invents selectors not in design system | Medium | Medium | New selectors are flagged in a "proposed testids" section; Mantis signs off | Mitigated |
 
 ## Risk-Test Mapping
 
@@ -29,10 +33,10 @@ created_at: 2026-06-15
 - R-3 → `test/document-project-batch-scanner.test.js`
 - R-4 → `test/adapter-*.test.js`
 - R-5, R-6 → `test/cli-commands.test.js`, CI smoke
-- R-7, R-8, R-9 → no automated tests (workflow-only). Mitigated by step-by-step design + human gate.
+- R-7, R-8, R-9, R-10, R-11, R-12, R-13 → no automated tests (workflow-only). Mitigated by step-by-step design + human gate.
 
 ## Notes
 
 - All HIGH-impact risks are mitigated.
 - No blockers for next epic.
-- Backlog P2 (project-context, checkpoint-preview, investigate, qa-generate-e2e-tests) remains queued.
+- Backlog P3 (review-edge-case-hunter, index-docs, editorial-review, customize) remains queued.

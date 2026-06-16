@@ -1,5 +1,37 @@
 # Sprint Status
 
+## Sprint 3 — 2026-06-16
+
+**Capacity:** 1 person-day (focused burst)
+**Goal:** Implement P2 backlog (project-context + checkpoint + investigate + qa-e2e).
+
+**Pulled:**
+- E05-S01 — M — owner: Tony — gate: PASS
+- E05-S02 — M — owner: Shuri + Tony — gate: PASS
+- E05-S03 — M — owner: Shuri + Hawkeye — gate: PASS
+- E05-S04 — M — owner: Hawkeye — gate: PASS
+
+**Out (deferred):**
+- None.
+
+**Risks flagged:**
+- None — all 4 stories shipped clean.
+
+### Final day (2026-06-16)
+**Trend:** Closed. P2 backlog shipped.
+
+**Blockers:**
+- (none)
+
+**Stories:**
+- E05-S01 — gate-PASS — shipped (wize-project-context consolidates 5 artifacts).
+- E05-S02 — gate-PASS — shipped (wize-checkpoint-preview records snapshot + decision).
+- E05-S03 — gate-PASS — shipped (wize-investigate with 5-section RCA template).
+- E05-S04 — gate-PASS — shipped (wize-qa-generate-e2e-tests with 3-10 cases per screen).
+
+**Decisions:**
+- P2 backlog shipped; P3 (review-edge-case-hunter, index-docs, editorial-review, customize) remains queued.
+
 ## Sprint 2 — 2026-06-15 → 2026-06-15
 
 **Capacity:** 1 person-day (focused burst)
