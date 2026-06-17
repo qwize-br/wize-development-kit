@@ -27,6 +27,7 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
   - `builder-skills/wize-create-*/workflow.md`
   - `web-overlay/` and `app-overlay/` with `module.yaml` + workflows + `playbooks/`.
   - `security-overlay/` (AI Pentester, overlay técnico, file-first) with skills + `_shared/` + `data/` + agents/. Skills/workflows under it must carry `overlay: security` in frontmatter.
+  - File naming for assets under `src/**/skills/` is lowercase `skill.md` (not `SKILL.md`) — see `tools/installer/validators/walk.js`.
 - **tools/installer/** holds all runtime JS.
 - **adapters/** holds one directory per IDE target with `adapter.yaml`, `render.js`, `README.md`.
 - **schemas/** holds JSON Schema files.
