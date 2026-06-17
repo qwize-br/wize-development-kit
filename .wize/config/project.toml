@@ -3,7 +3,7 @@
 
 [project]
 name = "wize-dev-kit"
-kit_version = "0.3.0"
+kit_version = "0.4.1"
 
 [install]
 profiles = ["core"]

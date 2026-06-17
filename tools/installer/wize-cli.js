@@ -140,10 +140,67 @@ function prompt(question) {
 }
 
 async function confirm(question, defaultYes = true) {
+  if (INTERACTIVE) {
+    const { value } = await prompts({
+      type: 'confirm',
+      name: 'value',
+      message: question,
+      initial: defaultYes
+    });
+    if (value === undefined) process.exit(130);
+    return value;
+  }
   const hint = defaultYes ? '[Y/n]' : '[y/N]';
   const ans = (await prompt(`${question} ${hint} `)).toLowerCase();
   if (!ans) return defaultYes;
   return ans.startsWith('y');
+}
+
+async function promptText(question, defaultValue = '') {
+  if (INTERACTIVE) {
+    const { value } = await prompts({
+      type: 'text',
+      name: 'value',
+      message: question,
+      initial: defaultValue
+    });
+    if (value === undefined) process.exit(130);
+    return value.trim();
+  }
+  const ans = (await prompt(`${question} [${defaultValue}]: `)).trim();
+  return ans || defaultValue;
+}
+
+async function promptTextMandatory(question, defaultValue = '') {
+  if (INTERACTIVE) {
+    if (defaultValue) {
+      const { keep } = await prompts({
+        type: 'confirm',
+        name: 'keep',
+        message: `${question} (use "${defaultValue}"?)`,
+        initial: true
+      });
+      if (keep === undefined) process.exit(130);
+      if (keep) return defaultValue;
+    }
+    const { value } = await prompts({
+      type: 'text',
+      name: 'value',
+      message: question
+    });
+    if (value === undefined) process.exit(130);
+    const trimmed = value.trim();
+    if (trimmed) return trimmed;
+    if (defaultValue) return defaultValue;
+    return promptTextMandatory(question, defaultValue);
+  }
+  // Non-TTY: keep asking until non-empty.
+  for (;;) {
+    const ans = (await prompt(`${question}: `)).trim();
+    if (ans) return ans;
+    if (defaultValue) return defaultValue;
+    console.log('Please provide a value.');
+  }
 }
 
 async function select(label, choices, defaultValue) {
@@ -384,7 +441,7 @@ async function cmdInstall(args) {
     console.log('\nGreenfield repo detected.');
   }
 
-  const project_name = (await prompt(`Project name [${path.basename(cwd)}]: `)) || path.basename(cwd);
+  const project_name = (await promptText(`Project name`, path.basename(cwd))) || path.basename(cwd);
   const profiles = await multiSelect('Select profile(s) to install', PROFILES);
   const targets = await multiSelect('Select IDE target(s)', TARGETS);
 
@@ -398,10 +455,13 @@ async function cmdInstall(args) {
   );
 
   // Personal touch — the user_name lands in .wize/config/user.toml (per-developer).
+  // Always ask; do not silently accept the OS username, because the install must
+  // feel personal and avoid misnaming the user in agent conversations.
   const defaultName = (os.userInfo().username || '').trim();
-  const user_name = (await prompt(
-    `How should the agents call you? [${defaultName || 'leave blank'}]: `
-  )).trim() || defaultName;
+  const user_name = await promptTextMandatory(
+    'How should the agents call you?',
+    defaultName
+  );
 
   // Gitignore — opt-in, idempotent.
   const wantsGitignore = await confirm(

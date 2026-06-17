@@ -53,6 +53,42 @@ function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
+// Companion files (steps/, templates/, data/, *.csv, *-template.md,
+// customize.toml, research.template.md, etc.) that micro-file workflows
+// reference from their body. We must copy these alongside the SKILL.md so
+// the IDE can resolve paths like "./steps/step-01-init.md" at runtime.
+const SKIP_NAMES = new Set(['.DS_Store', 'Thumbs.db', 'node_modules', '.git']);
+const SKIP_FILES = new Set([
+  'skill.md', 'workflow.md', 'agent.yaml', 'persona.md',
+  'package.json', 'package-lock.json'
+]);
+
+function isCompanion(entry) {
+  if (entry.name.startsWith('.')) return false;
+  if (SKIP_NAMES.has(entry.name)) return false;
+  if (SKIP_FILES.has(entry.name)) return false;
+  if (entry.name.endsWith('.test.js')) return false;
+  return true;
+}
+
+function copyCompanionFiles(srcDir, destDir, written, relPrefix = '') {
+  if (!srcDir || !fs.existsSync(srcDir)) return;
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    if (!isCompanion(entry)) continue;
+    const s = path.join(srcDir, entry.name);
+    const d = path.join(destDir, entry.name);
+    const rel = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      ensureDir(d);
+      copyCompanionFiles(s, d, written, rel);
+    } else if (entry.isFile()) {
+      ensureDir(path.dirname(d));
+      fs.copyFileSync(s, d);
+      written.push(rel);
+    }
+  }
+}
+
 // Walks the kit and returns a flat array of "assets" the adapters can render.
 // Each asset has: { kind: 'agent'|'workflow'|'skill', code, name, title, description, body, overlay }
 function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
@@ -69,7 +105,7 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
     if (!code || !name) continue;
     const personaPath = path.join(dir, 'persona.md');
     const persona = fs.existsSync(personaPath) ? fs.readFileSync(personaPath, 'utf-8') : '';
-    out.push({ kind: 'agent', code, name, title, description, body: persona || description, overlay: null });
+    out.push({ kind: 'agent', code, name, title, description, body: persona || description, overlay: null, srcDir: dir });
   }
 
   for (const wfPath of walkWorkflows(kitRoot)) {
@@ -85,7 +121,8 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
       title: fm.phase || fm.gate || '',
       description: `${fm.phase || fm.gate || 'workflow'}: ${fm.name || fm.code}`,
       body: bodyAfterFrontmatter(content),
-      overlay: fm.overlay || null
+      overlay: fm.overlay || null,
+      srcDir: path.dirname(wfPath)
     });
   }
 
@@ -100,7 +137,8 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
       title: fm.module || '',
       description: fm.module ? `${fm.module} skill: ${fm.name || fm.code}` : (fm.name || fm.code),
       body: bodyAfterFrontmatter(content),
-      overlay: null
+      overlay: null,
+      srcDir: path.dirname(skPath)
     });
   }
 
@@ -140,6 +178,10 @@ function renderAnthropicSkills(kitRoot, targetDir, opts = {}) {
       ensureDir(skillDir);
       fs.writeFileSync(path.join(skillDir, 'SKILL.md'), content, 'utf-8');
       written.push(`${a.code}/SKILL.md`);
+      // Copy companion files (steps/, templates/, data/, *.csv, customize.toml,
+      // *-template.md, research.template.md, etc.) so micro-file workflows can
+      // resolve relative paths from inside the SKILL body.
+      copyCompanionFiles(a.srcDir, skillDir, written, a.code);
     }
   }
   return { written, skipped: [] };
@@ -178,6 +220,7 @@ module.exports = {
   collectAssets,
   renderAnthropicSkills,
   renderAgentsMd,
+  copyCompanionFiles,
   // Re-exports for adapter authors who need to roll their own format:
   readFrontmatter,
   bodyAfterFrontmatter,
