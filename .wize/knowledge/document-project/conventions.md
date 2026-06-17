@@ -66,3 +66,12 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
   in any partial — only file/line/rule. The full gitleaks report (with
   raw values) lives in `.wize/security/gitleaks-report.json` and is
   intentionally NOT committed (the directory is gitignored).
+
+## 2026-06-17 — security-overlay E06-S04
+
+- ffuf is shipped with a small embedded wordlist at
+  src/security-overlay/skills/wize-sec-exploit/data/common.txt (~117
+  entries). This is the conservative default; users with SecLists can
+  pass their own wordlist via extraArgs. The default wordlist is
+  versioned with the kit so the rate-limit (-rate 5) and timeout keep
+  the scan gentle even on unhardened targets.

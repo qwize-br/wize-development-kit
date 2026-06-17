@@ -23,7 +23,7 @@
     "--dbms=", "--technique=", "--tamper=", "--random-agent", "--retries=1"
   ],
   "ffuf": [
-    "-u:", "-w:", "-mc=", "-t=", "-rate=", "-recursion", "-recursion-depth=", "-ac", "-of="
+    "-u:", "-w:", "-mc:", "-t:", "-rate:", "-recursion", "-recursion-depth:", "-ac:", "-of:", "-o:", "-ma:", "-fs:"
   ],
   "curl": [
     "-sI:", "-s:", "-o:", "-L", "-k", "-A=", "-H=", "--max-time="
