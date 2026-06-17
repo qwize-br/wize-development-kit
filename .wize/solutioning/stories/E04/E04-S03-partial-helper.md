@@ -1,7 +1,7 @@
 ---
 story_id: E04-S03
 epic: 04-recon-enumerate
-status: ready-for-dev
+status: done
 priority: 1
 estimate: S
 linked_acs: [AC-E04-1, AC-E04-3]
