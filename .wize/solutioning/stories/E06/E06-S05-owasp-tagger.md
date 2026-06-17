@@ -1,7 +1,7 @@
 ---
 story_id: E06-S05
 epic: 06-dast
-status: ready-for-dev
+status: done
 priority: 1
 estimate: S
 linked_acs: [AC-E06-3]
