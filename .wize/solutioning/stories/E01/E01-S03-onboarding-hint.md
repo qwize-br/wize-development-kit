@@ -1,7 +1,7 @@
 ---
 story_id: E01-S03
 epic: 01-packaging
-status: ready-for-dev
+status: done
 priority: 2
 estimate: S
 linked_acs: [AC-E01-5]
