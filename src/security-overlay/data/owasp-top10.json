@@ -1,0 +1,15 @@
+{
+  "_schema": "OWASP Top 10 (2021) — stable IDs. Used by tagOwasp() to categorize findings from DAST tools. Update with care; downstream rendering depends on these IDs.",
+  "categories": [
+    { "id": "A01:2021", "name": "Broken Access Control" },
+    { "id": "A02:2021", "name": "Cryptographic Failures" },
+    { "id": "A03:2021", "name": "Injection" },
+    { "id": "A04:2021", "name": "Insecure Design" },
+    { "id": "A05:2021", "name": "Security Misconfiguration" },
+    { "id": "A06:2021", "name": "Vulnerable and Outdated Components" },
+    { "id": "A07:2021", "name": "Identification and Authentication Failures" },
+    { "id": "A08:2021", "name": "Software and Data Integrity Failures" },
+    { "id": "A09:2021", "name": "Security Logging and Monitoring Failures" },
+    { "id": "A10:2021", "name": "Server-Side Request Forgery (SSRF)" }
+  ]
+}
