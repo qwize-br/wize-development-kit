@@ -101,10 +101,20 @@ function loadScope(scopePath) {
 // Throws ScopeError if `scope` itself is invalid (HASH_MISMATCH, etc.) —
 // callers should treat that as abort-the-pipeline.
 function assertTargetInScope(scope, target, opts = {}) {
-  // Validate the scope up front so any tampering is surfaced loudly.
-  validateScope(scope);
-
   const refusalsDir = opts.refusalsDir || path.join(process.cwd(), '.wize', 'security');
+
+  // Validate the scope up front so any tampering is surfaced loudly. We
+  // also log the attempt before re-throwing — an invalid scope is itself
+  // a refusal event that must appear in the audit trail.
+  try {
+    validateScope(scope);
+  } catch (err) {
+    if (err && err.code) {
+      logRefusal(refusalsDir, target || {}, `${err.code}: ${String(err.message || '').slice(0, 200)}`);
+    }
+    throw err;
+  }
+
   const allowlist = parseAllowlist(scope.body);
 
   // Evaluate each provided dimension of the target. A dimension is "in scope"
