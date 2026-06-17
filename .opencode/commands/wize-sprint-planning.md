@@ -71,4 +71,14 @@ development_status:
 
 ## Hand-off
 
-> Sprint committed at `.wize/implementation/sprint-status.yaml`. Next: `/wize-sprint-status`.
+> Sprint committed at `.wize/implementation/sprint-status.yaml`. Stories in `ready-for-dev` are now eligible for the dev loop.
+>
+> **Recommended next loop:**
+>
+> ```
+> /loop /wize-dev-story
+> ```
+>
+> `/loop /wize-dev-story` drives one story at a time: TDD red-green-refactor, AC IDs in commits, `tea-design.md` contract, knowledge update on the 5 baseline axes, and a clean gate at the end. `/loop` keeps it going across the sprint's `ready-for-dev` queue until the user pauses.
+>
+> Next: `/wize-sprint-status` (Maria Hill) to acompanhar o progresso.
