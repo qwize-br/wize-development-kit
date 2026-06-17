@@ -49,6 +49,42 @@ test('generic adapter emits a root AGENTS.md', () => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 
+// Anthropic-family adapters must copy companion files (steps/, templates/,
+// data/, *.csv, customize.toml, *-template.md) alongside the SKILL.md so
+// micro-file workflows like wize-create-architecture can resolve relative
+// paths from inside the SKILL body.
+const ANTHROPIC = [
+  { code: 'claude-code',  base: '.claude' },
+  { code: 'antigravity',  base: '.agent' },
+  { code: 'codex',        base: '.agents' },
+  { code: 'kimi-code',    base: '.kimi' }
+];
+
+for (const a of ANTHROPIC) {
+  test(`adapter ${a.code} copies companion files (steps/, templates/, *.csv) next to SKILL.md`, () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), `wize-companions-${a.code}-`));
+    const mod = require(path.join(KIT, 'adapters', a.code, 'render.js'));
+    mod.render(KIT, root, { profiles: ['core'] });
+
+    // micro-file: wize-create-architecture/steps/step-01-init.md
+    const step = path.join(root, a.base, 'skills/wize-create-architecture/steps/step-01-init.md');
+    assert.ok(fs.existsSync(step),
+      `${a.code} should copy steps/step-01-init.md next to SKILL.md (looked at ${step})`);
+
+    // sibling template: wize-market-research/research.template.md
+    const tpl = path.join(root, a.base, 'skills/wize-market-research/research.template.md');
+    assert.ok(fs.existsSync(tpl),
+      `${a.code} should copy research.template.md for wize-market-research`);
+
+    // sibling CSV: wize-document-project/documentation-requirements.csv
+    const csv = path.join(root, a.base, 'skills/wize-document-project/documentation-requirements.csv');
+    assert.ok(fs.existsSync(csv),
+      `${a.code} should copy documentation-requirements.csv for wize-document-project`);
+
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+}
+
 test('cursor mdc has correct frontmatter shape', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-cursor-'));
   const mod = require(path.join(KIT, 'adapters', 'cursor', 'render.js'));
