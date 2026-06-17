@@ -71,8 +71,11 @@ function matchHost(allowlist, host) {
 }
 
 function matchUrl(allowlist, url) {
-  // The URL must start with one of the allowlisted URL prefixes.
-  return allowlist.urls.some(prefix => url.startsWith(prefix));
+  // Normalize by stripping trailing slashes so 'http://x/' and 'http://x'
+  // match the same prefix.
+  const norm = s => String(s || '').replace(/\/+$/, '');
+  const target = norm(url);
+  return allowlist.urls.some(prefix => target.startsWith(norm(prefix)));
 }
 
 function matchPath(allowlist, p) {
