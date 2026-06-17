@@ -34,7 +34,8 @@ const RULES = [
   { match: f => /\bxss\b/i.test(f.rule || ''),           to: 'A03:2021' },
   { match: f => /\bauth[-_ ]?bypass|auth[-_ ]?bypass|session/i.test(f.rule || ''), to: 'A07:2021' },
   { match: f => /\btls|cert|cipher|\bssl\b/i.test(f.rule || ''), to: 'A02:2021' },
-  { match: f => /\bcors|\bcsp|header/i.test(f.rule || ''), to: 'A05:2021' },
+  { match: f => /\bcors|\bcsp|headers?|\bhttponly/i.test(f.rule || ''), to: 'A05:2021' },
+  { match: f => /\bexposed|\bdisclosed|server-status|admin\b/i.test(f.rule || ''), to: 'A05:2021' },
   { match: f => /\bssrf|redirect/i.test(f.rule || ''),   to: 'A10:2021' }
 ];
 
