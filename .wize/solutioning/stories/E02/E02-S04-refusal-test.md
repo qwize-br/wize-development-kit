@@ -1,7 +1,7 @@
 ---
 story_id: E02-S04
 epic: 02-scope-gate
-status: ready-for-dev
+status: done
 priority: 1
 estimate: S
 linked_acs: [AC-E02-5]
