@@ -1,0 +1,28 @@
+{
+  "_schema": "Each entry is a list of allowed flag tokens. Flags ending in ':' (e.g. '-f:') consume the next arg as their value; flags without ':' are standalone switches.",
+  "nmap": [
+    "-sV", "-Pn", "-p-", "--open", "-T4", "-sn", "-O"
+  ],
+  "gitleaks": [
+    "detect", "--no-banner", "-f:", "-r:", "-v", "--log-level="
+  ],
+  "osv-scanner": [
+    "--json", "-r:", "--lockfile=", "-L"
+  ],
+  "grype": [
+    "dir:.", "-o", "json", "-f"
+  ],
+  "nuclei": [
+    "-u:", "-t:", "-severity:", "-passive", "-json", "-o:", "-duc", "-rl:", "-c:"
+  ],
+  "nikto": [
+    "-h:", "-ask", "no", "-Tuning", "-timeout=", "-port="
+  ],
+  "sqlmap": [
+    "-u:", "--batch", "--level=1", "--risk=1", "--threads=2", "--timeout=10",
+    "--dbms=", "--technique=", "--tamper=", "--random-agent", "--retries=1"
+  ],
+  "ffuf": [
+    "-u:", "-w:", "-mc=", "-t=", "-rate=", "-recursion", "-recursion-depth=", "-ac", "-of="
+  ]
+}
