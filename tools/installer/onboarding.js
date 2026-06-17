@@ -26,6 +26,7 @@ function compose(detection, profiles) {
   lines.push('  → /wize-quick-dev              (Shuri, for small fixes)');
   if (profiles.find(p => p.code === 'web-overlay')) lines.push('  → /wize-web-scaffold           (overlay)');
   if (profiles.find(p => p.code === 'app-overlay')) lines.push('  → /wize-app-scaffold           (overlay)');
+  if (profiles.find(p => p.code === 'security-overlay')) lines.push('  → /wize-sec-pentest         (overlay)');
   return lines.join('\n');
 }
 
