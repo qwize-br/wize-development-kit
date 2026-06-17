@@ -85,3 +85,14 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
   1.9; 8.1 vs 9.1) — the test follows the spec, not the brief.
 - Consumers should pass a CVSS:3.1 vector string; the module also
   accepts vectors without the 'CVSS:3.1/' prefix for convenience.
+
+## 2026-06-17 — security-overlay E07-S03
+
+- report.html is a single self-contained file with CSS inline. No
+  <script src>, <link href>, or @import references to remote URLs —
+  the file opens offline. Severity badges (Critical/High/Medium/Low/
+  Info/None) and OWASP tags are color-coded per the architecture
+  decision (Critical #7f1d1d, High #b91c1c, etc.). The structure is
+  semantic (header/main/footer, articles for findings, dl for
+  metadata, table with th scope=col). A skip link to #main is provided
+  for screen-reader users.

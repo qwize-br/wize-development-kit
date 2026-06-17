@@ -214,7 +214,150 @@ function renderReport({ securityDir } = {}) {
   // changes between runs in tests; the rest of the report is stable.
   const reportPath = path.join(sec, 'report.md');
   fs.writeFileSync(reportPath, lines.join('\n'), 'utf8');
+
+  // Also generate the HTML report (self-contained, no remote refs).
+  renderReportHtml({ securityDir: sec, phaseSummaries, allFindings, refusals, generatedAt, scopeSha });
+
   return { ok: true, findings: allFindings.length };
+}
+
+// --- HTML report -------------------------------------------------------
+
+const HTML_CSS = `
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; line-height: 1.5; }
+header, main, footer { padding: 1rem 1.25rem; max-width: 60rem; margin: 0 auto; }
+header { border-bottom: 2px solid #ccc; }
+h1, h2, h3 { line-height: 1.2; }
+.skip-link { position: absolute; left: -1000px; top: -1000px; }
+.skip-link:focus { left: 1rem; top: 1rem; background: #fff; padding: .5rem 1rem; border: 2px solid #000; z-index: 999; }
+.severity-Critical { background: #7f1d1d; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .75rem; }
+.severity-High     { background: #b91c1c; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .75rem; }
+.severity-Medium   { background: #b45309; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .75rem; }
+.severity-Low      { background: #1d4ed8; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .75rem; }
+.severity-Info, .severity-unknown, .severity-None { background: #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .75rem; }
+.owasp-tag { background: #1f2937; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .75rem; margin-left: .25rem; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+th, td { padding: .5rem; border-bottom: 1px solid #ccc; text-align: left; }
+th { background: #f3f4f6; }
+article { margin: 1rem 0; padding: 1rem; border: 1px solid #ccc; border-radius: 4px; }
+@media (max-width: 40rem) { body { font-size: 0.95rem; } }
+`;
+
+function escapeHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, generatedAt, scopeSha }) {
+  const sec = securityDir;
+  const title = `Security Report — ${scopeSha ? scopeSha.slice(0, 12) : 'unknown'}`;
+  const phasesHtml = phaseSummaries.map(p => {
+    const cls = p.status === 'complete' ? 'phase-complete'
+              : p.status === 'incomplete' ? 'phase-incomplete'
+              : 'phase-missing';
+    return `      <section class="${cls}" aria-labelledby="phase-${p.phase}">
+        <h2 id="phase-${p.phase}">${escapeHtml(p.phase)}</h2>
+        <p>status: <code>${escapeHtml(p.status)}</code>${p.mode ? ' · mode: <code>' + escapeHtml(p.mode) + '</code>' : ''}</p>
+      </section>`;
+  }).join('\n');
+
+  const findingsHtml = allFindings.length === 0
+    ? '<p><em>(no findings)</em></p>'
+    : allFindings.map(f => {
+        const sev = (f.severity || 'unknown').toString();
+        const sevClass = `severity-${sev}`;
+        const owasp = f.owasp || 'UNKNOWN';
+        return `      <article aria-labelledby="finding-${escapeHtml(f.phase + '-' + f.section)}">
+        <h3 id="finding-${escapeHtml(f.phase + '-' + f.section)}">${escapeHtml(f.phase)} / ${escapeHtml(f.section)}</h3>
+        <dl>
+          <dt>Severity</dt><dd><span class="${sevClass}">${escapeHtml(sev)}</span></dd>
+          <dt>CVSS</dt><dd>${f.score == null ? 'n/a' : escapeHtml(String(f.score))}</dd>
+          <dt>OWASP</dt><dd><span class="owasp-tag">${escapeHtml(owasp)}</span></dd>
+        </dl>
+        <pre><code>${escapeHtml(f.raw)}</code></pre>
+      </article>`;
+    }).join('\n');
+
+  const refusalsHtml = (refusals && refusals.length)
+    ? `<section aria-labelledby="refusals">
+        <h2 id="refusals">Refusals</h2>
+        <pre><code>${escapeHtml(refusals.join('\n'))}</code></pre>
+      </section>`
+    : '';
+
+  const sevCounts = { Critical: 0, High: 0, Medium: 0, Low: 0, None: 0, unknown: 0 };
+  const owaspCounts = {};
+  for (const f of allFindings) {
+    const k = f.severity || 'unknown';
+    sevCounts[k] = (sevCounts[k] || 0) + 1;
+    if (f.owasp && f.owasp !== 'UNKNOWN') {
+      owaspCounts[f.owasp] = (owaspCounts[f.owasp] || 0) + 1;
+    }
+  }
+  const sevRows = Object.entries(sevCounts).filter(([, n]) => n > 0)
+    .map(([s, n]) => `<tr><th scope="row">${escapeHtml(s)}</th><td>${n}</td></tr>`).join('');
+  const owaspRows = Object.entries(owaspCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([o, n]) => `<tr><th scope="row">${escapeHtml(o)}</th><td>${n}</td></tr>`).join('');
+
+  const html = [
+    '<!DOCTYPE html>',
+    '<html lang="pt-BR">',
+    '<head>',
+    '<meta charset="utf-8">',
+    `<meta name="viewport" content="width=device-width, initial-scale=1">`,
+    `<title>${escapeHtml(title)}</title>`,
+    `<meta name="generated_at" content="${escapeHtml(generatedAt)}">`,
+    `<style>${HTML_CSS}</style>`,
+    '</head>',
+    '<body>',
+    '<a href="#main" class="skip-link">Skip to main content</a>',
+    '<header>',
+    `  <h1>${escapeHtml(title)}</h1>`,
+    `  <dl>`,
+    `    <dt>Generated</dt><dd>${escapeHtml(generatedAt)}</dd>`,
+    scopeSha ? `    <dt>Scope SHA-256</dt><dd><code>${escapeHtml(scopeSha)}</code></dd>` : '',
+    `  </dl>`,
+    '</header>',
+    '<main id="main">',
+    '  <section aria-labelledby="exec-summary">',
+    '    <h2 id="exec-summary">Executive summary</h2>',
+    '    <table>',
+    '      <caption>Findings by severity</caption>',
+    '      <thead><tr><th scope="col">Severity</th><th scope="col">Count</th></tr></thead>',
+    '      <tbody>',
+    sevRows || '        <tr><th scope="row">(none)</th><td>0</td></tr>',
+    '      </tbody>',
+    '    </table>',
+    '    <table>',
+    '      <caption>Findings by OWASP category</caption>',
+    '      <thead><tr><th scope="col">OWASP</th><th scope="col">Count</th></tr></thead>',
+    '      <tbody>',
+    owaspRows || '        <tr><th scope="row">(none)</th><td>0</td></tr>',
+    '      </tbody>',
+    '    </table>',
+    '  </section>',
+    phasesHtml,
+    '  <section aria-labelledby="findings">',
+    '    <h2 id="findings">Findings</h2>',
+    findingsHtml,
+    '  </section>',
+    refusalsHtml,
+    '</main>',
+    '<footer>',
+    '  <p>Generated by <code>wize-sec-report</code>. Self-contained (no remote references). All sensitive data has been redacted.</p>',
+    '</footer>',
+    '</body>',
+    '</html>'
+  ].filter(Boolean).join('\n');
+
+  fs.writeFileSync(path.join(sec, 'report.html'), html, 'utf8');
 }
 
 function extractScopeSha(sec) { return 'unknown'; }
@@ -239,4 +382,4 @@ function readRefusals(sec) {
   return fs.readFileSync(file, 'utf8').split('\n').filter(l => l.trim().length > 0);
 }
 
-module.exports = { renderReport, classifyFinding, extractFindings, redactText, parseSections };
+module.exports = { renderReport, renderReportHtml, classifyFinding, extractFindings, redactText, parseSections };
