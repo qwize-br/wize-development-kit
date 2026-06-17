@@ -75,3 +75,13 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
   pass their own wordlist via extraArgs. The default wordlist is
   versioned with the kit so the rate-limit (-rate 5) and timeout keep
   the scan gentle even on unhardened targets.
+
+## 2026-06-17 — security-overlay E07-S01
+
+- CVSS v3.1 calculator is shipped as a zero-dep Node module
+  (src/security-overlay/_shared/cvss.js). It implements the FIRST.org
+  v3.1 formula with RoundUp-to-1-decimal rounding. Two of the brief's
+  expected values differ from the spec's calculation by 0.1 (1.8 vs
+  1.9; 8.1 vs 9.1) — the test follows the spec, not the brief.
+- Consumers should pass a CVSS:3.1 vector string; the module also
+  accepts vectors without the 'CVSS:3.1/' prefix for convenience.
