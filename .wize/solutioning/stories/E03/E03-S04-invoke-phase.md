@@ -1,7 +1,7 @@
 ---
 story_id: E03-S04
 epic: 03-persona-orchestrator
-status: ready-for-dev
+status: done
 priority: 1
 estimate: S
 linked_acs: [AC-E03-2, AC-E03-3]
