@@ -5,6 +5,39 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-06-17
+
+### Added
+
+- **Onboarding real.** `wize-onboarding` is no longer a stub; reads `.wize/config/{project,user}.toml` and detects state S0–S4, then routes to the right next workflow with explicit hand-off copy.
+- **`wize-correct-course`** (4-implementation) — react when a sprint drifts. 5 sections: detect, classify (cut / re-route / escalate), propose, confirm with human, update `sprint-status.yaml`. Logs to `course-corrections.md`.
+- **`wize-edit-prd`** (2-plan) — update `.wize/planning/prd.md` without rewriting. 4 edit types (AC, scope, non-goal, decision) with mandatory `prd-changelog.md` row per change.
+- **`wize-project-context`** (3-solutioning) — consolidates brief + PRD + UX + architecture + ADRs + risk profile into `.wize/knowledge/project-context.md`. 5 sections, one canonical source for other agents.
+- **`wize-checkpoint-preview`** (4-implementation) — pause mid-story to validate direction. Records snapshot + decision in `checkpoints/{story_id}.md`.
+- **`wize-investigate`** (4-implementation) — structured RCA: frame, reproduce, hypothesize (top 3), verify, conclude. Report in `investigations/{date}-{slug}.md`.
+- **`wize-qa-generate-e2e-tests`** (tea) — translates UX screens + ACs into concrete E2E cases with P0/P1/P2 priority. Output in `tea/e2e-cases/{screen}.md`.
+- **`wize-review-edge-case-hunter`** (core) — focused edge-case pass. 4 areas (input, state, time/race, integration) with top-5 P0 ranking.
+- **`wize-index-docs`** (core) — rebuilds `.wize/knowledge/index.md` from the actual tree, 5 sections.
+- **`wize-editorial-review-prose` + `wize-editorial-review-structure`** (core) — Peggy Carter's review skills. Voice/jargon/hedging/pronouns; missing/misordered/heading-level/empty.
+- **`wize-customize`** (core) — guided override of built-in agents/skills/workflows via `.wize/custom/{type}/{code}/customize.toml`.
+- Sprint tracking: `.wize/implementation/sprint-status.yaml` (YAML state machine) plus human-readable `.wize/implementation/sprint-status.md`. 4 sprints closed (S1–S4).
+- Backlog: `.wize/implementation/backlog.md` with prioritized list of missing agile workflows.
+- TEA risk profile: 17 risks catalogued, all HIGH-impact mitigated.
+
+### Changed
+
+- **`wize-sprint-planning` hand-off** now suggests `/loop /wize-dev-story` so the dev loop runs across the sprint's `ready-for-dev` queue without re-invoking the workflow per story.
+- IDE adapters now copy companion files (`steps/`, `templates/`, `data/`, `*.csv`, `*-template.md`, `customize.toml`, `research.template.md`) alongside the SKILL.md. Anthropic-family adapter emit count: 63 → 119 per run.
+
+### Fixed
+
+- Installer: the "How should the agents call you?" prompt is always surfaced (was being skipped when the user name was inferred from the OS). Uses `prompts` library consistently for text + confirm inputs; no more residual stdin.
+- IDE adapters: micro-file workflows like `wize-create-architecture` previously rendered only their SKILL.md, dropping the entire `steps/` folder. Now all 4 Anthropic-family adapters copy siblings.
+
+### Tests
+
+- 233 passing (was 222). New: 4 Anthropic-family companion-file tests + 1 sprint-planning hand-off regression test.
+
 ## [0.4.1] — 2026-06-13
 
 ### Fixed
