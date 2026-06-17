@@ -43,7 +43,8 @@ const TARGETS = [
 const PROFILES = [
   { code: 'core', label: 'Wize Dev Core', required: true },
   { code: 'web-overlay', label: 'Wize Web Dev (overlay)', required: false },
-  { code: 'app-overlay', label: 'Wize App Development (overlay)', required: false }
+  { code: 'app-overlay', label: 'Wize App Development (overlay)', required: false },
+  { code: 'security-overlay', label: 'Wize Security (AI Pentester overlay)', required: false }
 ];
 
 // Common BCP-47 short codes. Users can type any other value freely.
@@ -482,6 +483,12 @@ async function cmdInstall(args) {
   console.log(`✓ profiles: ${profiles.map(p => p.code).join(', ')}`);
   console.log(`✓ ide targets: ${targets.map(t => t.code).join(', ')}`);
   if (user_name) console.log(`✓ user.toml: agents will call you "${user_name}"`);
+
+  if (profiles.some(p => p.code === 'security-overlay')) {
+    console.log('\n⚠  security-overlay selected — authorized use only.');
+    console.log('   Uso autorizado. Você é responsável por obter permissão antes de testar alvos que não são seus.');
+    console.log('   O kit detecta alvos fora do scope.md e recusa automaticamente; ainda assim, use com responsabilidade.');
+  }
 
   if (wantsGitignore) {
     const r = applyGitignore(cwd);
