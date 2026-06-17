@@ -58,3 +58,11 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
 - README still says "alpha — v0.1.0" in the status section while package.json and CHANGELOG are at v0.3.0.
 - Some source workflow files are marked `status: ready` but rely on the IDE to execute; there is no runtime runner for them.
 - `wize-cli.js` mixes CLI dispatcher, install logic, prompt helpers, and adapter rendering in a single large file.
+
+## 2026-06-17 — security-overlay E05-S01
+
+- Secrets found by SAST (gitleaks) are written to `sast.md` with
+  `redacted_value: ***REDACTED***`. The actual secret value NEVER appears
+  in any partial — only file/line/rule. The full gitleaks report (with
+  raw values) lives in `.wize/security/gitleaks-report.json` and is
+  intentionally NOT committed (the directory is gitignored).
