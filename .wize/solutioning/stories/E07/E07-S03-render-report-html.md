@@ -1,7 +1,7 @@
 ---
 story_id: E07-S03
 epic: 07-report
-status: ready-for-dev
+status: done
 priority: 1
 estimate: L
 linked_acs: [AC-E07-2, AC-E07-3, AC-E07-4, AC-E07-5]
