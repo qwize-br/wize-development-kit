@@ -1,7 +1,7 @@
 ---
 story_id: E05-S02
 epic: 05-sast
-status: ready-for-dev
+status: done
 priority: 1
 estimate: M
 linked_acs: [AC-E05-2, AC-E05-3]
