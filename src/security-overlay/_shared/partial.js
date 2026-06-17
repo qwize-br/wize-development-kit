@@ -123,6 +123,10 @@ function coerceScalar(v) {
   if (v === 'true') return true;
   if (v === 'false') return false;
   if (v === 'null') return null;
+  // Inline JSON array: [a, b, c]
+  if (/^\[.*\]$/.test(v)) {
+    try { return JSON.parse(v); } catch (_) { /* fall through */ }
+  }
   return v;
 }
 
@@ -162,6 +166,10 @@ function writePartial(opts) {
   fm.push(`scope_sha256: ${yamlScalar(scopeSha)}`);
   fm.push(`mode: ${yamlScalar(opts.mode || 'passive')}`);
   fm.push(`partial_status: ${yamlScalar(opts.status || 'complete')}`);
+  if (Array.isArray(opts.dependsOn) && opts.dependsOn.length) {
+    const arr = '[' + opts.dependsOn.map(v => JSON.stringify(String(v))).join(', ') + ']';
+    fm.push(`depends_on: ${arr}`);
+  }
   if (opts.tools && Object.keys(opts.tools).length) {
     fm.push(renderNestedMap({ tools: opts.tools }, 0));
   }

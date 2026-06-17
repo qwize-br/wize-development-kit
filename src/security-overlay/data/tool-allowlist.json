@@ -24,5 +24,8 @@
   ],
   "ffuf": [
     "-u:", "-w:", "-mc=", "-t=", "-rate=", "-recursion", "-recursion-depth=", "-ac", "-of="
+  ],
+  "curl": [
+    "-sI:", "-s:", "-o:", "-L", "-k", "-A=", "-H=", "--max-time="
   ]
 }
