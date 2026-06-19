@@ -30,3 +30,6 @@ coverage/
 .opencode/commands/wize-*.md
 .wize/agents/wize-*.md
 # <<< wize-dev-kit (managed) <<<
+
+# security-overlay scan outputs (local, per-project)
+.wize/security/
