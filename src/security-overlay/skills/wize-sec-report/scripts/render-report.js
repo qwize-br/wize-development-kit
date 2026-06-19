@@ -147,6 +147,66 @@ function computeRisk(findings) {
   return { score, rating, posture, counts, drivers };
 }
 
+// The checks we expect a complete pentest to perform, grouped by what each
+// one answers. Used to compute honest coverage + audit confidence.
+const EXPECTED_CHECKS = [
+  { id: 'recon-ports', tool: 'nmap', phase: 'recon', label: 'Mapeamento de portas/serviços', answers: 'Quais serviços estão expostos?' },
+  { id: 'enum-surface', tool: 'curl', phase: 'enumerate', label: 'Enumeração de superfície HTTP', answers: 'Quais endpoints/tecnologias respondem?' },
+  { id: 'sast-secrets', tool: 'gitleaks', phase: 'sast', label: 'Secrets no código/histórico', answers: 'Há credenciais vazadas?' },
+  { id: 'sast-deps', tool: 'osv-scanner', phase: 'sast', label: 'Dependências vulneráveis', answers: 'Há CVEs em libs?' },
+  { id: 'dast-nuclei', tool: 'nuclei', phase: 'dast', label: 'Templates de vulnerabilidade (nuclei)', answers: 'CVEs/misconfigs conhecidos na app?' },
+  { id: 'dast-nikto', tool: 'nikto', phase: 'dast', label: 'Web server scan (nikto)', answers: 'Headers/arquivos perigosos?' },
+  { id: 'dast-content', tool: 'ffuf', phase: 'dast', label: 'Content discovery (ffuf)', answers: 'Há /admin, /.env, /.git, endpoints ocultos?' },
+  { id: 'dast-sqli', tool: 'sqlmap', phase: 'dast', label: 'SQL injection (sqlmap)', answers: 'A app é injetável? (requer --active)' }
+];
+
+// computeCoverage(securityDir, phaseSummaries) -> { ran, missing, pct, audited, confidence }
+// Honest accounting: which checks actually ran vs. degraded (tool missing /
+// out of scope). The confidence is what a reader should trust the report to.
+function computeCoverage(loadFn, secDir) {
+  // Determine tool presence two ways and combine them, because sibling
+  // scripts that share a partial (gitleaks+osv -> sast.md; nuclei+nikto+
+  // sqlmap+ffuf -> dast.md) can overwrite each other's frontmatter.tools
+  // block. So a tool counts as "ran" if EITHER the frontmatter says
+  // present:true OR a degraded_checks line does NOT mention it as missing.
+  const toolPresent = {};
+  const degradedMentions = {}; // tool -> true if listed as ausente/missing
+  for (const phase of PHASES) {
+    const p = loadFn({ securityDir: secDir, phase });
+    if (!p) continue;
+    if (p.frontmatter && p.frontmatter.tools) {
+      for (const [tool, info] of Object.entries(p.frontmatter.tools)) {
+        if (info && typeof info === 'object' && info.present) toolPresent[tool] = true;
+      }
+    }
+    if (p.body) {
+      // A degraded line like "- ffuf: ffuf ausente" marks ffuf missing.
+      for (const tool of EXPECTED_CHECKS.map(c => c.tool)) {
+        const re = new RegExp(`${tool}[^\\n]*\\b(ausente|missing|não instalad)`, 'i');
+        if (re.test(p.body)) degradedMentions[tool] = true;
+      }
+    }
+  }
+  // A tool "ran" if frontmatter says present AND it is not flagged degraded.
+  const ranTool = t => toolPresent[t] === true && !degradedMentions[t];
+  const ran = [];
+  const missing = [];
+  for (const c of EXPECTED_CHECKS) {
+    if (ranTool(c.tool)) ran.push(c);
+    else missing.push(c);
+  }
+  const pct = Math.round((ran.length / EXPECTED_CHECKS.length) * 100);
+  // "audited" only if all DAST + SAST checks ran. recon/enum alone is NOT an audit.
+  const dastSastRan = ran.filter(c => c.phase === 'dast' || c.phase === 'sast').length;
+  const dastSastTotal = EXPECTED_CHECKS.filter(c => c.phase === 'dast' || c.phase === 'sast').length;
+  const audited = dastSastRan === dastSastTotal;
+  let confidence;
+  if (audited) confidence = 'ALTA — todas as checagens SAST/DAST executaram';
+  else if (pct >= 50) confidence = 'PARCIAL — algumas checagens não rodaram; o ambiente NÃO está auditado';
+  else confidence = 'BAIXA — cobertura insuficiente; isto é um inventário de exposição, não uma auditoria';
+  return { ran, missing, pct, audited, confidence, total: EXPECTED_CHECKS.length };
+}
+
 function renderReport({ securityDir } = {}) {
   const sec = securityDir || path.join(process.cwd(), '.wize', 'security');
   const partials = listPartials({ securityDir: sec });
@@ -219,6 +279,7 @@ function renderReport({ securityDir } = {}) {
 
   // Risk rollup for stakeholders.
   const risk = computeRisk(allFindings);
+  const coverage = computeCoverage(loadPartial, sec);
   lines.push('## Resumo de risco');
   lines.push('');
   lines.push(`**Nível de risco da aplicação: ${risk.rating}** (score ${risk.score}/100)`);
@@ -229,6 +290,25 @@ function renderReport({ securityDir } = {}) {
     lines.push(`Principais fatores: ${risk.drivers.join(', ')}.`);
     lines.push('');
   }
+  // Honest coverage caveat — the most important section per the reviewer.
+  if (!coverage.audited) {
+    lines.push(`> ⚠️ **Ambiente NÃO auditado por completo.** Cobertura: ${coverage.pct}% (${coverage.ran.length}/${coverage.total} checagens). Confiança: ${coverage.confidence}. Vulnerabilidades podem existir nas áreas não testadas — ver "Cobertura do teste" abaixo.`);
+    lines.push('');
+  }
+  lines.push('## Cobertura do teste');
+  lines.push('');
+  lines.push(`Confiança da auditoria: **${coverage.confidence}** · ${coverage.pct}% das checagens executaram.`);
+  lines.push('');
+  lines.push('### Executado');
+  lines.push('');
+  if (coverage.ran.length === 0) lines.push('- (nenhuma)');
+  for (const c of coverage.ran) lines.push(`- ✅ ${c.label} — _${c.answers}_`);
+  lines.push('');
+  lines.push('### NÃO executado (lacunas)');
+  lines.push('');
+  if (coverage.missing.length === 0) lines.push('- (nenhuma — cobertura completa)');
+  for (const c of coverage.missing) lines.push(`- ❌ ${c.label} (\`${c.tool}\` ausente) — _${c.answers}_ **→ não sabemos.**`);
+  lines.push('');
   lines.push('## Executive summary');
   lines.push('');
   lines.push('### Findings by severity');
@@ -294,7 +374,7 @@ function renderReport({ securityDir } = {}) {
   fs.writeFileSync(reportPath, lines.join('\n'), 'utf8');
 
   // Also generate the HTML report (self-contained, no remote refs).
-  renderReportHtml({ securityDir: sec, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk });
+  renderReportHtml({ securityDir: sec, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage });
 
   return { ok: true, findings: allFindings.length };
 }
@@ -511,6 +591,18 @@ footer.site code { background: var(--code-bg); padding: 1px 6px; border-radius: 
   .card dt { margin-top: .25rem; }
 }
 
+/* Coverage section */
+.coverage-warn { background: var(--sev-High-bg); color: var(--fg); border: 1px solid var(--sev-High); border-radius: var(--radius-sm); padding: .75rem 1rem; }
+.coverage-ok { background: var(--sev-None-bg); color: var(--fg); border: 1px solid var(--sev-None); border-radius: var(--radius-sm); padding: .75rem 1rem; }
+.coverage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+.coverage-grid .cov-col { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+.coverage-grid h3 { margin: 0 0 .5rem; font-size: .95rem; }
+.coverage-grid ul { margin: 0; padding-left: 1.1rem; }
+.coverage-grid li { margin: .35rem 0; font-size: .88rem; }
+.coverage-grid .cov-q { display: block; color: var(--fg-muted); font-size: .8rem; margin-left: .25rem; }
+.coverage-grid .cov-missing { color: var(--sev-High); }
+@media (max-width: 40rem) { .coverage-grid { grid-template-columns: 1fr; } }
+
 /* Risk banner — the first thing a stakeholder reads */
 .risk-banner {
   display: flex; gap: 1.25rem; align-items: center;
@@ -552,10 +644,11 @@ function escapeHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
-function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk }) {
+function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage }) {
   const sec = securityDir;
   const title = `Security Report — ${scopeSha ? scopeSha.slice(0, 12) : 'unknown'}`;
   risk = risk || computeRisk(allFindings);
+  coverage = coverage || computeCoverage(loadPartial, sec);
 
   // Severity counts (for sticky header). 'Info-surface' is folded into a
   // dedicated "surface" bucket so the stakeholder header isn't dominated by
@@ -673,6 +766,7 @@ function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, 
     `  </div>`,
     `  <nav aria-label="Seções">`,
     `    <a href="#exec-summary">Sumário</a>`,
+    `    <a href="#coverage">Cobertura (${coverage.pct}%)</a>`,
     `    <a href="#phases">Fases (${phaseSummaries.length})</a>`,
     `    <a href="#findings">Findings (${allFindings.length})</a>`,
     refusals && refusals.length ? `    <a href="#refusals">Refusals (${refusals.length})</a>` : '',
@@ -699,6 +793,20 @@ function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, 
       .map(s => `<tr><th scope="row">${escapeHtml(s)}</th><td>${sevCounts[s]}</td></tr>`).join('\n        '),
     `      </tbody>`,
     `    </table>`,
+    `  </section>`,
+    `  <section aria-labelledby="coverage">`,
+    `    <h2 id="coverage">Cobertura do teste</h2>`,
+    !coverage.audited
+      ? `    <p class="coverage-warn" role="alert"><strong>⚠️ Ambiente NÃO auditado por completo.</strong> Cobertura ${coverage.pct}% (${coverage.ran.length}/${coverage.total}). Confiança: ${escapeHtml(coverage.confidence)}. Vulnerabilidades podem existir nas áreas não testadas.</p>`
+      : `    <p class="coverage-ok">✅ Cobertura completa (${coverage.pct}%). Confiança: ${escapeHtml(coverage.confidence)}.</p>`,
+    `    <div class="coverage-grid">`,
+    `      <div class="cov-col"><h3>Executado</h3><ul>`,
+    coverage.ran.length ? coverage.ran.map(c => `        <li class="cov-ran">✅ ${escapeHtml(c.label)} <span class="cov-q">${escapeHtml(c.answers)}</span></li>`).join('\n') : '        <li>(nenhuma)</li>',
+    `      </ul></div>`,
+    `      <div class="cov-col"><h3>NÃO executado (lacunas)</h3><ul>`,
+    coverage.missing.length ? coverage.missing.map(c => `        <li class="cov-missing">❌ ${escapeHtml(c.label)} <code>${escapeHtml(c.tool)}</code> <span class="cov-q">${escapeHtml(c.answers)} → não sabemos.</span></li>`).join('\n') : '        <li>(nenhuma — cobertura completa)</li>',
+    `      </ul></div>`,
+    `    </div>`,
     `  </section>`,
     `  <section aria-labelledby="phases">`,
     `    <h2 id="phases">Fases do pipeline</h2>`,

@@ -23,13 +23,25 @@ function defaultArgs(active) {
 }
 
 // Parse a greppable nmap stdout into a markdown list. We only care about
-// lines that look like `PORT/PROTO  SERVICE  VERSION`.
+// lines that look like `PORT/PROTO  SERVICE  VERSION`. Ports whose service
+// nmap could not fingerprint (`?`, unknown, tcpwrapped, or empty version)
+// are flagged for manual investigation — an unidentified open port is a
+// medium-priority unknown, not just inventory.
 function parseNmapGreppable(stdout) {
   const lines = String(stdout || '').split('\n');
   const out = [];
   for (const line of lines) {
     const m = line.match(/^(\d+\/[a-z]+)\s+(\S+)\s+(.*)$/);
-    if (m) out.push(`- **${m[1]}** \`${m[2]}\` — ${m[3].trim()}`);
+    if (!m) continue;
+    const port = m[1];
+    const service = m[2];
+    const version = m[3].trim();
+    const unidentified = /\?$/.test(service) || /^(unknown|tcpwrapped)$/i.test(service) || version === '';
+    if (unidentified) {
+      out.push(`- **${port}** \`${service}\` — ⚠️ serviço não identificado. **Investigar:** \`lsof -i :${port.split('/')[0]}\` · \`docker ps\` · \`ss -tulpn | grep ${port.split('/')[0]}\``);
+    } else {
+      out.push(`- **${port}** \`${service}\` — ${version}`);
+    }
   }
   return out.join('\n');
 }

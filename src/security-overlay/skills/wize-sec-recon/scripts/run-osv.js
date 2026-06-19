@@ -182,11 +182,17 @@ async function runOsv(opts = {}) {
 function mergeSast(sec, scope, active, tools, update) {
   const existing = loadPartial({ securityDir: sec, phase: 'sast' });
   const sections = {};
-  if (existing && existing.body) {
-    const re = /## ([a-z_]+)\n\n([\s\S]*?)(?=\n## |$)/g;
-    let m;
-    while ((m = re.exec(existing.body)) !== null) {
-      sections[m[1]] = m[2].trim();
+  let mergedTools = Object.assign({}, tools);
+  if (existing) {
+    if (existing.body) {
+      const re = /## ([a-z_]+)\n\n([\s\S]*?)(?=\n## |$)/g;
+      let m;
+      while ((m = re.exec(existing.body)) !== null) {
+        sections[m[1]] = m[2].trim();
+      }
+    }
+    if (existing.frontmatter && existing.frontmatter.tools) {
+      mergedTools = Object.assign({}, existing.frontmatter.tools, tools);
     }
   }
   if (update.degraded) {
@@ -202,7 +208,7 @@ function mergeSast(sec, scope, active, tools, update) {
     mode: active ? 'active' : 'passive',
     scope,
     status,
-    tools,
+    tools: mergedTools,
     sections
   });
 }
