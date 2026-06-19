@@ -29,19 +29,21 @@ function signedScope() {
 test('runOsv writes dep findings with cve + cvss to sast.md (AC-E05-2)', async () => {
   const sec = mkProject();
   fs.mkdirSync(sec, { recursive: true });
+  // A manifest must exist in manifestRoot for osv to run.
+  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-osv-proj-'));
+  fs.writeFileSync(path.join(proj, 'composer.lock'), '{"packages":[]}');
   const mockExec = (bin, args) => {
-    if (args.includes('--json')) {
-      const jsonIdx = args.indexOf('--json');
-      const reportPath = args[jsonIdx + 1];
+    // osv-scanner v2: --output-file <path> is where the JSON report goes.
+    const ofIdx = args.indexOf('--output-file');
+    if (ofIdx >= 0) {
+      const reportPath = args[ofIdx + 1];
+      // v2 shape: results -> packages -> { package, groups, vulnerabilities }
       const report = {
         results: [{
           packages: [{
-            package: { name: 'lodash', version: '4.17.20' },
-            vulnerabilities: [{
-              id: 'CVE-2021-23337',
-              severity: 'HIGH',
-              cvss: { score: 7.5 }
-            }]
+            package: { name: 'lodash', version: '4.17.20', ecosystem: 'npm' },
+            groups: [{ ids: ['CVE-2021-23337'], aliases: ['CVE-2021-23337'], max_severity: '7.5' }],
+            vulnerabilities: [{ id: 'CVE-2021-23337' }]
           }]
         }]
       };
@@ -55,6 +57,7 @@ test('runOsv writes dep findings with cve + cvss to sast.md (AC-E05-2)', async (
     active: false,
     execFn: mockExec,
     detectFn: () => ({ 'osv-scanner': { present: true }, grype: { present: false } }),
+    manifestRoot: proj,
     reportFilename: 'osv-report.json'
   });
   assert.equal(r.ok, true);
@@ -131,18 +134,16 @@ test('runOsv degrades with deps-no-manifest when no manifest files are present',
   assert.match(partial.body, /manifest/);
 });
 
-test('runOsv detects known manifest files in the project root', async () => {
+test('runOsv passes detected lockfiles via -L', async () => {
   const sec = mkProject();
   fs.mkdirSync(sec, { recursive: true });
   const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-osv-proj-'));
-  fs.writeFileSync(path.join(proj, 'package.json'), '{"dependencies":{}}');
-  const found = [];
+  fs.writeFileSync(path.join(proj, 'package-lock.json'), '{"packages":{}}');
+  let capturedArgs = null;
   const mockExec = (bin, args) => {
-    // Capture which manifest the tool was pointed at.
-    if (args[0] === '-r' || args.includes('-r')) {
-      const idx = args.indexOf('-r');
-      found.push(args[idx + 1]);
-    }
+    capturedArgs = args;
+    const ofIdx = args.indexOf('--output-file');
+    if (ofIdx >= 0) fs.writeFileSync(args[ofIdx + 1], '{"results":[]}', 'utf8');
     return { stdout: '', stderr: '' };
   };
   await runOsv({
@@ -153,6 +154,8 @@ test('runOsv detects known manifest files in the project root', async () => {
     detectFn: () => ({ 'osv-scanner': { present: true } }),
     manifestRoot: proj
   });
-  assert.ok(found.length > 0, 'osv-scanner should be invoked with the project root as -r');
-  assert.equal(found[0], proj);
+  // The lockfile should be passed via -L.
+  assert.ok(capturedArgs.includes('-L'), 'osv-scanner should receive -L for the lockfile');
+  const lIdx = capturedArgs.indexOf('-L');
+  assert.match(capturedArgs[lIdx + 1], /package-lock\.json$/);
 });

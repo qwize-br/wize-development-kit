@@ -21,6 +21,9 @@ async function runGitleaks(opts = {}) {
   const scope = opts.scope;
   const active = opts.active === true;
   const reportFilename = opts.reportFilename || 'gitleaks-report.json';
+  // The project to scan is the parent of `.wize/security/`. The scripts run
+  // with cwd = the kit, so we MUST point gitleaks at the target repo, not '.'.
+  const projectRoot = opts.projectRoot || (sec ? path.resolve(sec, '..', '..') : process.cwd());
 
   const execFn = opts.execFn || ((bin, args) => {
     return execFileSync(bin, args, { encoding: 'utf8', timeout: 5 * 60 * 1000 });
@@ -39,10 +42,22 @@ async function runGitleaks(opts = {}) {
   }
 
   const reportPath = path.join(sec, reportFilename);
+  // gitleaks 8.18: `-s/--source` is the scan path, `-f/--report-format` is
+  // the output format (json), `-r/--report-path` is the file. (Earlier
+  // versions used `-f` for the path — do NOT use that here.)
   const args = filterArgs('gitleaks', [
-    'detect', '--no-banner', '-f', '.', '-r', reportPath
+    'detect', '--no-banner', '-s', projectRoot, '-f', 'json', '-r', reportPath, '--exit-code', '0'
   ]);
-  execFn('gitleaks', args, { timeout: 5 * 60 * 1000 });
+  // gitleaks exits non-zero when it FINDS leaks (default exit-code 1). That
+  // is the success path for us, not an error — so we pass --exit-code 0 and
+  // also swallow any non-zero status defensively (we read the JSON report
+  // regardless).
+  try {
+    execFn('gitleaks', args, { timeout: 5 * 60 * 1000 });
+  } catch (_) {
+    // Leaks found (or gitleaks returned non-zero) — the report file is still
+    // written; we parse it below.
+  }
 
   // Read the JSON report gitleaks wrote. It is an array of findings.
   let findings = [];

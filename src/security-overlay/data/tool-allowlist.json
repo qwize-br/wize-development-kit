@@ -4,16 +4,16 @@
     "-sV", "-Pn", "-p-", "--open", "-T4", "-sn", "-O"
   ],
   "gitleaks": [
-    "detect", "--no-banner", "-f:", "-r:", "-v", "--log-level="
+    "detect", "--no-banner", "-s:", "-f:", "-r:", "-v", "--log-level=", "--exit-code:"
   ],
   "osv-scanner": [
-    "--json", "-r:", "--lockfile=", "-L"
+    "scan", "source", "--format:", "--output-file:", "-L:", "-r", "--recursive"
   ],
   "grype": [
     "dir:.", "-o", "json", "-f"
   ],
   "nuclei": [
-    "-u:", "-t:", "-severity:", "-passive", "-json", "-o:", "-duc", "-rl:", "-c:"
+    "-u:", "-t:", "-severity:", "-s:", "-jsonl", "-o:", "-duc", "-rl:", "-c:", "-nc", "-silent"
   ],
   "nikto": [
     "-h:", "-ask", "no", "-Tuning", "-timeout=", "-port="

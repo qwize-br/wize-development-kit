@@ -32,15 +32,37 @@ function parseOsvReport(report) {
   // osv-scanner JSON shape (simplified): { results: [{ packages: [{ package: {name, version}, vulnerabilities: [{id, severity, cvss: {score}}] }] }] }
   const out = [];
   const results = report && report.results ? report.results : [];
+  // Map a CVSS base score to a coarse severity label.
+  const sevFromScore = s => {
+    const n = parseFloat(s);
+    if (isNaN(n)) return null;
+    if (n === 0) return 'None';
+    if (n < 4) return 'Low';
+    if (n < 7) return 'Medium';
+    if (n < 9) return 'High';
+    return 'Critical';
+  };
   for (const r of results) {
     for (const p of (r.packages || [])) {
       const name = p.package && p.package.name;
       const version = p.package && p.package.version;
-      for (const v of (p.vulnerabilities || [])) {
-        const cve = v.id || '?';
-        const severity = v.severity || 'UNKNOWN';
-        const cvss = v.cvss && (typeof v.cvss === 'number' ? v.cvss : v.cvss.score);
-        out.push({ package: name, version, cve, severity, cvss });
+      // osv-scanner v2 groups vulnerabilities and exposes a max_severity
+      // (CVSS) + aliases (CVE ids) per group. Prefer that; fall back to
+      // the raw vulnerabilities array for older shapes.
+      const groups = Array.isArray(p.groups) ? p.groups : [];
+      if (groups.length) {
+        for (const g of groups) {
+          const ids = g.aliases && g.aliases.length ? g.aliases : g.ids || [];
+          const cve = ids.find(x => /^CVE-/.test(x)) || ids[0] || '?';
+          const cvss = g.max_severity ? parseFloat(g.max_severity) : null;
+          out.push({ package: name, version, cve, severity: sevFromScore(g.max_severity) || 'UNKNOWN', cvss });
+        }
+      } else {
+        for (const v of (p.vulnerabilities || [])) {
+          const cve = v.id || '?';
+          const cvss = v.cvss && (typeof v.cvss === 'number' ? v.cvss : v.cvss.score);
+          out.push({ package: name, version, cve, severity: sevFromScore(cvss) || 'UNKNOWN', cvss });
+        }
       }
     }
   }
@@ -80,7 +102,10 @@ async function runOsv(opts = {}) {
   const sec = opts.securityDir;
   const scope = opts.scope;
   const active = opts.active === true;
-  const manifestRoot = opts.manifestRoot || process.cwd();
+  // The project to scan is the parent of `.wize/security/`. Scripts run with
+  // cwd = the kit, so default to the target repo, not process.cwd().
+  const manifestRoot = opts.manifestRoot
+    || (sec ? path.resolve(sec, '..', '..') : process.cwd());
   const osvReportName = 'osv-report.json';
   const grypeReportName = 'grype-report.json';
 
@@ -116,8 +141,23 @@ async function runOsv(opts = {}) {
   if (osvPresent) {
     tool = 'osv-scanner';
     const reportPath = path.join(sec, osvReportName);
-    const args = filterArgs('osv-scanner', ['--json', reportPath, '-r', manifestRoot]);
-    execFn('osv-scanner', args, { timeout: 5 * 60 * 1000 });
+    // osv-scanner v2 needs explicit lockfiles (`-L <path>`); recursive
+    // directory scan misses composer.lock/package-lock.json. We pass each
+    // detected lockfile we found. Non-zero exit = vulns found (success).
+    const LOCKFILES = ['composer.lock', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml',
+      'requirements.txt', 'Pipfile.lock', 'poetry.lock', 'go.sum', 'Cargo.lock', 'Gemfile.lock'];
+    const lockArgs = [];
+    for (const lf of LOCKFILES) {
+      if (fs.existsSync(path.join(manifestRoot, lf))) {
+        lockArgs.push('-L', path.join(manifestRoot, lf));
+      }
+    }
+    const args = lockArgs.length
+      ? filterArgs('osv-scanner', ['scan', 'source', ...lockArgs, '--format', 'json', '--output-file', reportPath])
+      : filterArgs('osv-scanner', ['scan', 'source', '-r', '--format', 'json', '--output-file', reportPath, manifestRoot]);
+    try {
+      execFn('osv-scanner', args, { timeout: 5 * 60 * 1000 });
+    } catch (_) { /* vulns found -> non-zero exit; report still written */ }
     if (fs.existsSync(reportPath)) {
       try { findings = parseOsvReport(JSON.parse(fs.readFileSync(reportPath, 'utf8'))); }
       catch (_) { findings = []; }
