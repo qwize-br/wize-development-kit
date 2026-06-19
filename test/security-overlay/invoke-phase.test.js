@@ -40,7 +40,7 @@ function mkSkillDir() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-invoke-'));
   const skillDir = path.join(dir, 'src', 'security-overlay', 'skills', 'wize-sec-tiny');
   fs.mkdirSync(path.join(skillDir, 'scripts'), { recursive: true });
-  const script = path.join(skillDir, 'scripts', 'tiny.js');
+  const script = path.join(skillDir, 'scripts', 'run-tiny.js');
   fs.writeFileSync(script, 'console.log("ok"); process.exit(0);');
   return { root: dir, script };
 }
@@ -57,7 +57,7 @@ test('invokePhase captures non-zero exit and returns {ok:false} WITHOUT throwing
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-invoke-fail-'));
   const skillDir = path.join(dir, 'src', 'security-overlay', 'skills', 'wize-sec-fail');
   fs.mkdirSync(path.join(skillDir, 'scripts'), { recursive: true });
-  fs.writeFileSync(path.join(skillDir, 'scripts', 'fail.js'), 'process.exit(2);');
+  fs.writeFileSync(path.join(skillDir, 'scripts', 'run-fail.js'), 'process.exit(2);');
   const r = await invokePhase('wize-sec-fail', { kitRoot: dir });
   assert.equal(r.ok, false);
   assert.equal(r.code, 2);
@@ -68,7 +68,7 @@ test('invokePhase adds --active to the subprocess argv when active=true', async 
   const skillDir = path.join(dir, 'src', 'security-overlay', 'skills', 'wize-sec-arg');
   fs.mkdirSync(path.join(skillDir, 'scripts'), { recursive: true });
   // Script prints its argv as JSON; we then assert --active is present.
-  fs.writeFileSync(path.join(skillDir, 'scripts', 'arg.js'),
+  fs.writeFileSync(path.join(skillDir, 'scripts', 'run-arg.js'),
     'process.stdout.write(JSON.stringify(process.argv.slice(2)));');
   const r = await invokePhase('wize-sec-arg', { kitRoot: dir, active: true });
   assert.equal(r.ok, true);

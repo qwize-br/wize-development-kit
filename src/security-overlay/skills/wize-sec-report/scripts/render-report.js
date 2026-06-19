@@ -383,3 +383,15 @@ function readRefusals(sec) {
 }
 
 module.exports = { renderReport, renderReportHtml, classifyFinding, extractFindings, redactText, parseSections };
+
+if (require.main === module) {
+  const argv = process.argv.slice(2);
+  let securityDir = null;
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--securityDir' && argv[i + 1]) { securityDir = argv[i + 1]; i++; }
+    else if (argv[i].startsWith('--securityDir=')) securityDir = argv[i].slice('--securityDir='.length);
+  }
+  const r = renderReport({ securityDir: securityDir || path.join(process.cwd(), '.wize', 'security') });
+  console.log(`report: findings=${r.findings}`);
+  process.exit(r.ok ? 0 : 1);
+}

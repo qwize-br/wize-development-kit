@@ -168,3 +168,14 @@ function mergeSast(sec, scope, active, tools, update) {
 }
 
 module.exports = { runOsv, parseOsvReport, parseGrypeReport, detectManifests, MANIFEST_FILES };
+
+if (require.main === module) {
+  require('../../../_shared/cli-runner.js').runFromArgv({
+    fn: ({ securityDir, scopePath, active, manifestRoot, reportFilename } = {}) => {
+      const { loadScope } = require('../../../_shared/scope-gate.js');
+      const scope = loadScope(scopePath);
+      return runOsv({ securityDir, scope, active, manifestRoot, reportFilename });
+    },
+    argMap: { 'securityDir': 'securityDir', 'scope': 'scopePath', 'active': 'active', 'manifestRoot': 'manifestRoot', 'reportFilename': 'reportFilename' }
+  });
+}

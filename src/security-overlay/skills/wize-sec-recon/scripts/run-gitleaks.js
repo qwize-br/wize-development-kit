@@ -103,3 +103,14 @@ function mergeSast(sec, scope, active, tools, update) {
 }
 
 module.exports = { runGitleaks, mergeSast, REDACTED };
+
+if (require.main === module) {
+  require('../../../_shared/cli-runner.js').runFromArgv({
+    fn: ({ securityDir, scopePath, active, reportFilename } = {}) => {
+      const { loadScope } = require('../../../_shared/scope-gate.js');
+      const scope = loadScope(scopePath);
+      return runGitleaks({ securityDir, scope, active, reportFilename });
+    },
+    argMap: { 'securityDir': 'securityDir', 'scope': 'scopePath', 'active': 'active', 'reportFilename': 'reportFilename' }
+  });
+}

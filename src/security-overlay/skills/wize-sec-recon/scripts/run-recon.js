@@ -106,7 +106,7 @@ async function runRecon(opts = {}) {
 // --- CLI entrypoint ------------------------------------------------------
 
 function parseArgv(argv) {
-  const out = { active: false, securityDir: null, scopePath: null };
+  const out = { active: false, securityDir: null, scopePath: null, target: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--active') out.active = true;
@@ -114,6 +114,8 @@ function parseArgv(argv) {
     else if (a.startsWith('--target=')) out.target = a.slice('--target='.length);
     else if (a === '--scope' && argv[i + 1]) { out.scopePath = argv[i + 1]; i++; }
     else if (a.startsWith('--scope=')) out.scopePath = a.slice('--scope='.length);
+    else if (a === '--securityDir' && argv[i + 1]) { out.securityDir = argv[i + 1]; i++; }
+    else if (a.startsWith('--securityDir=')) out.securityDir = a.slice('--securityDir='.length);
   }
   if (!out.securityDir) out.securityDir = path.join(process.cwd(), '.wize', 'security');
   if (!out.scopePath) out.scopePath = path.join(process.cwd(), '.wize', 'security', 'scope.md');

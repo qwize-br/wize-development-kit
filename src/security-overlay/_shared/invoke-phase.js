@@ -28,8 +28,11 @@ function resolvePhaseScript(skill, opts = {}) {
     throw new Error(`phase-skill-name-traversal: refused ${JSON.stringify(skill)}`);
   }
   const kitRoot = opts.kitRoot || path.resolve(__dirname, '..', '..', '..');
-  const lastSegment = skill.split('-').pop();
-  return path.join(kitRoot, 'src', 'security-overlay', 'skills', skill, 'scripts', `${lastSegment}.js`);
+  // Convention: src/security-overlay/skills/<skill>/scripts/<scriptName>
+  // where scriptName is the explicit opts.scriptName (must include .js)
+  // if given, otherwise 'run-<lastSegment>.js'.
+  const scriptName = opts.scriptName || `run-${skill.split('-').pop()}.js`;
+  return path.join(kitRoot, 'src', 'security-overlay', 'skills', skill, 'scripts', scriptName);
 }
 
 // invokePhase(skill, opts) -> Promise<{ok, code, stdout, stderr, error?}>.
@@ -49,6 +52,8 @@ function invokePhase(skill, opts = {}) {
 
     const argv = [];
     if (opts.active) argv.push('--active');
+    if (opts.securityDir) argv.push(`--securityDir=${opts.securityDir}`);
+    if (opts.scopePath) argv.push(`--scope=${opts.scopePath}`);
     if (Array.isArray(opts.extraArgs)) argv.push(...opts.extraArgs);
 
     const child = spawn(process.execPath, [script, ...argv], {

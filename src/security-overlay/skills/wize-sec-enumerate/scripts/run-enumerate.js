@@ -167,3 +167,14 @@ async function runEnumerate(opts = {}) {
 }
 
 module.exports = { runEnumerate, parseOpenPorts, parseCurlHead, urlForPort };
+
+if (require.main === module) {
+  require('../../../_shared/cli-runner.js').runFromArgv({
+    fn: ({ securityDir, scopePath, active, target } = {}) => {
+      const { loadScope } = require('../../../_shared/scope-gate.js');
+      const scope = loadScope(scopePath);
+      return runEnumerate({ securityDir, scope, active, target });
+    },
+    argMap: { 'securityDir': 'securityDir', 'scope': 'scopePath', 'active': 'active', 'target': 'target' }
+  });
+}
