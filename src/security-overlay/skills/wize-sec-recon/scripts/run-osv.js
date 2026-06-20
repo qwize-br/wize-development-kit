@@ -114,7 +114,7 @@ async function runOsv(opts = {}) {
   });
   const detectFn = opts.detectFn || require('../../../_shared/detect.js').detectTools;
 
-  const tools = detectFn(['osv-scanner', 'grype']);
+  const tools = detectFn(['osv-scanner', 'grype'], { cacheDir: sec });
   const osvPresent = !!(tools['osv-scanner'] && tools['osv-scanner'].present);
   const grypePresent = !!(tools.grype && tools.grype.present);
 

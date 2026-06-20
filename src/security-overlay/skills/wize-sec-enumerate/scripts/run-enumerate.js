@@ -60,7 +60,7 @@ async function runEnumerate(opts = {}) {
   });
   const detectFn = opts.detectFn || require('../../../_shared/detect.js').detectTools;
 
-  const tools = detectFn(['curl', 'nuclei']);
+  const tools = detectFn(['curl', 'nuclei'], { cacheDir: sec });
   const curlPresent = !!(tools.curl && tools.curl.present);
   const nucleiPresent = !!(tools.nuclei && tools.nuclei.present);
 

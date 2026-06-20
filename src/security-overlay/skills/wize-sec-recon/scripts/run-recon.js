@@ -61,7 +61,7 @@ async function runRecon(opts = {}) {
   const detectFn = opts.detectFn || require('../../../_shared/detect.js').detectTools;
 
   // Gate — propagates ScopeError if scope is invalid.
-  const tools = detectFn(['nmap']);
+  const tools = detectFn(['nmap'], { cacheDir: sec });
   const nmapTool = tools.nmap || { present: false };
 
   // 1. nmap missing -> degraded partial, exit 0.

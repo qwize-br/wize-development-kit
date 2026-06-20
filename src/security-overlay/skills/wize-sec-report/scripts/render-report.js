@@ -150,14 +150,14 @@ function computeRisk(findings) {
 // The checks we expect a complete pentest to perform, grouped by what each
 // one answers. Used to compute honest coverage + audit confidence.
 const EXPECTED_CHECKS = [
-  { id: 'recon-ports', tool: 'nmap', phase: 'recon', label: 'Mapeamento de portas/serviços', answers: 'Quais serviços estão expostos?' },
-  { id: 'enum-surface', tool: 'curl', phase: 'enumerate', label: 'Enumeração de superfície HTTP', answers: 'Quais endpoints/tecnologias respondem?' },
-  { id: 'sast-secrets', tool: 'gitleaks', phase: 'sast', label: 'Secrets no código/histórico', answers: 'Há credenciais vazadas?' },
-  { id: 'sast-deps', tool: 'osv-scanner', phase: 'sast', label: 'Dependências vulneráveis', answers: 'Há CVEs em libs?' },
-  { id: 'dast-nuclei', tool: 'nuclei', phase: 'dast', label: 'Templates de vulnerabilidade (nuclei)', answers: 'CVEs/misconfigs conhecidos na app?' },
-  { id: 'dast-nikto', tool: 'nikto', phase: 'dast', label: 'Web server scan (nikto)', answers: 'Headers/arquivos perigosos?' },
-  { id: 'dast-content', tool: 'ffuf', phase: 'dast', label: 'Content discovery (ffuf)', answers: 'Há /admin, /.env, /.git, endpoints ocultos?' },
-  { id: 'dast-sqli', tool: 'sqlmap', phase: 'dast', label: 'SQL injection (sqlmap)', answers: 'A app é injetável? (requer --active)' }
+  { id: 'recon-ports', tool: 'nmap', phase: 'recon', section: 'open_ports', label: 'Mapeamento de portas/serviços', answers: 'Quais serviços estão expostos?' },
+  { id: 'enum-surface', tool: 'curl', phase: 'enumerate', section: 'surface', label: 'Enumeração de superfície HTTP', answers: 'Quais endpoints/tecnologias respondem?' },
+  { id: 'sast-secrets', tool: 'gitleaks', phase: 'sast', section: 'secrets', label: 'Secrets no código/histórico', answers: 'Há credenciais vazadas?' },
+  { id: 'sast-deps', tool: 'osv-scanner', phase: 'sast', section: 'deps', label: 'Dependências vulneráveis', answers: 'Há CVEs em libs?' },
+  { id: 'dast-nuclei', tool: 'nuclei', phase: 'dast', section: 'nuclei', label: 'Templates de vulnerabilidade (nuclei)', answers: 'CVEs/misconfigs conhecidos na app?' },
+  { id: 'dast-nikto', tool: 'nikto', phase: 'dast', section: 'nikto', label: 'Web server scan (nikto)', answers: 'Headers/arquivos perigosos?' },
+  { id: 'dast-content', tool: 'ffuf', phase: 'dast', section: 'ffuf', label: 'Content discovery (ffuf)', answers: 'Há /admin, /.env, /.git, endpoints ocultos?' },
+  { id: 'dast-sqli', tool: 'sqlmap', phase: 'dast', section: 'sqlmap', label: 'SQL injection (sqlmap)', answers: 'A app é injetável? (requer --active)' }
 ];
 
 // computeCoverage(securityDir, phaseSummaries) -> { ran, missing, pct, audited, confidence }
@@ -171,6 +171,7 @@ function computeCoverage(loadFn, secDir) {
   // present:true OR a degraded_checks line does NOT mention it as missing.
   const toolPresent = {};
   const degradedMentions = {}; // tool -> true if listed as ausente/missing
+  const sectionPresent = {};   // section name -> true if it exists in any partial
   for (const phase of PHASES) {
     const p = loadFn({ securityDir: secDir, phase });
     if (!p) continue;
@@ -185,14 +186,25 @@ function computeCoverage(loadFn, secDir) {
         const re = new RegExp(`${tool}[^\\n]*\\b(ausente|missing|não instalad)`, 'i');
         if (re.test(p.body)) degradedMentions[tool] = true;
       }
+      // A tool that wrote its own `## <section>` block actually ran — this
+      // survives even when a sibling script overwrites the frontmatter
+      // tools map (mergeDast/mergeSast share one partial per phase).
+      let m; const re = /^##\s+([a-z_-]+)/gm;
+      while ((m = re.exec(p.body)) !== null) sectionPresent[m[1]] = true;
     }
   }
-  // A tool "ran" if frontmatter says present AND it is not flagged degraded.
-  const ranTool = t => toolPresent[t] === true && !degradedMentions[t];
+  // A check "ran" if its tool is present (frontmatter) OR its output section
+  // exists — and it is not explicitly flagged as missing.
+  const ranTool = c => {
+    if (degradedMentions[c.tool]) return false;
+    if (toolPresent[c.tool] === true) return true;
+    if (c.section && sectionPresent[c.section]) return true;
+    return false;
+  };
   const ran = [];
   const missing = [];
   for (const c of EXPECTED_CHECKS) {
-    if (ranTool(c.tool)) ran.push(c);
+    if (ranTool(c)) ran.push(c);
     else missing.push(c);
   }
   const pct = Math.round((ran.length / EXPECTED_CHECKS.length) * 100);
@@ -205,6 +217,66 @@ function computeCoverage(loadFn, secDir) {
   else if (pct >= 50) confidence = 'PARCIAL — algumas checagens não rodaram; o ambiente NÃO está auditado';
   else confidence = 'BAIXA — cobertura insuficiente; isto é um inventário de exposição, não uma auditoria';
   return { ran, missing, pct, audited, confidence, total: EXPECTED_CHECKS.length };
+}
+
+// Stable key for a finding so AI insights can be attached idempotently.
+// Uses phase/section + a sha1 of the raw line (truncated).
+function findingKey(phase, section, raw) {
+  const h = require('node:crypto').createHash('sha1').update(`${phase}/${section}/${raw}`).digest('hex').slice(0, 12);
+  return `${phase}.${section}.${h}`;
+}
+
+// Load ai-insights.json if present. Shape:
+//   { briefing: "markdown string", actionPlan: [{priority,title,detail}],
+//     findings: { "<key>": "recommendation string" } }
+function loadAiInsights(sec) {
+  const file = path.join(sec, 'ai-insights.json');
+  if (!fs.existsSync(file)) return {};
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+  catch (_) { return {}; }
+}
+
+// Deterministic fallback recommendation when the harness hasn't written
+// an AI insight for this finding. Keyed by section/severity.
+function heuristicRecommendation(f) {
+  const s = f.section;
+  if (s === 'secrets') return 'Rotacione a credencial imediatamente e remova do histórico (git filter-repo / BFG). Migre para um secrets manager (Vault, AWS Secrets Manager) e nunca commite .env.';
+  if (s === 'deps') return 'Atualize a dependência para a versão corrigida (composer/npm update). Se não houver fix, avalie mitigação ou substituição.';
+  if (s === 'open_ports') return 'Confirme se a porta precisa estar exposta. Restrinja a localhost/VPN se for serviço interno; aplique firewall.';
+  if (s === 'tech') return 'Hardening: oculte headers de versão (ServerTokens Prod, expose_php=Off) para reduzir fingerprinting.';
+  if (s === 'surface') return 'Revise se o endpoint deve ser público; aplique autenticação/rate-limit conforme o caso.';
+  if (s === 'nuclei' || s === 'nikto') return 'Valide o finding manualmente e aplique o patch/config recomendado pelo template.';
+  if (s === 'ffuf') return 'Endpoint descoberto: confirme se deveria existir; remova arquivos sensíveis (.git, .env, backups) do webroot.';
+  if (s === 'sqlmap') return 'Parametrize todas as queries (prepared statements); valide entrada no boundary.';
+  return 'Revise o finding e avalie o risco no contexto da aplicação.';
+}
+
+// Heuristic business-language briefing when no AI briefing is provided.
+function heuristicBriefing(risk, coverage, findings) {
+  const bySection = {};
+  for (const f of findings) bySection[f.section] = (bySection[f.section] || 0) + 1;
+  const parts = [];
+  parts.push(`A postura de segurança da aplicação foi avaliada como **${risk.rating}** (${risk.score}/100).`);
+  if (bySection.secrets) parts.push(`Foram encontrados **${bySection.secrets} segredos** no código/histórico — credenciais expostas podem dar a um atacante acesso direto a sistemas conectados (bancos, APIs, cloud). É o tipo de falha que transforma um vazamento de código em um incidente real.`);
+  if (bySection.deps) parts.push(`Há **${bySection.deps} dependências com vulnerabilidades conhecidas (CVE)** — bibliotecas desatualizadas são o vetor de ataque mais explorado em aplicações web, pois exploits públicos já existem.`);
+  if (bySection.ffuf) parts.push(`A enumeração de conteúdo revelou endpoints/arquivos que podem expor áreas administrativas ou dados sensíveis.`);
+  if (!coverage.audited) parts.push(`⚠️ A cobertura foi de **${coverage.pct}%** — partes da aplicação não foram testadas, então a ausência de findings nessas áreas **não** significa que sejam seguras.`);
+  parts.push(`Para o negócio: o risco residual atual ${risk.rating === 'CRÍTICO' || risk.rating === 'ALTO' ? '**não é aceitável para produção** sem mitigação imediata' : 'é gerenciável, mas requer acompanhamento'}.`);
+  return parts.join(' ');
+}
+
+// Heuristic prioritized action plan.
+function heuristicActionPlan(findings, coverage) {
+  const plan = [];
+  const has = sec => findings.some(f => f.section === sec);
+  if (has('secrets')) plan.push({ priority: 'P0', title: 'Rotacionar segredos expostos', detail: 'Invalide todas as credenciais encontradas, remova do histórico git (BFG/filter-repo) e migre para um secrets manager.' });
+  const crit = findings.filter(f => f.severity === 'Critical');
+  if (crit.length) plan.push({ priority: 'P0', title: `Corrigir ${crit.length} vulnerabilidade(s) crítica(s)`, detail: 'Exploração comprovada ou trivial; bloqueia release.' });
+  if (has('deps')) plan.push({ priority: 'P1', title: 'Atualizar dependências vulneráveis', detail: 'Rode o update das libs com CVE; priorize as de severidade High.' });
+  if (has('ffuf')) plan.push({ priority: 'P1', title: 'Revisar endpoints descobertos', detail: 'Remova .git/.env/backups do webroot; proteja áreas administrativas.' });
+  if (has('tech')) plan.push({ priority: 'P2', title: 'Hardening de headers', detail: 'Oculte versões (ServerTokens Prod, expose_php=Off).' });
+  if (!coverage.audited) plan.push({ priority: 'P2', title: 'Completar a auditoria', detail: `Instale as ferramentas faltantes e re-rode para cobrir os ${coverage.missing.length} checks ausentes.` });
+  return plan;
 }
 
 function renderReport({ securityDir } = {}) {
@@ -234,6 +306,7 @@ function renderReport({ securityDir } = {}) {
           phase,
           section: sectionName,
           raw: redactedRaw,
+          key: findingKey(phase, sectionName, redactedRaw),
           ...klass
         });
       }
@@ -242,6 +315,15 @@ function renderReport({ securityDir } = {}) {
 
   // Sort findings by CVSS desc (nulls last).
   allFindings.sort((a, b) => (b.score == null ? -Infinity : b.score) - (a.score == null ? -Infinity : a.score));
+
+  // AI insights: written by the harness LLM into ai-insights.json (briefing
+  // + per-finding recommendation). The renderer never calls an external API
+  // — the harness already has the data locally. Falls back to heuristics.
+  const ai = loadAiInsights(sec);
+  for (const f of allFindings) {
+    const rec = ai.findings && ai.findings[f.key];
+    f.recommendation = rec || heuristicRecommendation(f);
+  }
 
   // Executive summary: counts by severity and OWASP.
   const sevCounts = { Critical: 0, High: 0, Medium: 0, Low: 0, None: 0, unknown: 0 };
@@ -288,6 +370,25 @@ function renderReport({ securityDir } = {}) {
   lines.push('');
   if (risk.drivers.length) {
     lines.push(`Principais fatores: ${risk.drivers.join(', ')}.`);
+    lines.push('');
+  }
+  // AI briefing (written by the harness LLM) — what this risk means in
+  // business terms. Falls back to a heuristic if not provided.
+  const briefing = ai.briefing || heuristicBriefing(risk, coverage, allFindings);
+  if (briefing) {
+    lines.push('### Briefing — o que isso significa');
+    lines.push('');
+    lines.push(briefing);
+    lines.push('');
+  }
+  // Prioritized action plan (AI-provided or heuristic).
+  const actionPlan = (ai.actionPlan && ai.actionPlan.length) ? ai.actionPlan : heuristicActionPlan(allFindings, coverage);
+  if (actionPlan.length) {
+    lines.push('### Plano de ação (priorizado)');
+    lines.push('');
+    for (const a of actionPlan) {
+      lines.push(`- **[${a.priority}] ${a.title}** — ${a.detail}`);
+    }
     lines.push('');
   }
   // Honest coverage caveat — the most important section per the reviewer.
@@ -347,6 +448,7 @@ function renderReport({ securityDir } = {}) {
       const sev = f.severity || 'unknown';
       const owasp = f.owasp || 'UNKNOWN';
       lines.push(`- **${f.phase}/${f.section}** severity=${sev} cvss=${score} owasp=${owasp} — ${f.raw}`);
+      if (f.recommendation) lines.push(`  - 💡 _Recomendação:_ ${f.recommendation}`);
     }
   }
   lines.push('');
@@ -374,7 +476,7 @@ function renderReport({ securityDir } = {}) {
   fs.writeFileSync(reportPath, lines.join('\n'), 'utf8');
 
   // Also generate the HTML report (self-contained, no remote refs).
-  renderReportHtml({ securityDir: sec, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage });
+  renderReportHtml({ securityDir: sec, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage, briefing, actionPlan });
 
   return { ok: true, findings: allFindings.length };
 }
@@ -628,10 +730,24 @@ footer.site code { background: var(--code-bg); padding: 1px 6px; border-radius: 
 .risk-banner h2 strong { color: currentColor; }
 @media (max-width: 40rem) { .risk-banner { flex-direction: column; text-align: center; } }
 
+/* Briefing + action plan */
+.briefing { background: var(--bg-elev); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem 1.25rem; }
+.briefing h2 { margin: 0 0 .5rem; font-size: 1.05rem; }
+.briefing p { margin: 0; font-size: .95rem; line-height: 1.6; }
+.action-plan .plan { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .6rem; }
+.action-plan .plan li { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .75rem 1rem; display: grid; grid-template-columns: auto 1fr; gap: .25rem .75rem; align-items: baseline; }
+.action-plan .plan .prio-tag { grid-row: span 2; font-weight: 800; font-size: .8rem; padding: 2px 8px; border-radius: 4px; align-self: start; }
+.action-plan .plan .prio-p0 .prio-tag, .action-plan .plan li.prio-p0 .prio-tag { background: var(--sev-Critical); color: #0a0e15; }
+.action-plan .plan li.prio-p1 .prio-tag { background: var(--sev-High); color: #0a0e15; }
+.action-plan .plan li.prio-p2 .prio-tag { background: var(--sev-Low); color: #0a0e15; }
+.action-plan .plan .plan-detail { grid-column: 2; color: var(--fg-muted); font-size: .85rem; }
+.card .rec { margin: .75rem 0 0; padding: .6rem .8rem; background: var(--owasp-bg); border-radius: var(--radius-sm); font-size: .85rem; color: var(--fg); }
+.card .rec strong { color: var(--owasp); }
+
 @media print {
   header.site { position: static; }
   .skip-link, .filters { display: none; }
-  .card, .risk-banner { break-inside: avoid; box-shadow: none; border-color: #888; }
+  .card, .risk-banner, .briefing, .action-plan .plan li { break-inside: avoid; box-shadow: none; border-color: #888; }
 }
 `;
 
@@ -644,11 +760,13 @@ function escapeHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
-function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage }) {
+function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage, briefing, actionPlan }) {
   const sec = securityDir;
   const title = `Security Report — ${scopeSha ? scopeSha.slice(0, 12) : 'unknown'}`;
   risk = risk || computeRisk(allFindings);
   coverage = coverage || computeCoverage(loadPartial, sec);
+  briefing = briefing || heuristicBriefing(risk, coverage, allFindings);
+  actionPlan = (actionPlan && actionPlan.length) ? actionPlan : heuristicActionPlan(allFindings, coverage);
 
   // Severity counts (for sticky header). 'Info-surface' is folded into a
   // dedicated "surface" bucket so the stakeholder header isn't dominated by
@@ -694,6 +812,7 @@ function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, 
             <span class="badge cvss" aria-label="CVSS">CVSS ${f.score == null ? 'n/a' : escapeHtml(String(f.score))}</span>
           </div>
           <pre><code>${escapeHtml(f.raw)}</code></pre>
+          ${f.recommendation ? `<p class="rec"><span class="rec-ico" aria-hidden="true">💡</span> <strong>Recomendação:</strong> ${escapeHtml(f.recommendation)}</p>` : ''}
         </article>`;
       }).join('\n');
 
@@ -766,6 +885,7 @@ function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, 
     `  </div>`,
     `  <nav aria-label="Seções">`,
     `    <a href="#exec-summary">Sumário</a>`,
+    actionPlan.length ? `    <a href="#plan-h">Plano de ação</a>` : '',
     `    <a href="#coverage">Cobertura (${coverage.pct}%)</a>`,
     `    <a href="#phases">Fases (${phaseSummaries.length})</a>`,
     `    <a href="#findings">Findings (${allFindings.length})</a>`,
@@ -782,6 +902,16 @@ function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, 
     risk.drivers.length ? `      <p class="risk-drivers">Principais fatores: ${escapeHtml(risk.drivers.join(', '))}.</p>` : '',
     `    </div>`,
     `  </section>`,
+    briefing ? `  <section class="briefing" aria-labelledby="briefing-h">
+    <h2 id="briefing-h">Briefing — o que isso significa</h2>
+    <p>${escapeHtml(briefing)}</p>
+  </section>` : '',
+    actionPlan.length ? `  <section class="action-plan" aria-labelledby="plan-h">
+    <h2 id="plan-h">Plano de ação (priorizado)</h2>
+    <ol class="plan">
+${actionPlan.map(a => `      <li class="prio-${escapeHtml((a.priority||'').toLowerCase())}"><span class="prio-tag">${escapeHtml(a.priority||'')}</span> <strong>${escapeHtml(a.title)}</strong><span class="plan-detail">${escapeHtml(a.detail)}</span></li>`).join('\n')}
+    </ol>
+  </section>` : '',
     `  <section aria-labelledby="exec-summary">`,
     `    <h2 id="exec-summary">Sumário executivo</h2>`,
     `    <p class="lead">Relatório gerado em <time datetime="${escapeHtml(generatedAt)}">${escapeHtml(generatedAt)}</time>. Pipeline file-first, sem dependências externas em tempo de execução.${surfaceCount ? ` ${surfaceCount} itens de superfície (informativo) não entram na contagem de severidade.` : ''}</p>`,

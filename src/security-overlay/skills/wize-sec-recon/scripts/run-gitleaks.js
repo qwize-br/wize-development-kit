@@ -30,7 +30,7 @@ async function runGitleaks(opts = {}) {
   });
   const detectFn = opts.detectFn || require('../../../_shared/detect.js').detectTools;
 
-  const tools = detectFn(['gitleaks']);
+  const tools = detectFn(['gitleaks'], { cacheDir: sec });
   const present = !!(tools.gitleaks && tools.gitleaks.present);
 
   if (!present) {
