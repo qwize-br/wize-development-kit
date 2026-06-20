@@ -19,7 +19,7 @@ Um desenvolvedor instala o `security-overlay` com `npx wize-dev-kit install`, es
 
 ## Success criteria
 1. `security-overlay` é selecionável no instalador e renderiza skills+scripts+agente(s) para os ≥3 harnesses já suportados (claude-code, cursor, codex) — instalação verde no `npm run validate`.
-2. O pipeline produz um artefato de relatório versionado em `.wize/security/report.md` com findings classificados por severidade (CVSS ou OWASP) e PoC/evidência por finding.
+2. O pipeline produz relatório versionado: cada **fase** emite seu `.md` parcial e a `wize-sec-report` consolida o final em `.wize/security/report.md` **+ `report.html`** — findings com severidade CVSS v3.1 + tag OWASP (badge colorido no HTML) e PoC/evidência por finding. O HTML é **single-file self-contained** (CSS inline, zero CDN/build, abre offline), renderizado por script bundled (`wize-sec-report/scripts/render-report`), reusando os playbooks `semantic-html` + `wcag-aa` do web-overlay como guia de qualidade/acessibilidade. **Sem `npm install` de framework frontend** — template estático + script de conversão, para honrar o "zero runtime próprio".
 3. Cobertura mínima na v1: SAST de secrets + dependências vulneráveis + ≥6 categorias OWASP Top 10 no DAST de um alvo web.
 4. **Zero runtime próprio:** todo o "cérebro" é o harness do usuário; as únicas dependências externas são ferramentas de pentest locais, detectadas e reportadas como ausentes (não instaladas silenciosamente).
 5. Guardrail de escopo ativo: o pipeline recusa execução contra qualquer host/URL fora do arquivo de escopo assinado pelo usuário (teste automatizado cobre a recusa).
@@ -34,15 +34,15 @@ Um desenvolvedor instala o `security-overlay` com `npx wize-dev-kit install`, es
 ## Constraints
 - **Deadline:** sem data dura; entra como novo epic no roadmap do kit (pós-0.4.1).
 - **Budget:** dentro do esforço normal de manutenção do kit; sem custo de infra (roda local no harness do usuário).
-- **Compliance / legal:** ferramenta dual-use. Exige guardrail de autorização explícito (arquivo de escopo) + disclaimer de uso autorizado. LGPD/GDPR: relatórios podem conter dados sensíveis → ficam locais, nunca enviados a serviço externo.
-- **Integrations:** ferramentas de pentest locais via Bash (nmap, nuclei, ffuf, sqlmap, gitleaks/trufflehog, osv-scanner/grype…); deve compor com `web-overlay`/`app-overlay` (alvo do DAST) e com TEA.
+- **Compliance / legal:** ferramenta dual-use. Guardrail de autorização **decidido**: gate de escopo em `.wize/security/scope.md` (allowlist de hosts/URLs/paths com aceite assinado) verificado por fase, **+ dry-run/passivo como default** — exploit ativo só com flag explícita. Disclaimer de uso autorizado no install. LGPD/GDPR: relatórios ficam locais, nunca enviados a serviço externo.
+- **Integrations / ferramentas v1 (decidido — kit amplo):** recon `nmap`; secrets `gitleaks`; deps `osv-scanner`/`grype`; DAST `nuclei`, `nikto`, `sqlmap`; fuzz `ffuf`. Detectadas, nunca auto-instaladas. **Ferramenta ausente → degrada a fase: reporta no relatório e pula só aquela checagem; pipeline continua.** Deve compor com `web-overlay`/`app-overlay` (alvo do DAST) e com TEA.
 - **Arquitetura:** seguir o trilho de overlay existente — `PROFILES` em `tools/installer/wize-cli.js`, frontmatter `overlay:` filtrado em `render-shared.js`, hints em `onboarding.js`. Skills com `scripts/` empacotados executados pelo agente.
 
 ## Open questions
-- [ ] **(blocker)** Modelo de autorização/escopo: confirmar `.wize/security/scope.md` assinado pelo usuário como gate único; formato (lista de hosts/URLs/paths) e como o agente verifica antes de cada disparo ofensivo. — *owner: André (usuário) + Hawkeye (TEA)*
-- [ ] **(blocker)** Conjunto mínimo de ferramentas locais assumidas na v1 e comportamento quando ausentes (degradar vs abortar a fase). — *owner: André*
-- [ ] **(important)** Fronteira SAST vs DAST: o DAST exige app rodando + URL; como o usuário declara o alvo vivo (compor com `web/app-overlay`?). — *owner: Tony (arch) + André*
-- [ ] **(important)** Mapa de fases do pipeline → skills: 1 skill por fase (recon/enumerate/exploit/report) ou 1 skill-orquestradora chamando sub-agentes? — *owner: Tony + Pepper*
-- [ ] **(important)** Há persona/agente novo de segurança (ex.: um "red-teamer") ou Hawkeye/TEA absorve o papel? — *owner: Wizer*
-- [ ] **(nice-to-know)** Esquema de severidade no relatório: CVSS v3.1 vs OWASP Risk Rating vs ambos. — *owner: André*
-- [ ] **(nice-to-know)** Disclaimer/aceite de uso autorizado exibido no install do overlay? — *owner: mantenedores*
+- [x] **(blocker — RESOLVIDO)** Autorização/escopo: `.wize/security/scope.md` (allowlist assinada) verificado por fase + **dry-run default**, exploit ativo só com flag explícita. — *decidido por André, 2026-06-17*
+- [x] **(blocker — RESOLVIDO)** Ferramentas v1: **kit amplo** (nmap, gitleaks, osv-scanner/grype, nuclei, nikto, sqlmap, ffuf); ausência **degrada a fase** (reporta e pula, pipeline continua). — *decidido por André, 2026-06-17*
+- [x] **(important — RESOLVIDO)** Alvo vivo do DAST: declarado num campo do próprio `.wize/security/scope.md` (fonte única, mesmo gate de escopo). — *decidido por André, 2026-06-17*
+- [x] **(important — RESOLVIDO)** Fases → skills: **1 skill por fase** (`wize-sec-recon`, `wize-sec-enumerate`, `wize-sec-exploit`, `wize-sec-report`) **+ orquestradora** `wize-sec-pentest` que encadeia. — *decidido por André, 2026-06-17*
+- [x] **(important — RESOLVIDO)** Persona: **novo agente red-teamer** dono do pipeline; Hawkeye/TEA pode colaborar na validação de findings/gate (a confirmar na arquitetura). — *decidido por André, 2026-06-17*
+- [x] **(nice-to-know — RESOLVIDO)** Severidade no relatório: **CVSS v3.1 + tag OWASP** por finding. — *decidido por André, 2026-06-17*
+- [x] **(nice-to-know — RESOLVIDO)** Disclaimer de uso autorizado exibido no install do overlay: **sim**. — *default aceito, 2026-06-17*

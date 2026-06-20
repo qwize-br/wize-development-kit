@@ -58,3 +58,10 @@ IDE adapters render the same assets into each selected IDE's native format (e.g.
 - Installer, update, sync, agent list/create/edit, and structural validation are implemented and smoke-tested in CI.
 - Many workflows are **ready** markdown specs but still executed by the IDE reading the skill; they are not independent Node scripts.
 - Self-dogfooding: this baseline itself is produced by the `wize-document-project` workflow (the kit documenting itself).
+
+## 2026-06-17 — security-overlay persona
+
+- **red-teamer** added to the agent roster (security overlay). Drives the
+  `wize-sec-pentest` orchestrator through recon → enumerate → sast → dast
+  → report. Default passivo; exploits gated by `--active`; every refusal
+  is audited. Scope gate is the single source of truth.

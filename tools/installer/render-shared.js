@@ -114,6 +114,7 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
     if (!fm.code) continue;
     if (fm.overlay === 'web' && !profSet.has('web-overlay')) continue;
     if (fm.overlay === 'app' && !profSet.has('app-overlay')) continue;
+    if (fm.overlay === 'security' && !profSet.has('security-overlay')) continue;
     out.push({
       kind: 'workflow',
       code: fm.code,
@@ -130,6 +131,9 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
     const content = fs.readFileSync(skPath, 'utf-8');
     const fm = readFrontmatter(content);
     if (!fm.code) continue;
+    if (fm.overlay === 'web' && !profSet.has('web-overlay')) continue;
+    if (fm.overlay === 'app' && !profSet.has('app-overlay')) continue;
+    if (fm.overlay === 'security' && !profSet.has('security-overlay')) continue;
     out.push({
       kind: 'skill',
       code: fm.code,
@@ -137,7 +141,7 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
       title: fm.module || '',
       description: fm.module ? `${fm.module} skill: ${fm.name || fm.code}` : (fm.name || fm.code),
       body: bodyAfterFrontmatter(content),
-      overlay: null,
+      overlay: fm.overlay || null,
       srcDir: path.dirname(skPath)
     });
   }

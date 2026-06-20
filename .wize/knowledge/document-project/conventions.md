@@ -26,6 +26,8 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
   - `orchestrator-skills/wize-*/{agent.yaml,persona.md,workflow.md}`
   - `builder-skills/wize-create-*/workflow.md`
   - `web-overlay/` and `app-overlay/` with `module.yaml` + workflows + `playbooks/`.
+  - `security-overlay/` (AI Pentester, overlay técnico, file-first) with skills + `_shared/` + `data/` + agents/. Skills/workflows under it must carry `overlay: security` in frontmatter.
+  - File naming for assets under `src/**/skills/` is lowercase `skill.md` (not `SKILL.md`) — see `tools/installer/validators/walk.js`.
 - **tools/installer/** holds all runtime JS.
 - **adapters/** holds one directory per IDE target with `adapter.yaml`, `render.js`, `README.md`.
 - **schemas/** holds JSON Schema files.
@@ -56,3 +58,41 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
 - README still says "alpha — v0.1.0" in the status section while package.json and CHANGELOG are at v0.3.0.
 - Some source workflow files are marked `status: ready` but rely on the IDE to execute; there is no runtime runner for them.
 - `wize-cli.js` mixes CLI dispatcher, install logic, prompt helpers, and adapter rendering in a single large file.
+
+## 2026-06-17 — security-overlay E05-S01
+
+- Secrets found by SAST (gitleaks) are written to `sast.md` with
+  `redacted_value: ***REDACTED***`. The actual secret value NEVER appears
+  in any partial — only file/line/rule. The full gitleaks report (with
+  raw values) lives in `.wize/security/gitleaks-report.json` and is
+  intentionally NOT committed (the directory is gitignored).
+
+## 2026-06-17 — security-overlay E06-S04
+
+- ffuf is shipped with a small embedded wordlist at
+  src/security-overlay/skills/wize-sec-exploit/data/common.txt (~117
+  entries). This is the conservative default; users with SecLists can
+  pass their own wordlist via extraArgs. The default wordlist is
+  versioned with the kit so the rate-limit (-rate 5) and timeout keep
+  the scan gentle even on unhardened targets.
+
+## 2026-06-17 — security-overlay E07-S01
+
+- CVSS v3.1 calculator is shipped as a zero-dep Node module
+  (src/security-overlay/_shared/cvss.js). It implements the FIRST.org
+  v3.1 formula with RoundUp-to-1-decimal rounding. Two of the brief's
+  expected values differ from the spec's calculation by 0.1 (1.8 vs
+  1.9; 8.1 vs 9.1) — the test follows the spec, not the brief.
+- Consumers should pass a CVSS:3.1 vector string; the module also
+  accepts vectors without the 'CVSS:3.1/' prefix for convenience.
+
+## 2026-06-17 — security-overlay E07-S03
+
+- report.html is a single self-contained file with CSS inline. No
+  <script src>, <link href>, or @import references to remote URLs —
+  the file opens offline. Severity badges (Critical/High/Medium/Low/
+  Info/None) and OWASP tags are color-coded per the architecture
+  decision (Critical #7f1d1d, High #b91c1c, etc.). The structure is
+  semantic (header/main/footer, articles for findings, dl for
+  metadata, table with th scope=col). A skip link to #main is provided
+  for screen-reader users.

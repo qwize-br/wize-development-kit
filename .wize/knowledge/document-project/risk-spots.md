@@ -17,3 +17,9 @@ last_refreshed: 2026-06-13
 | No lint/format config | No eslint, prettier, biome, or editorconfig. Consistency relies on manual review. | Project is young; convention not formalized yet. | Medium |
 | Generic adapter | `.wize/agents/*.md` fallback exists, but not all IDEs read markdown rules the same way. | Generic format is lowest-common-denominator. | Low |
 | Test coverage | 115 tests cover CLI, validators, adapters, doctor, version check; no tests for markdown workflow behavior because there is no runtime. | Workflows are IDE-executed specs. | Medium |
+
+## 2026-06-17 — security-overlay E02-S03
+
+| Area | Symptom | Mitigation |
+|---|---|---|
+| tool-allowlist flags with arbitrary values | A flag like `--script <name>` on nmap can pull in any nmap script from the local scripts dir — a known escape vector. | `src/security-overlay/data/tool-allowlist.json` is opt-in per flag; flags that consume arbitrary user values are NOT included by default. Skills that need them must add the explicit literal to the allowlist. Confirmed by `filterArgs` test suite. |
