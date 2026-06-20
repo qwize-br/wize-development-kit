@@ -5,6 +5,22 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-06-20
+
+### Added
+
+- **`security-overlay` — AI Pentester (novo profile opcional).** Pipeline file-first de pentest que roda no harness do usuário (zero runtime próprio, zero dependência npm nova). Selecionável no instalador como `security-overlay`.
+  - **Persona `red-teamer`** + orquestradora `wize-sec-pentest` que encadeia recon → enumerate → SAST → DAST → report.
+  - **Gate de escopo** (`.wize/security/scope.md`, allowlist assinada com SHA-256): toda ação ofensiva é verificada por fase; alvo fora do escopo é recusado e auditado em `.refusals.log`. Default passivo; exploit ativo só com `--active`.
+  - **Allowlist de flags por ferramenta** (`data/tool-allowlist.json`): `--dump`/`--os-shell` e afins nunca chegam ao `execFile`, independente do input.
+  - **SAST**: secrets via gitleaks (com redação `***REDACTED***`) + dependências vulneráveis via osv-scanner/grype (CVE + CVSS).
+  - **DAST**: nuclei, nikto (safe checks), sqlmap e ffuf (content discovery), gated por `--active` quando ofensivos.
+  - **CVSS v3.1** zero-dep + tagger **OWASP Top 10 (2021)**.
+  - **Relatório** `report.md` + `report.html` self-contained (CSS inline, offline, WCAG 2.2 AA): risk score 0–100, briefing executivo, plano de ação P0/P1/P2, cobertura honesta do teste (audit confidence), recomendação por finding.
+  - **AI insights**: o renderer consome `ai-insights.json` escrito pelo LLM do harness (briefing + recomendações), sem chamada externa — dados ficam locais.
+  - **Preflight** (Epic 08): detecta SO/arch/package-manager e gera `install-pentest-tools.sh` com a fonte correta por ferramenta (apt para nmap/nikto/sqlmap; GitHub release para gitleaks/nuclei/ffuf/osv-scanner; script oficial para grype).
+- Documentação completa do overlay em `.wize/planning` e `.wize/solutioning` (brief, PRD, tech-vision, NFR, architecture, 4 ADRs, 8 epics, 26+ stories).
+
 ## [0.5.0] — 2026-06-17
 
 ### Added
