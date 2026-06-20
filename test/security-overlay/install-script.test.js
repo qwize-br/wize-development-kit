@@ -10,26 +10,24 @@ function freshRequire() {
   return require('../../src/security-overlay/_shared/install-script.js');
 }
 
-test('install script for linux/apt includes apt-get install for missing tools', () => {
+test('install script installs apt tools via apt and GitHub binaries via curl', () => {
   const { generateInstallScript } = freshRequire();
   const pre = {
     os: 'linux',
     arch: 'x64',
     packageManager: 'apt',
-    tools: {
-      nmap: { present: true },
-      gitleaks: { present: false },
-      'osv-scanner': { present: false },
-      nuclei: { present: false }
-    },
-    missing: ['gitleaks', 'osv-scanner', 'nuclei']
+    missing: ['nmap', 'gitleaks', 'osv-scanner', 'nuclei']
   };
   const script = generateInstallScript(pre);
-  assert.match(script, /apt-get install/);
-  assert.match(script, /gitleaks/);
-  assert.match(script, /nuclei/);
-  // Tools that are present should not be in the install list.
-  assert.ok(!/\bapt-get install.*\bnmap\b/.test(script), 'present tools should not be re-installed');
+  // nmap IS in apt -> apt-get install nmap.
+  assert.match(script, /apt-get install -y nmap/);
+  // gitleaks/nuclei/osv-scanner are NOT in apt -> GitHub release download.
+  assert.match(script, /github\.com\/gitleaks\/gitleaks\/releases/);
+  assert.match(script, /github\.com\/projectdiscovery\/nuclei\/releases/);
+  assert.match(script, /github\.com\/google\/osv-scanner\/releases/);
+  // The GitHub binaries must NOT appear in an apt-get install line.
+  assert.ok(!/apt-get install[^\n]*gitleaks/.test(script), 'gitleaks must not be apt-installed');
+  assert.ok(!/apt-get install[^\n]*nuclei/.test(script), 'nuclei must not be apt-installed');
 });
 
 test('install script for darwin/brew uses brew install', () => {
@@ -67,17 +65,28 @@ test('install script for wsl uses apt-get (delegated to the Linux side)', () => 
   assert.match(script, /apt-get install/);
 });
 
-test('install script for unknown PM (none) returns a manual-install guide', () => {
+test('install script for unknown PM (none) falls back to manual links for PM tools', () => {
   const { generateInstallScript } = freshRequire();
   const pre = {
     os: 'linux', arch: 'x64', packageManager: 'none',
-    tools: { nmap: { present: false } },
     missing: ['nmap']
   };
   const script = generateInstallScript(pre);
-  // We don't know the PM, so the script falls back to manual links.
-  assert.match(script, /manual/i);
-  assert.match(script, /nmap/);
+  // nmap needs a PM but none was detected -> point at the project page.
+  assert.match(script, /package manager/i);
+  assert.match(script, /nmap\.org|nmap/);
+});
+
+test('install script installs GitHub binaries even when no PM is present', () => {
+  const { generateInstallScript } = freshRequire();
+  const pre = {
+    os: 'linux', arch: 'x64', packageManager: 'none',
+    missing: ['ffuf', 'gitleaks']
+  };
+  const script = generateInstallScript(pre);
+  // GitHub binaries don't need a PM — they should still install.
+  assert.match(script, /github\.com\/ffuf\/ffuf\/releases/);
+  assert.match(script, /github\.com\/gitleaks\/gitleaks\/releases/);
 });
 
 test('install script includes a header explaining what it does', () => {
@@ -89,9 +98,9 @@ test('install script includes a header explaining what it does', () => {
   };
   const script = generateInstallScript(pre);
   // Header explaining what the script does + a shebang.
-  assert.match(script, /^#!\/bin\/bash/);
+  assert.match(script, /^#!\/usr\/bin\/env bash/);
   assert.match(script, /security-overlay/i);
-  assert.match(script, /set -e/);
+  assert.match(script, /set -euo pipefail/);
 });
 
 test('install script is idempotent: re-running on a fixed host is a no-op', () => {
