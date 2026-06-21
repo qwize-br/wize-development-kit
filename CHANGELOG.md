@@ -5,6 +5,16 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.7.1] — 2026-06-21
+
+### Changed
+
+- **README reescrito** com TL;DR, perfil **Wize Security** na tabela, seção dedicada do AI Pentester (como funciona + garantias de design), roster com 10 agentes (red-teamer), `.wize/security/` no layout e status atualizado para v0.7.x.
+
+### Added
+
+- **Traduções do README:** `README.pt-BR.md` (Português) e `README.es.md` (Español), com seletor de idioma cruzado. Incluídos no pacote npm.
+
 ## [0.7.0] — 2026-06-21
 
 ### Added
