@@ -43,6 +43,8 @@
     "tools/",
     "schemas/",
     "README.md",
+    "README.pt-BR.md",
+    "README.es.md",
     "LICENSE",
     "CHANGELOG.md",
     "ARCH.md",
