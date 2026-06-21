@@ -470,15 +470,36 @@ function renderReport({ securityDir } = {}) {
     lines.push('');
   }
 
+  // Next step CTA — turn findings into a remediation sprint.
+  {
+    const { CTA_COMMAND } = require('../../../_shared/backlog.js');
+    lines.push('## Próximo passo — planejar a correção');
+    lines.push('');
+    lines.push('Um backlog de remediação foi gerado em `.wize/security/security-backlog.md` (epics/stories priorizados a partir destes findings).');
+    lines.push('');
+    lines.push('Para transformá-lo em uma sprint formal, rode:');
+    lines.push('');
+    lines.push('```');
+    lines.push(CTA_COMMAND);
+    lines.push('```');
+    lines.push('');
+  }
+
   // Final newline + deterministic timestamp is the only line that
   // changes between runs in tests; the rest of the report is stable.
   const reportPath = path.join(sec, 'report.md');
   fs.writeFileSync(reportPath, lines.join('\n'), 'utf8');
 
-  // Also generate the HTML report (self-contained, no remote refs).
-  renderReportHtml({ securityDir: sec, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage, briefing, actionPlan });
+  // Generate the remediation backlog (consumable by
+  // wize-create-epics-and-stories) from the same findings + AI action plan.
+  const { buildBacklog, CTA_COMMAND } = require('../../../_shared/backlog.js');
+  const backlogMd = buildBacklog({ findings: allFindings, actionPlan, scopeSha, generatedAt });
+  fs.writeFileSync(path.join(sec, 'security-backlog.md'), backlogMd, 'utf8');
 
-  return { ok: true, findings: allFindings.length };
+  // Also generate the HTML report (self-contained, no remote refs).
+  renderReportHtml({ securityDir: sec, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage, briefing, actionPlan, ctaCommand: CTA_COMMAND });
+
+  return { ok: true, findings: allFindings.length, backlog: 'security-backlog.md', cta: CTA_COMMAND };
 }
 
 // --- HTML report -------------------------------------------------------
@@ -744,10 +765,17 @@ footer.site code { background: var(--code-bg); padding: 1px 6px; border-radius: 
 .card .rec { margin: .75rem 0 0; padding: .6rem .8rem; background: var(--owasp-bg); border-radius: var(--radius-sm); font-size: .85rem; color: var(--fg); }
 .card .rec strong { color: var(--owasp); }
 
+/* Call to action — next-step sprint planning */
+.cta { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: var(--radius); padding: 1rem 1.25rem; }
+.cta h2 { margin: 0 0 .5rem; font-size: 1.05rem; color: var(--accent); }
+.cta p { margin: 0 0 .5rem; font-size: .92rem; }
+.cta .cta-cmd { background: var(--code-bg); border: 1px dashed var(--accent); border-radius: var(--radius-sm); padding: .75rem 1rem; margin: 0; overflow-x: auto; }
+.cta .cta-cmd code { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--fg); user-select: all; }
+
 @media print {
   header.site { position: static; }
   .skip-link, .filters { display: none; }
-  .card, .risk-banner, .briefing, .action-plan .plan li { break-inside: avoid; box-shadow: none; border-color: #888; }
+  .card, .risk-banner, .briefing, .action-plan .plan li, .cta { break-inside: avoid; box-shadow: none; border-color: #888; }
 }
 `;
 
@@ -760,13 +788,14 @@ function escapeHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
-function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage, briefing, actionPlan }) {
+function renderReportHtml({ securityDir, phaseSummaries, allFindings, refusals, generatedAt, scopeSha, risk, coverage, briefing, actionPlan, ctaCommand }) {
   const sec = securityDir;
   const title = `Security Report — ${scopeSha ? scopeSha.slice(0, 12) : 'unknown'}`;
   risk = risk || computeRisk(allFindings);
   coverage = coverage || computeCoverage(loadPartial, sec);
   briefing = briefing || heuristicBriefing(risk, coverage, allFindings);
   actionPlan = (actionPlan && actionPlan.length) ? actionPlan : heuristicActionPlan(allFindings, coverage);
+  ctaCommand = ctaCommand || require('../../../_shared/backlog.js').CTA_COMMAND;
 
   // Severity counts (for sticky header). 'Info-surface' is folded into a
   // dedicated "surface" bucket so the stakeholder header isn't dominated by
@@ -949,6 +978,11 @@ ${actionPlan.map(a => `      <li class="prio-${escapeHtml((a.priority||'').toLow
     `    <div class="findings">${findingsHtml}</div>`,
     `  </section>`,
     refusalsHtml,
+    `  <section class="cta" aria-labelledby="cta-h">
+    <h2 id="cta-h">Próximo passo — planejar a correção</h2>
+    <p>Um backlog de remediação foi gerado em <code>.wize/security/security-backlog.md</code> (epics/stories priorizados a partir destes findings). Para transformá-lo em uma sprint formal, rode:</p>
+    <pre class="cta-cmd"><code>${escapeHtml(ctaCommand)}</code></pre>
+  </section>`,
     `</main>`,
     `<footer class="site" role="contentinfo">`,
     `  <p>Gerado por <code>wize-sec-report</code> (overlay <code>security-overlay</code>) · Self-contained (sem refs remotas) · CSS inline · Default: dark mode.</p>`,

@@ -1,5 +1,19 @@
 # Sprint Status
 
+## Sprint security-overlay — 2026-06-17 → 2026-06-21 — **CLOSED**
+
+**Goal:** Entregar o `security-overlay` (AI Pentester) — pipeline file-first completo + report executivo, instalável como profile.
+
+**Result:** ✅ Shipped. 8 epics / 27 stories, todas done. **v0.6.0** no npm. Validado end-to-end contra `sabia/starterkit-sabia`.
+
+- Epics E01–E08 — all stories shipped, suite verde (246 testes), validate verde.
+- Release v0.6.0 (Trusted Publishing + provenance + GitHub Release).
+- Retrospectiva: `.wize/implementation/retrospective/2026-06-21.md`.
+
+**Carry-over:** 0. **Próximo:** sprint de correção dos findings do scan + feature de auto-sugestão de sprint pós-scan.
+
+---
+
 ## Sprint 4 — 2026-06-17
 
 **Capacity:** 1 person-day (focused burst)

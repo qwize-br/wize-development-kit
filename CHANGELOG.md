@@ -5,6 +5,16 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-06-21
+
+### Added
+
+- **Post-scan remediation planning (security-overlay).** Ao fim do `wize-sec-pentest`, o overlay traduz os findings em um backlog de correção pronto para `wize-create-epics-and-stories`.
+  - **`security-backlog.md`** gerado em `.wize/security/`: findings agrupados por tema (ex.: 97 secrets → 1 epic de rotação, não 97 stories), priorizados **P0/P1/P2** pela pior severidade do grupo, estimados S/M/L, com rastreabilidade aos findings de origem + `scope_sha256` e DoD ("re-rodar scan e confirmar finding ausente").
+  - Epics semeados pelo action plan do `ai-insights.json` quando presente.
+  - **Call-to-action** com o comando exato (`/wize-create-epics-and-stories --from .wize/security/security-backlog.md`) impresso no terminal, no `report.md` e como banner no `report.html`.
+  - Mantém **zero runtime próprio**: o overlay gera o backlog e imprime o comando; o usuário/agente é quem executa a skill de planejamento (o Node nunca invoca skills).
+
 ## [0.6.0] — 2026-06-20
 
 ### Added
