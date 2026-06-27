@@ -2,7 +2,7 @@
 
 OpenAI Codex skills.
 
-- **Target path:** `.codex/skills/`
+- **Target path:** `.agents/skills/`
 - **File pattern:** `wize-*/SKILL.md`
 - **Format:** Anthropic-compatible `SKILL.md`
 

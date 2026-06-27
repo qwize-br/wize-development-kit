@@ -9,7 +9,7 @@ Each adapter renders the kit's agents/skills/workflows into the file layout that
 | `claude-code` | `.claude/skills/wize-*/` | `SKILL.md` per agent/workflow | Default. Uses Claude Code skill folder pattern. |
 | `cursor` | `.cursor/rules/wize-*.mdc` | MDC | Each agent/skill becomes a rule file. |
 | `windsurf` | `.windsurf/agents/wize-*.md` | Markdown | Cascade-friendly. |
-| `codex` | `.codex/skills/wize-*/` | `SKILL.md` per agent/workflow | OpenAI Codex. |
+| `codex` | `.agents/skills/wize-*/` | `SKILL.md` per agent/workflow | OpenAI Codex. |
 | `continue` | `.continue/agents/wize-*.md` | Markdown | Continue agent slot. |
 | `kimi-code` | `.kimi/agents/wize-*.md` | Markdown | Moonshot Kimi Code. |
 | `opencode` | `.opencode/agents/wize-*.md` | Markdown | OpenCode CLI. |

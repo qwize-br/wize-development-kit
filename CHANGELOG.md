@@ -5,6 +5,13 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.7.3] — 2026-06-27
+
+### Fixed
+
+- **Codex adapter alinhado com a documentação pública da OpenAI.** O target `codex` voltou a renderizar skills em `.agents/skills/`, que é o diretório documentado para skills locais de repositório no Codex. A regressão em `0.7.2` tinha movido a saída para `.codex/skills/`, o que quebrou o carregamento das skills no harness real.
+- **Doctor, smoke tests e `.gitignore` corrigidos para o path canônico do Codex.**
+
 ## [0.7.2] — 2026-06-27
 
 ### Fixed
