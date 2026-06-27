@@ -9,7 +9,7 @@ Each adapter renders the kit's agents/skills/workflows into the file layout that
 | `claude-code` | `.claude/skills/wize-*/` | `SKILL.md` per agent/workflow | Default. Uses Claude Code skill folder pattern. |
 | `cursor` | `.cursor/rules/wize-*.mdc` | MDC | Each agent/skill becomes a rule file. |
 | `windsurf` | `.windsurf/agents/wize-*.md` | Markdown | Cascade-friendly. |
-| `codex` | `.codex/wize-*.md` | Markdown | OpenAI Codex CLI. |
+| `codex` | `.codex/skills/wize-*/` | `SKILL.md` per agent/workflow | OpenAI Codex. |
 | `continue` | `.continue/agents/wize-*.md` | Markdown | Continue agent slot. |
 | `kimi-code` | `.kimi/agents/wize-*.md` | Markdown | Moonshot Kimi Code. |
 | `opencode` | `.opencode/agents/wize-*.md` | Markdown | OpenCode CLI. |
@@ -23,4 +23,4 @@ Every adapter is a folder under `adapters/{code}/` with:
 - `render.js` — function `(kitRoot, projectRoot, opts) => void` that emits files.
 - `README.md` — adapter-specific notes.
 
-In v0.1 only the descriptors and READMEs are present; `render.js` is a stub printing what it would emit. Wiring is on the v0.2 roadmap.
+The shipped adapters emit real files through `render.js`.

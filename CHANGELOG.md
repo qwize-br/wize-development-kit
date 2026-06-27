@@ -5,6 +5,13 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.7.2] — 2026-06-27
+
+### Fixed
+
+- **Codex adapter path corrigido.** O instalador e o `sync` agora renderizam as skills do target `codex` em `.codex/skills/`, alinhado com o harness usado no projeto. Antes, o kit escrevia em `.agents/skills/`, o que deixava o install aparentemente bem-sucedido, mas sem as skills serem carregadas no Codex.
+- **Diagnóstico e smoke alinhados ao Codex real.** `doctor`, `.gitignore`, smoke tests e testes de adapters passaram a validar `.codex/skills/`, evitando falso positivo no suporte multi-harness.
+
 ## [0.7.1] — 2026-06-21
 
 ### Changed
