@@ -14,7 +14,7 @@ const KIT = path.resolve(__dirname, '..');
 const ADAPTERS = [
   { code: 'claude-code',  expectFile: (root) => path.join(root, '.claude/skills/wize-orchestrator/SKILL.md') },
   { code: 'antigravity',  expectFile: (root) => path.join(root, '.agent/skills/wize-orchestrator/SKILL.md') },
-  { code: 'codex',        expectFile: (root) => path.join(root, '.codex/skills/wize-orchestrator/SKILL.md') },
+  { code: 'codex',        expectFile: (root) => path.join(root, '.agents/skills/wize-orchestrator/SKILL.md') },
   { code: 'kimi-code',    expectFile: (root) => path.join(root, '.kimi/skills/wize-orchestrator/SKILL.md') },
   { code: 'cursor',       expectFile: (root) => path.join(root, '.cursor/rules/wize-orchestrator.mdc') },
   { code: 'windsurf',     expectFile: (root) => path.join(root, '.windsurf/rules/wize-orchestrator.md') },
@@ -56,7 +56,7 @@ test('generic adapter emits a root AGENTS.md', () => {
 const ANTHROPIC = [
   { code: 'claude-code',  base: '.claude' },
   { code: 'antigravity',  base: '.agent' },
-  { code: 'codex',        base: '.codex' },
+  { code: 'codex',        base: '.agents' },
   { code: 'kimi-code',    base: '.kimi' }
 ];
 

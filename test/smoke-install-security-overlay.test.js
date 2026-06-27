@@ -13,7 +13,7 @@ const KIT = path.resolve(__dirname, '..');
 // adapter.yaml convention), so we look up the right one for each.
 const TARGETS = [
   { code: 'claude-code', base: '.claude/skills' },
-  { code: 'codex',       base: '.codex/skills' },
+  { code: 'codex',       base: '.agents/skills' },
   { code: 'cursor',      base: '.cursor/rules' }
 ];
 
