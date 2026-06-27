@@ -1,6 +1,6 @@
 code: codex
-description: "OpenAI Codex CLI agent skills (.agents/skills/, Anthropic-compatible)."
-target_path: ".agents/skills/"
+description: "OpenAI Codex agent skills (.codex/skills/, Anthropic-compatible)."
+target_path: ".codex/skills/"
 file_pattern: "wize-*/SKILL.md"
 file_format: markdown
 hooks:

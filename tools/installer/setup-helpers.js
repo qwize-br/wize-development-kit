@@ -22,7 +22,7 @@ const GITIGNORE_BODY = [
   '# Generated IDE adapter outputs (regenerate with `npx wize-dev-kit install`)',
   '.claude/skills/wize-*',
   '.agent/skills/wize-*',
-  '.agents/skills/wize-*',
+  '.codex/skills/wize-*',
   '.kimi/skills/wize-*',
   '.cursor/rules/wize-*.mdc',
   '.windsurf/rules/wize-*.md',

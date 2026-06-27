@@ -148,7 +148,7 @@ test('adapterTargetPath returns expected paths for all known targets', () => {
   const paths = {
     'claude-code': '.claude/skills',
     'antigravity': '.agent/skills',
-    'codex':       '.agents/skills',
+    'codex':       '.codex/skills',
     'kimi-code':   '.kimi/skills',
     'cursor':      '.cursor/rules',
     'windsurf':    '.windsurf/rules',

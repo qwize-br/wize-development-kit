@@ -58,7 +58,7 @@ function adapterTargetPath(targetCode, projectRoot) {
   switch (targetCode) {
     case 'claude-code':  return path.join(projectRoot, '.claude/skills');
     case 'antigravity':  return path.join(projectRoot, '.agent/skills');
-    case 'codex':        return path.join(projectRoot, '.agents/skills');
+    case 'codex':        return path.join(projectRoot, '.codex/skills');
     case 'kimi-code':    return path.join(projectRoot, '.kimi/skills');
     case 'cursor':       return path.join(projectRoot, '.cursor/rules');
     case 'windsurf':     return path.join(projectRoot, '.windsurf/rules');
