@@ -1,5 +1,6 @@
 ---
 description: "design: TEA Test Design"
+agent: wize-agent-test-architect
 ---
 
 # TEA Test Design

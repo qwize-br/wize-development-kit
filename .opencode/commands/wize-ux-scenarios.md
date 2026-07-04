@@ -1,5 +1,6 @@
 ---
 description: "2-plan: UX Scenarios"
+agent: wize-agent-ux-designer
 ---
 
 # UX Scenarios

@@ -2,7 +2,7 @@
 status: baseline
 owner: Pepper Potts + Peggy Carter
 created: 2026-06-13
-last_refreshed: 2026-06-13
+last_refreshed: 2026-07-04
 ---
 
 # Overview
@@ -65,3 +65,19 @@ IDE adapters render the same assets into each selected IDE's native format (e.g.
   `wize-sec-pentest` orchestrator through recon → enumerate → sast → dast
   → report. Default passivo; exploits gated by `--active`; every refusal
   is audited. Scope gate is the single source of truth.
+
+## 2026-07-04 — per-harness docs + OpenCode highlighted
+
+- New `docs/harnesses/<name>.md` (+ `.pt-BR.md`) — one pair per IDE
+  adapter (opencode, claude-code, codex, kimi-code, antigravity, cursor,
+  windsurf, continue, generic), documenting each adapter's real output
+  path and format from `adapters/*/render.js`.
+- README.md / README.pt-BR.md gained a "Supported harnesses" /
+  "Harnesses suportadas" table linking to each doc, calling out that
+  **OpenCode** is the only adapter where personas/workflows map onto a
+  harness-native primitive (`mode: primary|subagent`, `agent:`,
+  `subtask:`) instead of being flattened into one file type.
+- Shuri's persona gained a "reuse ladder" (YAGNI → reuse in repo →
+  stdlib → native/framework → dependency → one-liner → new code); Wizer's
+  persona gained a documented subagent fan-out pattern generalized from
+  `wize-code-review`'s own fan-out step.

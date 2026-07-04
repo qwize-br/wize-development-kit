@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Document Project (brownfield baseline)"
+agent: wize-agent-analyst
 ---
 
 # Document Project (brownfield baseline)

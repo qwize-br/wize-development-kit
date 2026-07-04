@@ -1,5 +1,6 @@
 ---
 description: "4-implementation: Code Review"
+agent: wize-agent-dev
 ---
 
 # Code Review

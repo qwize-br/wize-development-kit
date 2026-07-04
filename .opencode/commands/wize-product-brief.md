@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Product Brief"
+agent: wize-agent-analyst
 ---
 
 # Product Brief

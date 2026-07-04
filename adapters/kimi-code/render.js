@@ -1,7 +1,7 @@
 // Moonshot Kimi Code adapter — emits .kimi/skills/wize-{code}/SKILL.md per asset.
 // Kimi Code consumes the Anthropic SKILL.md format verbatim and additionally
-// auto-detects .claude/skills/ and .codex/skills/, so installing alongside
-// those adapters is harmless.
+// auto-detects .claude/skills/ and .agents/skills/ (Codex), so installing
+// alongside those adapters is harmless.
 
 'use strict';
 

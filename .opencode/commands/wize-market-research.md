@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Market Research"
+agent: wize-agent-analyst
 ---
 
 # Market Research

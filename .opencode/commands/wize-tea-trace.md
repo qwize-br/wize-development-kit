@@ -1,5 +1,6 @@
 ---
 description: "trace: TEA Traceability"
+agent: wize-agent-test-architect
 ---
 
 # TEA Traceability

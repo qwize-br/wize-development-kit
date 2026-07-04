@@ -1,5 +1,6 @@
 ---
 description: "3-solutioning: Create Architecture"
+agent: wize-agent-architect
 ---
 
 # Create Architecture

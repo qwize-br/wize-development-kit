@@ -1,5 +1,6 @@
 ---
 description: "2-plan: UX Design"
+agent: wize-agent-ux-designer
 ---
 
 # UX Design

@@ -14,6 +14,8 @@ failed_layers: ''
 
 ## Instructions
 
+This step is an instance of Wizer's subagent fan-out pattern (see `wize-orchestrator` persona): name, scope, dispatch on whatever the current harness natively supports, tolerate partial failure.
+
 1. If `{review_mode}` = `"no-spec"`, note: "Acceptance Auditor skipped — no spec file provided."
 
 2. Launch parallel subagents without conversation context:

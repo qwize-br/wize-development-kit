@@ -1,5 +1,6 @@
 ---
 description: "2-plan: Create PRD"
+agent: wize-agent-pm
 ---
 
 # Create PRD

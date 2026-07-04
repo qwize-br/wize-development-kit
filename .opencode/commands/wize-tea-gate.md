@@ -1,5 +1,6 @@
 ---
 description: "gate: TEA Gate Decision"
+agent: wize-agent-test-architect
 ---
 
 # TEA Gate Decision

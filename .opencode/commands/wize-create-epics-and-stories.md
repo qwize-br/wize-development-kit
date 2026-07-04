@@ -1,5 +1,6 @@
 ---
 description: "3-solutioning: Create Epics and Stories"
+agent: wize-agent-architect
 ---
 
 # Create Epics and Stories

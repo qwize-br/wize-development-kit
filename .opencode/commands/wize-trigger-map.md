@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Trigger Map"
+agent: wize-agent-analyst
 ---
 
 # Trigger Map

@@ -1,5 +1,6 @@
 ---
 description: "3-solutioning: Check Implementation Readiness"
+agent: wize-agent-architect
 ---
 
 # Check Implementation Readiness

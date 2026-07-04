@@ -1,5 +1,6 @@
 ---
 description: "4-implementation: Create Story"
+agent: wize-agent-architect
 ---
 
 # Create Story

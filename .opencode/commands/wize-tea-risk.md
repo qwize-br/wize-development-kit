@@ -1,5 +1,6 @@
 ---
 description: "risk: TEA Risk Profile"
+agent: wize-agent-test-architect
 ---
 
 # TEA Risk Profile

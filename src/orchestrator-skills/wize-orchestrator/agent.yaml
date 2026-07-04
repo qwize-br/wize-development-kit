@@ -19,6 +19,7 @@ capabilities:
   - "Project context recall"
   - "Intent classification and routing"
   - "Multi-agent facilitation (party-mode)"
+  - "Subagent fan-out (harness-native dispatch, manual fallback)"
   - "Onboarding triage (greenfield vs brownfield)"
 
 routes_to:

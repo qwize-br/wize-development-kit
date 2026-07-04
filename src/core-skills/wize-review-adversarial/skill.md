@@ -3,6 +3,7 @@ code: wize-review-adversarial
 name: Adversarial Review
 module: core
 status: stub
+subtask: true
 ---
 
 # Adversarial Review

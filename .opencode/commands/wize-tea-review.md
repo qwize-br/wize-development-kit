@@ -1,5 +1,6 @@
 ---
 description: "review: TEA Story Review"
+agent: wize-agent-test-architect
 ---
 
 # TEA Story Review

@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Research"
+agent: wize-agent-analyst
 ---
 
 # Research
