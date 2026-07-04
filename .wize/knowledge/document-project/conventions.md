@@ -2,7 +2,7 @@
 status: baseline
 owner: Peggy Carter
 created: 2026-06-13
-last_refreshed: 2026-06-13
+last_refreshed: 2026-07-04
 sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yaml files, workflow.md files, module.yaml files"
 ---
 
@@ -36,7 +36,7 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
 ## Markdown frontmatter
 
 - Agent descriptors: `agent.yaml` with `code`, `name`, `title`, `module`, `description`.
-- Workflows/skills: markdown with YAML frontmatter (`---` block) carrying `code`, `name`, `phase`, `owner`, `status`, `overlay`, `gate`.
+- Workflows/skills: markdown with YAML frontmatter (`---` block) carrying `code`, `name`, `phase`, `owner`, `status`, `overlay`, `gate`, `subtask` (opt-in — marks a skill as a fan-out worker the OpenCode adapter should isolate).
 - All generated knowledge docs carry `status`, `owner`, `created`, `last_refreshed`.
 
 ## Test placement
@@ -55,7 +55,6 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
 
 ## Observed deviations
 
-- README still says "alpha — v0.1.0" in the status section while package.json and CHANGELOG are at v0.3.0.
 - Some source workflow files are marked `status: ready` but rely on the IDE to execute; there is no runtime runner for them.
 - `wize-cli.js` mixes CLI dispatcher, install logic, prompt helpers, and adapter rendering in a single large file.
 
@@ -96,3 +95,16 @@ sampled: "wize-cli.js, detect.js, render-shared.js, structure.test.js, agent.yam
   semantic (header/main/footer, articles for findings, dl for
   metadata, table with th scope=col). A skip link to #main is provided
   for screen-reader users.
+
+## 2026-07-04 — OpenCode-native wiring + per-harness docs
+
+- New optional workflow/skill frontmatter: `subtask: true` marks a skill
+  as a fan-out worker (e.g. `wize-review-adversarial`,
+  `wize-review-edge-case-hunter`) that the OpenCode adapter should isolate
+  regardless of who invokes it. `owner:` (already existed for humans
+  reading the source) is now also machine-resolved by the OpenCode
+  adapter into `agent: <code>` on the rendered command.
+- New doc pair convention: `docs/harnesses/<name>.md` +
+  `docs/harnesses/<name>.pt-BR.md`, one pair per IDE adapter, following
+  the same EN/pt-BR split as the root README. Linked from both README.md
+  and README.pt-BR.md; listed in package.json's published `files`.
