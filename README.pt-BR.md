@@ -66,6 +66,24 @@ Após instalar, abra sua IDE e diga:
 
 ---
 
+## Harnesses suportadas
+
+Os 9 alvos de IDE são gerados a partir da mesma fonte; formato e mecânica mudam por harness. O **OpenCode** tem a integração mais profunda — a divisão persona/workflow do kit mapeia pras primitivas nativas do próprio OpenCode (`mode: primary|subagent`, `agent:`, `subtask:`) em vez de ser achatada num único tipo de arquivo.
+
+| Harness | Saída | Destaque |
+|---|---|---|
+| **OpenCode** 🆕 | `.opencode/agents/` + `.opencode/commands/` | `mode: primary\|subagent` nativo; commands se ligam à persona dona (`agent:`); workers de fan-out rodam isolados (`subtask: true`). [Docs →](docs/harnesses/opencode.pt-BR.md) |
+| **Claude Code** | `.claude/skills/*/SKILL.md` | Formato Skill da Anthropic; fan-out ad hoc via Task/Agent tool (`wize-code-review`). [Docs →](docs/harnesses/claude-code.pt-BR.md) |
+| **Codex** | `.agents/skills/*/SKILL.md` | Mesmo formato Skill + `AGENTS.md` na raiz. [Docs →](docs/harnesses/codex.pt-BR.md) |
+| **Kimi Code** | `.kimi/skills/*/SKILL.md` | Mesmo formato Skill; autodetecta as árvores do Claude/Codex. [Docs →](docs/harnesses/kimi-code.pt-BR.md) |
+| **Antigravity** | `.agent/skills/*/SKILL.md` | Mesmo formato Skill + `AGENTS.md` na raiz. [Docs →](docs/harnesses/antigravity.pt-BR.md) |
+| **Cursor** | `.cursor/rules/*.mdc` | Rules sob demanda (`alwaysApply: false`), casadas por descrição. [Docs →](docs/harnesses/cursor.pt-BR.md) |
+| **Windsurf** | `.windsurf/rules/*.md` | Markdown puro; modo de ativação definido dentro da IDE. [Docs →](docs/harnesses/windsurf.pt-BR.md) |
+| **Continue.dev** | `.continue/prompts/*.prompt` | Slash commands via `invokable: true`. [Docs →](docs/harnesses/continue.pt-BR.md) |
+| **Fallback genérico** | `.wize/agents/*.md` + `AGENTS.md` na raiz | Para qualquer IDE sem adapter dedicado. [Docs →](docs/harnesses/generic.pt-BR.md) |
+
+---
+
 ## O elenco
 
 | # | Persona | Código | Papel |
@@ -203,6 +221,7 @@ npx wize-dev-kit uninstall       # remove .wize/ (seu código permanece intacto)
 - [`ROSTER.md`](ROSTER.md) — personas com estilo, papel, equivalências BMAD.
 - [`DECISIONS.md`](DECISIONS.md) — log de decisões.
 - [`CHANGELOG.md`](CHANGELOG.md) — histórico de releases.
+- [`docs/harnesses/`](docs/harnesses/) — um doc por [harness suportada](#harnesses-suportadas), em português + [English](README.md#supported-harnesses).
 
 ---
 

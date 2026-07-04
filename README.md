@@ -66,6 +66,24 @@ After install, open your IDE and say:
 
 ---
 
+## Supported harnesses
+
+All 9 IDE targets render from the same source; format and mechanics differ per harness. **OpenCode** gets the deepest integration — the kit's persona/workflow split maps onto OpenCode's own primitives (`mode: primary|subagent`, `agent:`, `subtask:`) instead of being flattened into one file type.
+
+| Harness | Output | Notable |
+|---|---|---|
+| **OpenCode** 🆕 | `.opencode/agents/` + `.opencode/commands/` | Native `mode: primary\|subagent`; commands auto-bind to their owning persona (`agent:`); fan-out workers run isolated (`subtask: true`). [Docs →](docs/harnesses/opencode.md) |
+| **Claude Code** | `.claude/skills/*/SKILL.md` | Anthropic Skill format; ad-hoc Task/Agent-tool fan-out (`wize-code-review`). [Docs →](docs/harnesses/claude-code.md) |
+| **Codex** | `.agents/skills/*/SKILL.md` | Same Skill format + root `AGENTS.md`. [Docs →](docs/harnesses/codex.md) |
+| **Kimi Code** | `.kimi/skills/*/SKILL.md` | Same Skill format; auto-detects Claude/Codex skill trees. [Docs →](docs/harnesses/kimi-code.md) |
+| **Antigravity** | `.agent/skills/*/SKILL.md` | Same Skill format + root `AGENTS.md`. [Docs →](docs/harnesses/antigravity.md) |
+| **Cursor** | `.cursor/rules/*.mdc` | On-demand rules (`alwaysApply: false`), matched by description. [Docs →](docs/harnesses/cursor.md) |
+| **Windsurf** | `.windsurf/rules/*.md` | Plain markdown; activation mode set inside the IDE. [Docs →](docs/harnesses/windsurf.md) |
+| **Continue.dev** | `.continue/prompts/*.prompt` | `invokable: true` slash commands. [Docs →](docs/harnesses/continue.md) |
+| **Generic fallback** | `.wize/agents/*.md` + root `AGENTS.md` | For any IDE without a dedicated adapter. [Docs →](docs/harnesses/generic.md) |
+
+---
+
 ## The roster
 
 | # | Persona | Code | Role |
@@ -203,6 +221,7 @@ npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 - [`ROSTER.md`](ROSTER.md) — personas with style, role, BMAD equivalences.
 - [`DECISIONS.md`](DECISIONS.md) — decisions log.
 - [`CHANGELOG.md`](CHANGELOG.md) — release history.
+- [`docs/harnesses/`](docs/harnesses/) — one doc per [supported harness](#supported-harnesses), in English + [pt-BR](README.pt-BR.md#harnesses-suportadas).
 
 ---
 

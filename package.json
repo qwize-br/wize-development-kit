@@ -42,6 +42,7 @@
     "adapters/",
     "tools/",
     "schemas/",
+    "docs/",
     "README.md",
     "README.pt-BR.md",
     "README.es.md",
