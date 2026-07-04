@@ -21,7 +21,7 @@ const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 const { cmdDoctor } = require('./commands/doctor.js');
 const { cmdDocumentProject } = require('./commands/document-project.js');
-const { detectHarnessCli, manualInstructions } = require('./baseline.js');
+const { compose: composeOnboarding } = require('./onboarding.js');
 
 const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
 
@@ -536,39 +536,11 @@ async function cmdInstall(args) {
     }
   }
 
-  // Offer to open a detected AI harness interactively.
-  if (INTERACTIVE) {
-    const ideTargetCodes = targets.map(t => t.code);
-    const harnesses = detectHarnessCli({ preferIde: ideTargetCodes });
-    if (harnesses.length) {
-      const primary = harnesses[0];
-      const { cmd, args } = primary.buildCmd('/wize-orchestrator');
-      const shown = `${cmd} ${args.map(a => /\s/.test(a) ? '"' + a + '"' : a).join(' ')}`;
-      const openHarness = await confirm(
-        `\nA harness was detected: ${primary.code} (${primary.path}).\n` +
-        `Open it now with Wizer? (runs: ${shown})`,
-        true
-      );
-      if (openHarness) {
-        const { spawnSync } = require('node:child_process');
-        console.log(`\nLaunching ${shown}...`);
-        spawnSync(cmd, args, { cwd, stdio: 'inherit' });
-      } else {
-        console.log(manualInstructions(primary).replace('/wize-document-project', '/wize-orchestrator'));
-      }
-    } else {
-      console.log('\nNo AI harness CLI detected on PATH (claude / codex / opencode).');
-      console.log('Open your IDE in this repo and run: /wize-orchestrator');
-    }
-  }
-
   console.log('\n──────────────────────────────────────────────────────────────');
   console.log('Done.');
   console.log('');
-  console.log('Next steps:');
-  console.log('  1. ⚠  Restart your IDE — many harnesses load skills only at startup.');
-  console.log('  2. Activate Wizer and say: "Brief me on this project."');
-  console.log('     (or use any /wize-* slash command from the auto-complete list)');
+  console.log('⚠  Restart your IDE — many harnesses load skills only at startup.');
+  console.log(composeOnboarding(detection, profiles));
   console.log('');
   console.log('Keep the kit in sync over time:');
   console.log('  • `npx wize-dev-kit update`  refresh adapters after a new kit version');
