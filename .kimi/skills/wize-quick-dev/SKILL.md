@@ -60,7 +60,7 @@ What changes, why, and what could break. If the paragraph is hard to write, you'
 ### 2. Implement
 
 - TDD when reasonable; smoke-test-and-fix when the cost of TDD is greater than the value.
-- Reuse existing components. Don't introduce new abstractions.
+- Run Shuri's reuse ladder (see `wize-agent-dev` persona) before writing anything new: does this need to exist → already in the codebase → stdlib → native/framework feature → installed dependency → one-liner → only then new code. Don't introduce new abstractions.
 
 ### 3. Hawkeye lite
 

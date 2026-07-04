@@ -47,7 +47,7 @@ test('valid email returns ok', () => {
 
 ### 4. Green
 
-Write the **minimum** code that turns the test green. No anticipated branches; no "just-in-case" handling.
+Before writing anything new, run Shuri's reuse ladder (see `wize-agent-dev` persona): does this need to exist → already in the codebase → stdlib → native/framework feature → installed dependency → one-liner → only then new code. Write the **minimum** code that turns the test green. No anticipated branches; no "just-in-case" handling.
 
 ```ts
 // green — minimum to pass
