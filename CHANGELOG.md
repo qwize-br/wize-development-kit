@@ -5,6 +5,21 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-07-04
+
+### Added
+
+- **OpenCode: commands agora rodam sob a persona dona.** O adapter deriva `agent: <code>` do `owner:` de cada workflow/skill (código, nome de exibição ou combinações "X + Y"), então `/wize-dev-story` já ativa o system prompt da Shuri em vez de depender de qual agente estava ativo.
+- **OpenCode: fan-out isolado nativamente.** `wize-review-adversarial` e `wize-review-edge-case-hunter` — os dois workers nomeados que o `wize-code-review` dispara em paralelo — ganham `subtask: true`, isolando-os do contexto de quem invoca independentemente do chamador.
+- **Escada de reuso (YAGNI) na persona da Shuri.** Antes de escrever código novo: precisa existir? já está no repo? a stdlib resolve? é nativo da plataforma? uma dependência instalada resolve? é uma linha? Só então código novo — referenciada por `wize-dev-story` e `wize-quick-dev`.
+- **Padrão de fan-out de subagentes documentado na persona do Wizer**, generalizado a partir do `wize-code-review`: nomear cada worker, escopar contexto, despachar pela primitiva nativa do harness (Task/Agent tool no Claude Code; `mode`/`subtask` no OpenCode; geração de prompts + fallback manual nos demais), tolerar falha parcial.
+- **`docs/harnesses/`** — um doc por harness suportada (9 adapters, em inglês + pt-BR), com overview curto e tabela no README apontando pra cada um. `package.json` passa a publicar `docs/` no pacote npm.
+
+### Fixed
+
+- **Instalador não tenta mais abrir a harness detectada ao final do `install`.** Em vez do prompt "abrir agora com Wizer?", sugere o comando inicial certo pro estado do repo (greenfield/brownfield) via `composeOnboarding`.
+- Comentário desatualizado no adapter do Kimi Code, que ainda citava o path antigo do Codex (`.codex/skills/`).
+
 ## [0.7.3] — 2026-06-27
 
 ### Fixed

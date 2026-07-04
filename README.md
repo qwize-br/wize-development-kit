@@ -227,7 +227,7 @@ npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 
 ## Status
 
-**v0.7.0 — beta.** The full lifecycle (analysis → plan → solution → implementation) is wired with 10 agents and a structured skill library. The `security-overlay` (AI Pentester) ships a complete pentest pipeline, a stakeholder report (risk score + briefing + AI action plan), and post-scan remediation planning — validated end-to-end against a real Laravel/PHP app. IDE adapters for Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, and Antigravity are regenerated automatically.
+**v0.8.0 — beta.** The full lifecycle (analysis → plan → solution → implementation) is wired with 10 agents and a structured skill library. The `security-overlay` (AI Pentester) ships a complete pentest pipeline, a stakeholder report (risk score + briefing + AI action plan), and post-scan remediation planning — validated end-to-end against a real Laravel/PHP app. IDE adapters for Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, and Antigravity are regenerated automatically — [OpenCode](docs/harnesses/opencode.md) gets native `mode`/`agent`/`subtask` wiring, the deepest integration of the 9.
 
 ---
 
