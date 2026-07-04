@@ -1,5 +1,6 @@
 ---
 description: "2-to-3-boundary: Tech Vision"
+agent: wize-agent-solution-strategist
 ---
 
 # Tech Vision

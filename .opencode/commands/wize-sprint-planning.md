@@ -1,5 +1,6 @@
 ---
 description: "4-implementation: Sprint Planning"
+agent: wize-agent-pm
 ---
 
 # Sprint Planning

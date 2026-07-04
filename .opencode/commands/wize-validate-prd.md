@@ -1,5 +1,6 @@
 ---
 description: "2-plan: Validate PRD"
+agent: wize-agent-pm
 ---
 
 # Validate PRD

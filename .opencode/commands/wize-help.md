@@ -1,5 +1,6 @@
 ---
 description: "orchestrator skill: Help (Wizer)"
+agent: wize-orchestrator
 ---
 
 # Help (Wizer)

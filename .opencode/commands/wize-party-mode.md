@@ -1,5 +1,6 @@
 ---
 description: "workflow: Party Mode (multi-agent)"
+agent: wize-orchestrator
 ---
 
 # Party Mode (multi-agent)

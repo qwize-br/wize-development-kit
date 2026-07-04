@@ -1,5 +1,6 @@
 ---
 description: "4-implementation: Retrospective"
+agent: wize-orchestrator
 ---
 
 # Retrospective

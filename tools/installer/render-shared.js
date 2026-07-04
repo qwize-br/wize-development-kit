@@ -123,6 +123,8 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
       description: `${fm.phase || fm.gate || 'workflow'}: ${fm.name || fm.code}`,
       body: bodyAfterFrontmatter(content),
       overlay: fm.overlay || null,
+      owner: fm.owner || null,
+      subtask: fm.subtask === 'true',
       srcDir: path.dirname(wfPath)
     });
   }
@@ -142,6 +144,8 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
       description: fm.module ? `${fm.module} skill: ${fm.name || fm.code}` : (fm.name || fm.code),
       body: bodyAfterFrontmatter(content),
       overlay: fm.overlay || null,
+      owner: fm.owner || null,
+      subtask: fm.subtask === 'true',
       srcDir: path.dirname(skPath)
     });
   }

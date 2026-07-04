@@ -1,5 +1,6 @@
 ---
 description: "4-implementation: Sprint Status"
+agent: wize-agent-pm
 ---
 
 # Sprint Status

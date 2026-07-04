@@ -1,5 +1,6 @@
 ---
 description: "2-to-3-boundary: NFR Principles"
+agent: wize-agent-solution-strategist
 ---
 
 # NFR Principles

@@ -1,5 +1,6 @@
 ---
 description: "3-solutioning: Design System"
+agent: wize-agent-ux-designer
 ---
 
 # Design System

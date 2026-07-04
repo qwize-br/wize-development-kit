@@ -3,6 +3,7 @@ code: wize-review-edge-case-hunter
 name: Edge Case Hunter
 module: core
 status: ready
+subtask: true
 ---
 
 # Edge Case Hunter

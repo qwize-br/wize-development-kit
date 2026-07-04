@@ -1,5 +1,6 @@
 ---
 description: "nfr: TEA NFR Assessment"
+agent: wize-agent-test-architect
 ---
 
 # TEA NFR Assessment

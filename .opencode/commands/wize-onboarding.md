@@ -1,5 +1,6 @@
 ---
 description: "workflow: Onboarding"
+agent: wize-orchestrator
 ---
 
 # Onboarding

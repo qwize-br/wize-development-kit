@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Refresh Project Knowledge"
+agent: wize-agent-analyst
 ---
 
 # Refresh Project Knowledge

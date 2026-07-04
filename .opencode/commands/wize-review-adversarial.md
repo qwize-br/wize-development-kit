@@ -1,5 +1,6 @@
 ---
 description: "core skill: Adversarial Review"
+subtask: true
 ---
 
 # Adversarial Review

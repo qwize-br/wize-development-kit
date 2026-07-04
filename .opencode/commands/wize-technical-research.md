@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Technical Research"
+agent: wize-agent-analyst
 ---
 
 # Technical Research

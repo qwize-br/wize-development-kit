@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: Domain Research"
+agent: wize-agent-analyst
 ---
 
 # Domain Research

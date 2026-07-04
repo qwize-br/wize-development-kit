@@ -1,5 +1,6 @@
 ---
 description: "1-analysis: PR/FAQ"
+agent: wize-agent-analyst
 ---
 
 # PR/FAQ
