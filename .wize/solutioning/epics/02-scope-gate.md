@@ -1,6 +1,6 @@
 ---
 epic_id: 02-scope-gate
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: E02
 priority: 2

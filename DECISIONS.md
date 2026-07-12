@@ -148,6 +148,11 @@
 - **D8.4 — Versionamento dos workflows antigos:** cópias dos `workflow.md` monolíticos de `wize-create-architecture` e `wize-code-review` são arquivadas em `.wize/knowledge/decisions/` para referência, não mantidas em produção.
 - **D8.5 — Registro em catálogos:** skills adicionados a `src/core-skills/module.yaml` e `src/method-skills/module.yaml`; fluxos refletidos no `README.md`.
 
+### Fase 9 — Security Overlay + OpenCode nativo (2026-07-11)
+
+- **D9.1 — Security Overlay neste kit:** o perfil `security-overlay` (AI Pentester) passa a ser distribuído **dentro do `wize-dev-kit`** como 4º perfil opt-in do installer, com a persona **red-teamer** (`wize-sec-red-teamer`) em `src/security-overlay/`. _Supersede parcialmente D1.1 (3 perfis → 4 perfis), D3.2 (9 papéis → 9 core + 1 overlay) e D3.5 (security deixava de ser reservado para kit futuro)._ As entradas históricas permanecem inalteradas como registro.
+- **D9.2 — OpenCode com wiring nativo (0.8.0):** o adapter OpenCode passa a gerar **agents e commands nativos** (`.opencode/agents/` + `.opencode/commands/`), com commands vinculados à persona dona e workers de fan-out isolados — em vez do fallback genérico.
+
 ## Perguntas em aberto
 
 _(serão preenchidas conforme a entrevista avança)_

@@ -1,6 +1,6 @@
 ---
 epic_id: 06-dast
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: E06
 priority: 6

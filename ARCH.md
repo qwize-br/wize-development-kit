@@ -9,7 +9,7 @@
 ## 1. Identidade
 
 - **Nome do pacote npm:** `wize-dev-kit`
-- **CLI:** `wize-dev-kit` (subcomandos: `install`, `update`, `uninstall`, `agent`, `workflow`, `sync`)
+- **CLI:** `wize-dev-kit` (subcomandos: `install`, `update`, `uninstall`, `list`, `sync`, `agent`, `workflow`, `validate`, `doctor`, `document-project`)
 - **Namespace de arquivos/agentes/skills:** `wize-*`
 - **Licença:** MIT — open-source desde o dia 1.
 - **Tema visual do roster:** Marvel.
@@ -19,15 +19,16 @@
 
 ## 2. Modelo de distribuição
 
-**1 pacote, 3 perfis selecionáveis, overlays combináveis.**
+**1 pacote, 4 perfis selecionáveis, overlays combináveis.**
 
 ```
 wize-dev-kit (pacote npm)
 │
 ├── Wize Dev Core      ← base completa (sempre instalada)
 ├── Wize Web Dev       ← overlay opt-in
-└── Wize App Development ← overlay opt-in
-                     (Web + App podem coexistir no mesmo repo)
+├── Wize App Development ← overlay opt-in
+└── Wize Security Overlay ← overlay opt-in (AI Pentester / red-teamer)
+                     (overlays podem coexistir no mesmo repo)
 ```
 
 - Selecionar perfil no installer aplica Core + overlay correspondente.
@@ -36,7 +37,7 @@ wize-dev-kit (pacote npm)
 
 ---
 
-## 3. Roster final (9 personas Marvel)
+## 3. Roster final (9 core personas + 1 overlay persona)
 
 | Persona | Code | Papel | Fase principal |
 |---|---|---|---|
@@ -49,6 +50,7 @@ wize-dev-kit (pacote npm)
 | Tony Stark | `wize-agent-architect` | System Architect | 3 (Solutioning) |
 | Hawkeye | `wize-agent-test-architect` | Test Architect (TEA) | Gates 2/3/4 |
 | Shuri | `wize-agent-dev` | Senior Developer | 4 (Implementation) |
+| red-teamer | `wize-sec-red-teamer` | AI Pentester (security-overlay, opt-in) | Transversal |
 
 ---
 
@@ -162,12 +164,12 @@ E nos IDE-targets (selecionáveis no install):
 ```
 .claude/skills/wize-*           (Claude Code)
 .cursor/rules/wize-*.mdc        (Cursor)
-.windsurf/...                   (Windsurf)
-.codex/...                      (Codex)
-.continue/...                   (Continue)
-.kimi/...                       (Kimi Code)
-.opencode/...                   (OpenCode)
-.antigravity/...                (Antigravity CLI/IDE)
+.windsurf/rules/wize-*.md       (Windsurf)
+.agents/skills/wize-*           (Codex — .codex/ foi revertido na 0.7.3)
+.continue/prompts/wize-*.prompt (Continue)
+.kimi/skills/wize-*             (Kimi Code)
+.opencode/agents/ + .opencode/commands/  (OpenCode)
+.agent/skills/wize-*            (Antigravity CLI/IDE)
 .wize/agents/                   (fallback genérico)
 ```
 
@@ -196,7 +198,7 @@ wize-dev-kit install
   ├─ Detecta: greenfield vs brownfield
   ├─ Pergunta: perfil(s) — Core / +Web / +App
   ├─ Pergunta: IDE targets — multi-select
-  ├─ Pergunta: idioma e output_folder
+  ├─ Pergunta: idioma (output folder é fixo: .wize/)
   ├─ Cria .wize/ + adapters IDE
   ├─ Se brownfield: oferece `wize-document-project`
   └─ Se ok: dispara onboarding (Wizer → Pepper/Mantis/Tony)
@@ -268,7 +270,7 @@ wize-dev-kit sync     # regera adapters IDE
 
 - 3 skills meta: `wize-create-agent`, `wize-create-skill`, `wize-create-workflow`.
 - Customização de built-ins via `.wize/custom/{tipo}/{code}/customize.toml` (override sem fork).
-- Validação obrigatória: schema → lint → dry-run.
+- Validação: checks estruturais (validação de schema via Ajv pendente de orçamento de dependências).
 - Auto-sync: regera adapters de todos os IDEs ativos a cada criação/edição.
 
 ---
@@ -295,7 +297,7 @@ wize-dev-kit/
 ├── ROSTER.md                   # ← quadro Marvel
 │
 ├── src/
-│   ├── core-skills/            # Core (advanced-elicitation, brainstorming, party-mode, etc)
+│   ├── core-skills/            # Core (advanced-elicitation, brainstorming, spec, etc)
 │   │   └── wize-*/
 │   ├── method-skills/          # AI Agile dev: 1-analysis, 2-plan, 3-solutioning, 4-implementation
 │   │   ├── 1-analysis/
@@ -347,12 +349,19 @@ wize-dev-kit/
 │   │   └── wize-create-workflow/
 │   ├── web-overlay/            # Wize Web Dev overlay
 │   │   ├── wize-web-scaffold/
+│   │   ├── wize-web-deploy/
 │   │   ├── wize-web-seo-audit/
 │   │   └── module.yaml
-│   └── app-overlay/            # Wize App Development overlay
-│       ├── wize-app-scaffold/
-│       ├── wize-app-release-channels/
-│       └── module.yaml
+│   ├── app-overlay/            # Wize App Development overlay
+│   │   ├── wize-app-scaffold/
+│   │   ├── wize-app-release-channels/
+│   │   ├── wize-app-store-listing/
+│   │   └── module.yaml
+│   └── security-overlay/       # Wize Security Overlay (AI Pentester, opt-in)
+│       ├── agents/             # red-teamer (wize-sec-red-teamer)
+│       ├── skills/
+│       ├── data/
+│       └── _shared/
 │
 ├── adapters/                   # IDE adapters
 │   ├── claude-code/
@@ -371,6 +380,12 @@ wize-dev-kit/
 │       ├── detect.js           # greenfield/brownfield detector
 │       ├── onboarding.js
 │       ├── sync.js
+│       ├── render-shared.js
+│       ├── baseline.js
+│       ├── version-check.js
+│       ├── setup-helpers.js
+│       ├── commands/
+│       ├── document-project/
 │       └── validators/         # schema, lint, dry-run
 │
 └── test/                       # specs validating skills + workflows

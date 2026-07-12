@@ -1,6 +1,6 @@
 ---
 epic_id: 07-report
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: E07
 priority: 7

@@ -25,7 +25,7 @@ Pick your profiles and IDE, then in your AI IDE say *"Activate Wizer and brief h
 
 Wize Development Kit (WDK) is an installable **AI agent stack** that runs inside your AI IDE (Claude Code, Cursor, Windsurf, Codex, and others) and writes structured artifacts to a hidden `.wize/` folder in your repo. It takes a project from **brief → PRD → UX strategy → architecture → tested implementation**, and can also **pentest the running app and plan the remediation sprint**.
 
-It is **file-first and zero-runtime**: the agents are Markdown skills your IDE reads; the tooling is plain Node (no new npm dependencies). Nothing is mocked — every step reads the previous artifact and writes a real one.
+It is **file-first and zero-runtime**: the agents are Markdown skills your IDE reads; the tooling is plain Node (a single runtime dependency, `prompts`, powers the interactive installer — nothing is added to your project). Nothing is mocked — every step reads the previous artifact and writes a real one.
 
 ### Profiles (combinable in monorepos)
 
@@ -57,8 +57,7 @@ The installer asks:
 1. **Profile(s)** — Core / +Web / +App / +Security (multi-select).
 2. **IDE target(s)** — Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity, or generic fallback (multi-select).
 3. **Languages** — communication + document output.
-4. **Output folder** — default `.wize/`.
-5. **Brownfield** — offers to run `wize-document-project` to baseline the existing codebase.
+4. **Brownfield** — offers to run `wize-document-project` to baseline the existing codebase.
 
 After install, open your IDE and say:
 
@@ -204,9 +203,11 @@ When the **Wize Security** profile is installed, the `red-teamer` persona runs a
 npx wize-dev-kit install         # interactive setup
 npx wize-dev-kit update          # bring an installed kit up to the current version
 npx wize-dev-kit sync            # re-render IDE adapters after editing config
+npx wize-dev-kit list            # list built-in + custom agents
 npx wize-dev-kit agent list      # list built-in + custom agents
 npx wize-dev-kit agent create    # scaffold a new custom agent (validated + dry-run)
 npx wize-dev-kit agent edit <code>  # override a built-in agent
+npx wize-dev-kit workflow <create|list>  # scaffold or list custom workflows
 npx wize-dev-kit doctor          # diagnose kit / project / adapters / gates
 npx wize-dev-kit validate        # structural checks on the kit assets
 npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--target <path>]

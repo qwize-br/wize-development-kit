@@ -1,9 +1,9 @@
 # Adapter — antigravity
 
-Antigravity CLI + IDE.
+Antigravity CLI + IDE skills.
 
-- **Target path:** `.antigravity/agents/`
-- **File pattern:** `wize-*.md`
-- **Format:** markdown
+- **Target path:** `.agent/skills/`
+- **File pattern:** `wize-*/SKILL.md`
+- **Format:** Anthropic-compatible `SKILL.md`
 
-This v0.1 adapter ships the descriptor only. Actual rendering of `wize-*` agents/skills/workflows into the target IDE format is on the v0.2 roadmap.
+Renders the Wize skills directly into the folder Antigravity loads at startup.

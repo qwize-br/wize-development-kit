@@ -6,12 +6,12 @@
   "required": ["code", "name", "title", "module", "description"],
   "additionalProperties": true,
   "properties": {
-    "code": { "type": "string", "pattern": "^wize-(agent|orchestrator)-[a-z0-9-]+$|^wize-orchestrator$" },
+    "code": { "type": "string", "pattern": "^wize-(agent|orchestrator|sec)-[a-z0-9-]+$|^wize-orchestrator$" },
     "name": { "type": "string", "minLength": 1 },
     "title": { "type": "string", "minLength": 1 },
     "icon": { "type": "string" },
     "team": { "type": "string" },
-    "module": { "enum": ["orchestrator", "method", "tea", "builder", "core", "web-overlay", "app-overlay", "custom"] },
+    "module": { "enum": ["orchestrator", "method", "tea", "builder", "core", "web-overlay", "app-overlay", "security-overlay", "custom"] },
     "phase": { "type": "string" },
     "description": { "type": "string", "minLength": 10 },
     "style": {

@@ -1,5 +1,19 @@
 # Sprint Status
 
+## Post-0.6.0 maintenance — 2026-06-21 → 2026-07-04 — **shipped via `wize-quick-dev`**
+
+Releases após o fechamento do sprint security-overlay rodaram como quick-dev
+(sem sprint formal). Registro em `.wize/implementation/quick-dev-log.md`:
+
+- **v0.7.3** (2026-06-27) — codex adapter volta ao path público `.agents/skills/`.
+- **v0.8.0** (2026-07-04) — OpenCode native wiring (`agent:`/`subtask:`), reuse-before-write
+  ladder da Shuri + fan-out pattern do Wizer, installer sugere comando inicial por estado
+  do repo, e `docs/harnesses/*` (9 adapters, en+pt-BR). Suite verde (246), validate verde.
+
+**Aberto:** RETRO-1 (testes de contrato real por ferramenta) — ver `backlog.md`.
+
+---
+
 ## Sprint security-overlay — 2026-06-17 → 2026-06-21 — **CLOSED**
 
 **Goal:** Entregar o `security-overlay` (AI Pentester) — pipeline file-first completo + report executivo, instalável como profile.
@@ -10,7 +24,7 @@
 - Release v0.6.0 (Trusted Publishing + provenance + GitHub Release).
 - Retrospectiva: `.wize/implementation/retrospective/2026-06-21.md`.
 
-**Carry-over:** 0. **Próximo:** sprint de correção dos findings do scan + feature de auto-sugestão de sprint pós-scan.
+**Carry-over:** 0. **Próximo:** feature de auto-sugestão de sprint pós-scan (entregue — `_shared/backlog.js`) e, a partir de 2026-07-11, o épico E09 (UX/intent) aberto no review. Ver `backlog.md`.
 
 ---
 

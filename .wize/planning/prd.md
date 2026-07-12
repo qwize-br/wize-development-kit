@@ -8,6 +8,8 @@ brief: .wize/planning/brief.md
 
 # PRD — wize-dev-kit · `security-overlay` (AI Pentester)
 
+> **Nota:** Este PRD captura o snapshot de planejamento do security-overlay 0.6.0 (2026-06-17) e antecede o E08 (preflight) e a feature de post-scan/security-backlog — ambos adicionados após a validação.
+
 > Sem trigger-map (decisão de Fase 1: overlay técnico, personas já claras no brief). As goals referenciam itens de escopo diretamente.
 
 ## Goals
@@ -46,6 +48,8 @@ brief: .wize/planning/brief.md
 - **E05:** Como dev de AppSec, quero SAST de secrets e deps, para achar vulnerabilidades no código sem app rodando.
 - **E06:** Como usuário, quero DAST (nuclei/nikto/sqlmap/ffuf) com exploit gated, para provar vulnerabilidades no app rodando.
 - **E07:** Como usuário, quero relatório `.md`+`.html` consolidado por fase e final, para apresentar findings dentro e fora da máquina.
+
+> Nota (pós-validação): o E08 (preflight — detecção de OS/arch + package-manager + geração de install-script) e a saída de post-scan security-backlog foram adicionados após a validação deste PRD.
 
 ## Acceptance criteria
 
@@ -126,7 +130,7 @@ Política atual `advisory` (`.wize/config/tea.toml`). Gates relevantes ao overla
 **Status:** validated
 
 **Signatories**
-- Maria Hill (PM) — concerns: none. 35 ACs observáveis, INVEST ok no nível backbone (Tony fatia E03/E06).
+- Maria Hill (PM) — concerns: none. 30 ACs observáveis, INVEST ok no nível backbone (Tony fatia E03/E06).
 - Pepper Potts (Analyst) — concern (aceito): goals não ancoram em trigger-map porque não há um; overlay técnico, personas claras no brief. Desvio documentado.
 - Mantis (UX) — concerns: none. Única UI implicada é o `report.html` (E07); endereçável via playbooks `semantic-html`/`wcag-aa`.
 - Fury (Solution Strategy) — concern: NFR pointer cita tightenings (isolamento de rede, dados locais, fail-safe) que devem entrar no `nfr-principles.md` quando ele rodar `wize-tech-vision`/`wize-nfr-principles`.

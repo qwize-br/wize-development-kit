@@ -52,7 +52,7 @@ signoffs:
 - [x] Secrets vault wired; no secret in repo — NFR Security #5 (redaction) garante.
 
 ## Notes
-- 7 epics, **26 stories** (atualizado após limpeza de arquivos de outros overlays que estavam no diretório `solutioning`).
+- 7 epics / 26 stories at readiness time (E08 preflight + its story added later → 8 epics / 27 stories on disk today) (atualizado após limpeza de arquivos de outros overlays que estavam no diretório `solutioning`).
 - TEA policy: advisory; gates `risk` once-after-architecture, `review`/`gate` per-story, `nfr` per-epic.
 - 4 ADRs aceitos (gate-shared, scope.md format, render-report zero-dep, --active flag).
 - Branch: `feature/security-overlay` (commits não vão à main; merge via PR — política global do user).

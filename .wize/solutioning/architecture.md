@@ -24,7 +24,7 @@ Overlay file-first `security-overlay` no trilho existente do kit. **Stack:** Nod
 ### Requirements Overview
 
 **Functional Requirements:**
-35 ACs cobrindo 7 epics. E01 (empacotamento) e E07 (relatório) são os extremos do pipeline; E02 (gate de escopo) é o módulo central reutilizado por E03–E06; E03 é a única composição multi-skill; E04–E06 são folhas que orquestram ferramentas externas via Bash.
+30 ACs cobrindo 7 epics (E08 preflight added post-validation). E01 (empacotamento) e E07 (relatório) são os extremos do pipeline; E02 (gate de escopo) é o módulo central reutilizado por E03–E06; E03 é a única composição multi-skill; E04–E06 são folhas que orquestram ferramentas externas via Bash.
 
 **Non-Functional Requirements:**
 7 non-negotiables de Security (categoria central), 3 de Reliability (idempotência do artefato), 4 de Maintainability (compatibilidade com kit), 2 de Accessibility (WCAG 2.2 AA + semantic-html no report.html), 2 de Cost (zero infra + zero-dep npm).
@@ -398,30 +398,6 @@ src/security-overlay/
 - Toda skill: `detect → load scope → gate → execFile (filtered args) → write partial → log refusals`. Sequência canônica.
 - Reportar degradações no parcial com `partial_status: incomplete` quando aplicável; nunca abortar pipeline.
 - Rerun de `wize-sec-report` é idempotente.
-
-## Stack
-
-- Language:
-- Front-end:
-- Back-end:
-- DB:
-- Auth:
-- Hosting:
-- Observability:
-- Test:
-
-## Components
-
-| Component | Responsibility | Boundary |
-|---|---|---|
-
-## Data model
-
-## Sequences
-
-## Cross-cutting concerns
-
-## NFR check
 
 ## ADRs
 

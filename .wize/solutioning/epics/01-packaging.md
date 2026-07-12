@@ -1,6 +1,6 @@
 ---
 epic_id: 01-packaging
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: E01
 priority: 1
