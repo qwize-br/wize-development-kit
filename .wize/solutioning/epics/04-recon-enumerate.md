@@ -1,6 +1,6 @@
 ---
 epic_id: 04-recon-enumerate
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: E04
 priority: 4

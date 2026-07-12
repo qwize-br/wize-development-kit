@@ -1,5 +1,5 @@
 # generated: 2026-06-14
-# last_updated: 2026-06-14
+# last_updated: 2026-07-11
 # project: wize-dev-kit
 # project_key: WDK
 # tracking_system: file-system
@@ -24,58 +24,73 @@
 # - Epic transitions to 'in-progress' automatically when first story is created
 # - Stories can be worked in parallel if team capacity allows
 # - Developer typically creates next story after previous one is 'done'
+#
+# 2026-07-11 — regenerated against the real .wize/solutioning/stories tree.
+# The previous state machine still described the pre-security-overlay story set
+# (old E01..E06 flat stories) deleted in commit 370dc60. It now tracks the
+# shipped security-overlay cycle: 8 epics / 27 stories, all done (v0.6.0).
 
 generated: 2026-06-17
-last_updated: 2026-06-17
+last_updated: 2026-07-11
+active_cycle: security-overlay
 project: wize-dev-kit
 project_key: WDK
 tracking_system: file-system
 story_location: .wize/solutioning/stories
 
 development_status:
+  # Epic 1 — Packaging (overlay installable + renderable)
   epic-1: done
   E01-S01: done
   E01-S02: done
   E01-S03: done
   E01-S04: done
-  E01-S05: done
-  E01-S06: done
-  E01-S07: done
-  E01-S08: done
-  E01-S09: done
-  E01-S10: done
-  epic-1-retrospective: done
+  # Epic 2 — Scope gate & authorization
   epic-2: done
   E02-S01: done
   E02-S02: done
   E02-S03: done
   E02-S04: done
-  E02-S05: done
-  E02-S06: done
-  epic-2-retrospective: done
+  # Epic 3 — Persona red-teamer & orchestrator
   epic-3: done
   E03-S01: done
   E03-S02: done
   E03-S03: done
   E03-S04: done
-  E03-S05: done
-  E03-S06: done
-  epic-3-retrospective: done
+  # Epic 4 — Recon & enumerate
   epic-4: done
   E04-S01: done
   E04-S02: done
   E04-S03: done
-  epic-4-retrospective: done
+  # Epic 5 — SAST
   epic-5: done
   E05-S01: done
   E05-S02: done
-  E05-S03: done
-  E05-S04: done
-  epic-5-retrospective: done
+  # Epic 6 — DAST
   epic-6: done
   E06-S01: done
   E06-S02: done
   E06-S03: done
   E06-S04: done
-  epic-6-retrospective: done
-
+  E06-S05: done
+  # Epic 7 — Report
+  epic-7: done
+  E07-S01: done
+  E07-S02: done
+  E07-S03: done
+  E07-S04: done
+  # Epic 8 — Preflight (added post-validation)
+  epic-8: done
+  E08-S01: done
+  # Sprint retrospective — .wize/implementation/retrospective/2026-06-21.md
+  security-overlay-retrospective: done
+  # Epic 9 — UX / intent (opened by the 2026-07-11 review; not yet started)
+  epic-9: backlog
+  E09-S01: backlog
+  E09-S02: backlog
+  E09-S03: backlog
+  E09-S04: backlog
+  E09-S05: backlog
+  E09-S06: backlog
+  E09-S07: backlog
+  E09-S08: backlog

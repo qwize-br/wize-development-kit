@@ -25,7 +25,7 @@ Escolha os perfis e a IDE; depois, na sua IDE com IA, diga *"Ative o Wizer e dê
 
 O Wize Development Kit (WDK) é uma **stack de agentes de IA** instalável que roda dentro da sua IDE com IA (Claude Code, Cursor, Windsurf, Codex e outras) e grava artefatos estruturados em uma pasta oculta `.wize/` no seu repositório. Leva um projeto de **brief → PRD → estratégia de UX → arquitetura → implementação testada** e também pode **fazer pentest da aplicação rodando e planejar a sprint de correção**.
 
-É **file-first e zero-runtime**: os agentes são skills em Markdown que sua IDE lê; o tooling é Node puro (sem novas dependências npm). Nada é simulado — cada passo lê o artefato anterior e grava um real.
+É **file-first e zero-runtime**: os agentes são skills em Markdown que sua IDE lê; o tooling é Node puro (uma única dependência de runtime, `prompts`, usada pelo instalador interativo — nada é adicionado ao seu projeto). Nada é simulado — cada passo lê o artefato anterior e grava um real.
 
 ### Perfis (combináveis em monorepos)
 
@@ -57,8 +57,7 @@ O instalador pergunta:
 1. **Perfil(is)** — Core / +Web / +App / +Security (múltipla escolha).
 2. **IDE(s) alvo** — Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity ou fallback genérico (múltipla escolha).
 3. **Idiomas** — comunicação + saída de documentos.
-4. **Pasta de saída** — padrão `.wize/`.
-5. **Brownfield** — oferece rodar `wize-document-project` para criar a baseline do código existente.
+4. **Brownfield** — oferece rodar `wize-document-project` para criar a baseline do código existente.
 
 Após instalar, abra sua IDE e diga:
 
@@ -204,9 +203,11 @@ Com o perfil **Wize Security** instalado, a persona `red-teamer` roda um pentest
 npx wize-dev-kit install         # setup interativo
 npx wize-dev-kit update          # atualiza um kit instalado para a versão atual
 npx wize-dev-kit sync            # re-renderiza os adapters de IDE após editar a config
+npx wize-dev-kit list            # lista agentes nativos + customizados
 npx wize-dev-kit agent list      # lista agentes nativos + customizados
 npx wize-dev-kit agent create    # cria um novo agente customizado (validado + dry-run)
 npx wize-dev-kit agent edit <code>  # sobrescreve um agente nativo
+npx wize-dev-kit workflow <create|list>  # cria ou lista workflows customizados
 npx wize-dev-kit doctor          # diagnostica kit / projeto / adapters / gates
 npx wize-dev-kit validate        # checagens estruturais nos assets do kit
 npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--target <path>]

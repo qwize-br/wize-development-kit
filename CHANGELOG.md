@@ -5,6 +5,27 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.8.1] — 2026-07-12
+
+Release de alinhamento: documentação ↔ realidade, fecho do ciclo ágil e `/wize-help` corrigido. Sem novas features de produto; suite verde (246 testes, validate 73 arquivos).
+
+### Fixed
+
+- **`/wize-help` roteava contra o arquivo errado.** Lia `.wize/implementation/sprint-status.md`, mas o canônico é `sprint-status.yaml` — toda detecção de Fase 4 falhava e projetos em sprint eram re-roteados para o começo. Reescrito e re-renderizado para todos os adapters: agora lê o `.yaml`, conhece o atalho `wize-quick-dev`, inclui os gates `wize-validate-prd` e `wize-check-implementation-readiness`, a persona `red-teamer` e os workflows de overlay, tem branch para gate FAIL → `wize-correct-course`, e não anuncia mais o alias `/wize` inexistente. Mais conciso (heurístico em tabela única).
+- **Schemas rejeitavam os assets do security-overlay já publicados.** `agent.schema.json` passa a aceitar `code: wize-sec-*` e `module: security-overlay`; `workflow.schema.json` aceita `overlay: security`.
+
+### Docs
+
+- **Baseline `wize-document-project` atualizado** (estava congelado em v0.3.0 apesar do "refresh" de 2026-07-04): versão, contagem de agentes (10), core skills (10), testes (24 arquivos / 246), LOC, commits e subcomandos de CLI. Riscos e perguntas obsoletas removidos.
+- **README.es** trazido à paridade com en/pt-BR (estava em 0.7.0, sem a seção de harnesses). Nos três READMEs: removida a pergunta de "output folder" (o instalador não pergunta), corrigida a afirmação sobre dependências npm (`prompts`), e documentados os comandos `list` e `workflow`.
+- **ARCH.md / DECISIONS.md / ROSTER.md / AGENTS.md e os 9 READMEs de adapter** atualizados para 4 profiles, a 10ª persona (`red-teamer`) e os paths reais de cada adapter; decisão Fase 9 registrada.
+- **PRD / architecture / readiness**: contagem de ACs corrigida (30), stubs de template vazios removidos, notas de snapshot 0.6.0.
+
+### Cycle
+
+- **Registro ágil reconciliado.** `sprint-status.yaml` regenerado contra a árvore real (8 epics / 27 stories, todas `done`); epics `01`–`07` fechados; releases 0.7.x/0.8.0 registradas em `quick-dev-log.md` e `sprint-status.md`; `backlog.md` atualizado.
+- **Épico E09 aberto** ("Melhor aproveitamento de components e intenção do usuário") em `.wize/solutioning/epics/09-ux-intent.md`, com 8 stories verificadas contra o código; relatório completo em `REVIEW-2026-07-11.md`.
+
 ## [0.8.0] — 2026-07-04
 
 ### Added

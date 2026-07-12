@@ -11,7 +11,7 @@
     "phase": { "type": "string" },
     "owner": { "type": "string" },
     "absorbs": { "type": "string" },
-    "overlay": { "enum": ["web", "app"] },
+    "overlay": { "enum": ["web", "app", "security"] },
     "status": { "enum": ["stub", "draft", "ready", "stable"] },
     "gate": { "enum": ["risk", "design", "trace", "nfr", "review", "gate"] },
     "when": { "type": "string" }

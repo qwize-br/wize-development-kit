@@ -37,10 +37,29 @@
 
 ## Próxima sprint sugerida
 
-Backlog drenado. Próximo epic deve ser dirigido por uso real:
+O ciclo P1–P3 do parity-com-BMAD foi drenado, mas o ciclo `security-overlay` e as
+releases 0.7.x/0.8.0 deixaram itens em aberto (levantados no review de 2026-07-11).
 
-- Após um projeto real (ex.: `site-qwize`), rodar `/wize-investigate` em problemas observados.
+### Ação da retrospectiva 2026-06-21 ainda em aberto
+
+| ID | Demanda | Onde fica | Status |
+|---|---|---|---|
+| RETRO-1 | Teste de contrato real por ferramenta (smoke opt-in): roda o binário de verdade (skip se ausente) validando a sintaxe da CLI — pega quebra de versão sem run manual. | `test/tool-contract-*.test.js` (a criar) | ⬜ pendente — owner: Hawkeye + Shuri |
+
+> RETRO-2 (centralizar `mergePartial`) e RETRO-3 (auto-sugestão de sprint pós-scan)
+> foram entregues: `src/security-overlay/_shared/partial.js` (`writePartial`, usado por
+> todos os scripts SAST/DAST) e `_shared/backlog.js` + CTA em `wize-sec-report`.
+
+### Épico E09 — Melhor aproveitamento de components e intenção do usuário (novo)
+
+Aberto pelo review de 2026-07-11 (`REVIEW-2026-07-11.md`). Stories em
+`.wize/solutioning/epics/09-ux-intent.md`. Maior impacto: bug de descrição block-scalar
+(`— |`) em todas as skills de persona; roteamento por intenção no Wizer/wize-help;
+`--sign-scope` + criação guiada de escopo; `uninstall` que remove os adapters de fato;
+skills de _ship_ (release/changelog); CI que roda testes em push/PR.
+
+### Próximo epic dirigido por uso real
+
+- Após um projeto real, rodar `/wize-investigate` em problemas observados.
 - Coletar feedback dos agentes (qual skill pediu mais clarificações?).
 - Adicionar demandas conforme necessário.
-
-Até lá, foco em polimento: testar o ciclo completo em um projeto real, ajustar o que quebrar.

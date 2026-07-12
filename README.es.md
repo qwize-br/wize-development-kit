@@ -25,7 +25,7 @@ Elige tus perfiles y tu IDE; luego, en tu IDE con IA, di *"Activa a Wizer y dale
 
 Wize Development Kit (WDK) es un **stack de agentes de IA** instalable que funciona dentro de tu IDE con IA (Claude Code, Cursor, Windsurf, Codex y otros) y escribe artefactos estructurados en una carpeta oculta `.wize/` de tu repositorio. Lleva un proyecto de **brief → PRD → estrategia de UX → arquitectura → implementación testeada**, y también puede **hacer pentest de la app en ejecución y planificar el sprint de remediación**.
 
-Es **file-first y zero-runtime**: los agentes son skills en Markdown que tu IDE lee; el tooling es Node puro (sin nuevas dependencias npm). Nada está simulado — cada paso lee el artefacto anterior y escribe uno real.
+Es **file-first y zero-runtime**: los agentes son skills en Markdown que tu IDE lee; el tooling es Node puro (una única dependencia npm — `prompts`, usada solo por el instalador; nada se añade a tu proyecto). Nada está simulado — cada paso lee el artefacto anterior y escribe uno real.
 
 ### Perfiles (combinables en monorepos)
 
@@ -57,12 +57,29 @@ El instalador pregunta:
 1. **Perfil(es)** — Core / +Web / +App / +Security (selección múltiple).
 2. **IDE(s) objetivo** — Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity o fallback genérico (selección múltiple).
 3. **Idiomas** — comunicación + salida de documentos.
-4. **Carpeta de salida** — por defecto `.wize/`.
-5. **Brownfield** — ofrece ejecutar `wize-document-project` para crear la baseline del código existente.
+4. **Brownfield** — ofrece ejecutar `wize-document-project` para crear la baseline del código existente.
 
 Tras instalar, abre tu IDE y di:
 
 > "Activa a Wizer y dale el briefing del proyecto."
+
+---
+
+## Harnesses soportados
+
+Los 9 IDEs objetivo se renderizan desde la misma fuente; el formato y la mecánica varían por harness. **OpenCode** recibe la integración más profunda — la separación persona/workflow del kit se mapea sobre las primitivas propias de OpenCode (`mode: primary|subagent`, `agent:`, `subtask:`) en lugar de aplanarse en un único tipo de archivo.
+
+| Harness | Salida | Destacado |
+|---|---|---|
+| **OpenCode** 🆕 | `.opencode/agents/` + `.opencode/commands/` | `mode: primary\|subagent` nativo; los comandos se vinculan automáticamente a su persona propietaria (`agent:`); los workers de fan-out corren aislados (`subtask: true`). [Docs →](docs/harnesses/opencode.md) |
+| **Claude Code** | `.claude/skills/*/SKILL.md` | Formato Skill de Anthropic; fan-out ad-hoc vía Task/Agent tool (`wize-code-review`). [Docs →](docs/harnesses/claude-code.md) |
+| **Codex** | `.agents/skills/*/SKILL.md` | Mismo formato Skill + `AGENTS.md` en la raíz. [Docs →](docs/harnesses/codex.md) |
+| **Kimi Code** | `.kimi/skills/*/SKILL.md` | Mismo formato Skill; autodetecta árboles de skills de Claude/Codex. [Docs →](docs/harnesses/kimi-code.md) |
+| **Antigravity** | `.agent/skills/*/SKILL.md` | Mismo formato Skill + `AGENTS.md` en la raíz. [Docs →](docs/harnesses/antigravity.md) |
+| **Cursor** | `.cursor/rules/*.mdc` | Reglas on-demand (`alwaysApply: false`), emparejadas por descripción. [Docs →](docs/harnesses/cursor.md) |
+| **Windsurf** | `.windsurf/rules/*.md` | Markdown plano; el modo de activación se define dentro del IDE. [Docs →](docs/harnesses/windsurf.md) |
+| **Continue.dev** | `.continue/prompts/*.prompt` | Slash commands con `invokable: true`. [Docs →](docs/harnesses/continue.md) |
+| **Fallback genérico** | `.wize/agents/*.md` + `AGENTS.md` en la raíz | Para cualquier IDE sin adapter dedicado. [Docs →](docs/harnesses/generic.md) |
 
 ---
 
@@ -186,9 +203,12 @@ Con el perfil **Wize Security** instalado, la persona `red-teamer` ejecuta un pe
 npx wize-dev-kit install         # setup interactivo
 npx wize-dev-kit update          # actualiza un kit instalado a la versión actual
 npx wize-dev-kit sync            # re-renderiza los adapters de IDE tras editar la config
+npx wize-dev-kit list            # lista agentes, skills y workflows instalados
 npx wize-dev-kit agent list      # lista agentes nativos + personalizados
 npx wize-dev-kit agent create    # crea un nuevo agente personalizado (validado + dry-run)
 npx wize-dev-kit agent edit <code>  # sobrescribe un agente nativo
+npx wize-dev-kit workflow list   # lista workflows nativos + personalizados
+npx wize-dev-kit workflow create # crea un nuevo workflow personalizado
 npx wize-dev-kit doctor          # diagnostica kit / proyecto / adapters / gates
 npx wize-dev-kit validate        # chequeos estructurales en los assets del kit
 npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--target <path>]
@@ -203,12 +223,13 @@ npx wize-dev-kit uninstall       # elimina .wize/ (tu código queda intacto)
 - [`ROSTER.md`](ROSTER.md) — personas con estilo, rol, equivalencias BMAD.
 - [`DECISIONS.md`](DECISIONS.md) — registro de decisiones.
 - [`CHANGELOG.md`](CHANGELOG.md) — historial de releases.
+- [`docs/harnesses/`](docs/harnesses/) — un doc por [harness soportado](#harnesses-soportados), en inglés.
 
 ---
 
 ## Estado
 
-**v0.7.0 — beta.** El ciclo completo (análisis → plan → solución → implementación) está montado con 10 agentes y una biblioteca estructurada de skills. El `security-overlay` (Pentester de IA) entrega un pipeline de pentest completo, un informe ejecutivo (puntuación de riesgo + briefing + plan de acción por IA) y planificación de remediación post-scan — validado de principio a fin contra una aplicación Laravel/PHP real. Los adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode y Antigravity se regeneran automáticamente.
+**v0.8.0 — beta.** El ciclo completo (análisis → plan → solución → implementación) está montado con 10 agentes y una biblioteca estructurada de skills. El `security-overlay` (Pentester de IA) entrega un pipeline de pentest completo, un informe ejecutivo (puntuación de riesgo + briefing + plan de acción por IA) y planificación de remediación post-scan — validado de principio a fin contra una aplicación Laravel/PHP real. Los adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode y Antigravity se regeneran automáticamente — [OpenCode](docs/harnesses/opencode.md) recibe wiring nativo de `mode`/`agent`/`subtask`, la integración más profunda de las 9.
 
 ---
 

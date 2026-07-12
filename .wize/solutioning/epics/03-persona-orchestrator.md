@@ -1,6 +1,6 @@
 ---
 epic_id: 03-persona-orchestrator
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: E03
 priority: 3

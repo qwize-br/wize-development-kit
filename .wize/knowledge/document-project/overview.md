@@ -8,9 +8,9 @@ last_refreshed: 2026-07-04
 # Overview
 
 **Project:** wize-dev-kit  
-**What it is:** Installable AI-assisted development lifecycle kit. Brings 9 Marvel-themed agents (Wizer, Pepper, Peggy, Maria Hill, Mantis, Nick Fury, Tony Stark, Hawkeye, Shuri) into the user's repo via IDE-specific adapters, producing structured artifacts under `.wize/`.
+**What it is:** Installable AI-assisted development lifecycle kit. Brings 9 lifecycle personas + a 10th security-overlay persona (red-teamer, opt-in) (Wizer, Pepper, Peggy, Maria Hill, Mantis, Nick Fury, Tony Stark, Hawkeye, Shuri) into the user's repo via IDE-specific adapters, producing structured artifacts under `.wize/`.
 
-**Current version:** 0.3.0 (npm package `wize-dev-kit`).
+**Current version:** 0.8.0 (npm package `wize-dev-kit`).
 
 **Repository:** https://github.com/qwize-br/wize-development-kit
 
@@ -18,17 +18,17 @@ last_refreshed: 2026-07-04
 
 ## Size
 
-- Total tracked lines (src + tools + adapters + schemas + test): ~10,200 LOC.
+- Total tracked lines (src + tools + adapters + schemas + test): ~26,300 LOC (code dirs).
 - Runtime dependency count: 1 (`prompts`).
-- Test files: 10 (Node built-in `node:test` framework).
-- Recent commits (last 3 months): 22, all by André Dantas.
+- Test files: 24 (246 tests) (Node built-in `node:test` framework).
+- Recent commits (last 3 months): 50, all by André Dantas.
 - Markdown docs: README, ARCH, ROSTER, DECISIONS, CHANGELOG, AGENTS, plus per-adapter READMEs.
 
 ## What it ships
 
-- **Core runtime:** Node.js CLI (`tools/installer/wize-cli.js`) with subcommands: `install`, `update`, `uninstall`, `list`, `sync`, `agent`, `workflow`, `validate`, `doctor`, `help`.
-- **Method library:** 30 workflows under `src/method-skills/` covering analysis → planning → solutioning → implementation.
-- **Core skills:** 4 reusable skills (advanced-elicitation, brainstorming, shard-doc, review-adversarial).
+- **Core runtime:** Node.js CLI (`tools/installer/wize-cli.js`) with subcommands: `install`, `update`, `uninstall`, `list`, `sync`, `agent`, `workflow`, `validate`, `doctor`, `document-project`, `version`, `help`.
+- **Method library:** 31 workflows under `src/method-skills/` covering analysis → planning → solutioning → implementation.
+- **Core skills:** 10 core skills (advanced-elicitation, brainstorming, shard-doc, review-adversarial, review-edge-case-hunter, index-docs, editorial-review-prose, editorial-review-structure, customize, spec).
 - **TEA (Hawkeye):** 6 gates (risk, design, trace, nfr, review, gate) with advisory-by-default policy.
 - **Builder skills:** 3 meta-skills to create agents, skills, and workflows.
 - **Web / App overlays:** 3 workflows + playbook docs each.
@@ -54,7 +54,7 @@ IDE adapters render the same assets into each selected IDE's native format (e.g.
 
 ## User-facing maturity
 
-- v0.3.0 adds `doctor` and automated GitHub Releases.
+- v0.8.0 ships the opt-in security-overlay pipeline (red-teamer persona + `wize-sec-pentest`), OpenCode native wiring (personas/workflows mapped to harness-native agents/commands), and the `document-project` CLI subcommand.
 - Installer, update, sync, agent list/create/edit, and structural validation are implemented and smoke-tested in CI.
 - Many workflows are **ready** markdown specs but still executed by the IDE reading the skill; they are not independent Node scripts.
 - Self-dogfooding: this baseline itself is produced by the `wize-document-project` workflow (the kit documenting itself).

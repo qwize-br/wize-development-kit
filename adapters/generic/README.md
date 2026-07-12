@@ -6,4 +6,4 @@ Generic markdown fallback for any AI agent runtime that can read a folder of mar
 - **File pattern:** `wize-*.md`
 - **Format:** markdown
 
-This v0.1 adapter ships the descriptor only. Actual rendering of `wize-*` agents/skills/workflows into the target IDE format is on the v0.2 roadmap.
+Renders each Wize agent/skill/workflow as a plain markdown file that any runtime can read.

@@ -2,7 +2,7 @@
 
 This repo is wired with the [`wize-dev-kit`](https://www.npmjs.com/package/wize-dev-kit).
 Detailed artifacts live under `.wize/`. The agents below are activated through your AI IDE
-using slash commands (Claude Code, Codex, Cursor, Windsurf, Antigravity all read this file).
+using slash commands (Codex, Cursor, Windsurf, Antigravity all read this file).
 
 ## Roster
 

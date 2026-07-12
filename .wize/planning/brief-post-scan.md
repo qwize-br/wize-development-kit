@@ -1,5 +1,5 @@
 ---
-status: ready-for-prd
+status: shipped — implemented in src/security-overlay/_shared/backlog.js, not promoted into prd.md
 owner: Pepper Potts
 created: 2026-06-21
 feature: post-scan-planning

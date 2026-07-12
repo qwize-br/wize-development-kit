@@ -1,6 +1,6 @@
 ---
 epic_id: 05-sast
-status: ready
+status: done
 owner: Tony Stark + Maria Hill
 linked_prd: E05
 priority: 5

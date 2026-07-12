@@ -8,12 +8,12 @@ Each adapter renders the kit's agents/skills/workflows into the file layout that
 |---|---|---|---|
 | `claude-code` | `.claude/skills/wize-*/` | `SKILL.md` per agent/workflow | Default. Uses Claude Code skill folder pattern. |
 | `cursor` | `.cursor/rules/wize-*.mdc` | MDC | Each agent/skill becomes a rule file. |
-| `windsurf` | `.windsurf/agents/wize-*.md` | Markdown | Cascade-friendly. |
+| `windsurf` | `.windsurf/rules/wize-*.md` | Markdown | Cascade-friendly. |
 | `codex` | `.agents/skills/wize-*/` | `SKILL.md` per agent/workflow | OpenAI Codex. |
-| `continue` | `.continue/agents/wize-*.md` | Markdown | Continue agent slot. |
-| `kimi-code` | `.kimi/agents/wize-*.md` | Markdown | Moonshot Kimi Code. |
-| `opencode` | `.opencode/agents/wize-*.md` | Markdown | OpenCode CLI. |
-| `antigravity` | `.antigravity/agents/wize-*.md` | Markdown | Antigravity CLI + IDE. |
+| `continue` | `.continue/prompts/wize-*.prompt` | `.prompt` | Continue prompt slot. |
+| `kimi-code` | `.kimi/skills/wize-*/` | `SKILL.md` per agent/workflow | Moonshot Kimi Code. |
+| `opencode` | `.opencode/agents/wize-*.md` + `.opencode/commands/wize-*.md` | Markdown | OpenCode CLI. Native agents + commands. |
+| `antigravity` | `.agent/skills/wize-*/` | `SKILL.md` per agent/workflow | Antigravity CLI + IDE. |
 | `generic` | `.wize/agents/wize-*.md` | Markdown | Fallback for any agent that can read a folder of markdown. |
 
 ## Adapter shape
