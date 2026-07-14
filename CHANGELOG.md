@@ -5,6 +5,23 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-07-14
+
+A cadeia do WDK passa a operar por **mission contracts** — cada etapa declara objetivo, fontes de verdade, escopo, critérios de aceite, contratos de execução/validação e persistência em `.wize/`, no formato que modelos de longo horizonte executam melhor. Suite verde (246 testes, validate 73 arquivos).
+
+### Added
+
+- **`/wize-help mission`** — novo modo do Wizer: emite um mission contract preenchido a partir do estado do projeto (classe Quick Dev/Full Lifecycle, objetivo, fontes de verdade, escopo & limites, ACs, contratos de execução e validação, persistência, tier de subagentes), pronto para entregar à persona executora. Para Quick Dev, colapsa para a forma mínima.
+- **`wize-dev-story`** — seção "Operating contract" (inspecionar antes de editar, reuse ladder, evidência real de comandos, nunca parar no planejamento) e **Final report** estruturado em 9 itens (rota, resumo, arquivos, mapa AC→teste, comandos + resultados, artefatos `.wize/`, decisões, riscos residuais, próxima ação). Pre-PR check exige mapa AC→teste completo e nomeia explicitamente qualquer check que não rodou e por quê.
+- **`wize-quick-dev`** — "Operating contract (light)" com re-roteamento obrigatório para Full Lifecycle se a mudança crescer além de ~1h ou tocar feature/arquitetura/UX/segurança, e **Done report** compacto de 4 linhas.
+- **`wize-create-epics-and-stories` / `wize-create-story`** — templates de story ganham campos de contrato: **Sources of truth**, **Restrictions** (out-of-scope + comportamentos protegidos + compatibilidade + segurança), **Validation contract** (mapa AC→teste + checks obrigatórios) e **Done means**. Story sem esses campos não está ready-for-dev.
+- **Seleção de tier de modelo em fan-out** — persona do Wizer e AGENTS.md orientam a casar o tier do modelo com a tarefa ao despachar subagentes (leve para trabalho mecânico, padrão para implementação/revisão, alto só para arquitetura/decisões críticas/revisão adversarial final), passando o tier explicitamente quando o harness permitir. Apenas tiers genéricos — sem nomes de modelos de vendor no kit.
+
+### Changed
+
+- **`wize-help` Step 2** — a triagem quick-dev deixou de ser um "atalho" e virou decisão de contrato explícita (tabela Quick Dev vs Full Lifecycle + "nunca use Quick Dev para fugir dos artefatos; em dúvida, pergunte").
+- **`renderAgentsMd` + `AGENTS.md`** — o AGENTS.md gerado ganha bloco "Operating context": tratar `.wize/` + AGENTS.md + skills como instrução operacional e memória persistente (file-first), classificar a demanda via `/wize-help` antes de editar, e a nota de tier de subagentes. `AGENTS.md` da raiz regenerado pelo emitter (roster agora inclui a persona `red-teamer`, que faltava).
+
 ## [0.8.1] — 2026-07-12
 
 Release de alinhamento: documentação ↔ realidade, fecho do ciclo ágil e `/wize-help` corrigido. Sem novas features de produto; suite verde (246 testes, validate 73 arquivos).
