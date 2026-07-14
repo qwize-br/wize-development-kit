@@ -20,9 +20,13 @@ Tony drives. Shuri reads and proposes refinements before pulling the story.
 
 ## Inputs
 
+Read central docs first, expand by dependency; don't pad with unrelated files:
+
+- `AGENTS.md` + `.wize/config/project.toml` — profiles, languages, conventions.
 - `.wize/solutioning/architecture.md`
 - `.wize/solutioning/epics/{epic}.md`
 - `.wize/planning/prd.md` (the AC list)
+- `.wize/knowledge/document-project/` (brownfield baseline, if present)
 - (optional) `.wize/planning/ux/ux-design/{screen}.md`
 
 ## Output
@@ -61,14 +65,26 @@ Don't reword PRD ACs in a story — copy them verbatim. If they're not crisp eno
 
 Explicit. Other ACs the user might think this story touches, with a one-line reason it's not here.
 
-### 6. Notes for Shuri
+### 6. Sources of truth
+
+List the exact docs Shuri must read before coding: `AGENTS.md`, `project.toml`, `document-project/*`, the parent epic, `architecture.md`, the linked screen, the TEA test contract, and the related code + tests already on this path.
+
+### 7. Restrictions
+
+Beyond out-of-scope: name **protected behaviors** (what must not change), **compatibility** constraints (keys, contracts, migrations), and **security** constraints (boundary validation, authz). No silent scope creep — log recommended extras separately.
+
+### 8. Validation contract
+
+Declare the **AC → test** map and the **required checks** (unit / integration / e2e, lint, format, type-check, build, security when applicable) plus which UI states (loading / empty / error) must be asserted. Hawkeye writes the real `tea-design.md`, but this is the binding shape it fills.
+
+### 9. Notes for Shuri
 
 - Touch points: files Shuri will likely edit.
 - Reuse: components from `design-system` already named.
 - `testid` map: names Hawkeye expects.
 - Edge cases worth flagging (only ones not derivable from ACs).
 
-### 7. Notes for Hawkeye
+### 10. Notes for Hawkeye
 
 A one-paragraph hint: suggested split, fixtures, mocks, environment. Hawkeye writes the real `tea-design.md` but reads this hint.
 
@@ -113,20 +129,30 @@ linked_acs: [AC-02-1, AC-02-2]
 After sign-up the admin lands on `/onboarding`. This story implements the first
 moment-of-truth from scenario S1: inviting the first teammate.
 
+## Sources of truth (Shuri reads before coding)
+- `AGENTS.md` + `.wize/config/project.toml` · `.wize/knowledge/document-project/*`.
+- `prd.md` (AC source) · `architecture.md` · `ux-design/onboarding-step-1.md` · parent epic `01-onboarding.md`.
+- The TEA test contract for this story · related code + tests already on this path.
+
 ## Acceptance criteria
 - **AC-02-1:** Given a new admin on `/onboarding`, When they enter a valid email and click "Send invite", Then a `teammate_invited` event fires and the screen advances to "Invite sent" within 1s.
 - **AC-02-2:** Given an invalid email, When the user blurs the field, Then error text appears (200ms) identifying which rule failed.
 
-## Out of scope
-- Bulk invite (multiple emails) — separate story E01-S07.
-- Custom invite message — defer to E02-S03.
-- "Skip for now" button — not a moment-of-truth path; out.
+## Restrictions
+- **Out of scope:** bulk invite (multiple emails) → E01-S07; custom invite message → E02-S03; "Skip for now" button — not a moment-of-truth path; out.
+- **Protected behaviors:** existing sign-up + session flow must not change.
+- **Compatibility:** `(team_id, email)` composite idempotency key — don't break existing invite rows.
+- **Security:** validate email at the server boundary; auth context required on `inviteTeammate`.
 
 ## Notes for Shuri (Dev)
 - Touch points: `app/(onboarding)/invite/page.tsx`, `lib/email/send-invite.ts`, new server action `inviteTeammate`.
 - Reuse: `Button` (primary), `Input`, `Banner` (success/error) from design-system.
 - testid: `invite-form`, `invite-email`, `invite-cta`, `invite-sent-banner`.
-- Idempotency: use `(team_id, email)` composite key.
+
+## Validation contract
+- **AC → test:** AC-02-1 → E2E happy path (Playwright @chromium @ios) + unit `validateInviteEmail`; AC-02-2 → unit invalid-email rules + component error-state.
+- **Required checks:** the unit/integration/E2E split Hawkeye declares below, plus lint, format, type-check, build. Authz asserted on the server action.
+- **States:** loading, empty, error rendered and asserted.
 
 ## Notes for Hawkeye (TEA)
 Suggested split: 4 unit, 1 integration, 1 E2E.
@@ -134,6 +160,9 @@ Suggested split: 4 unit, 1 integration, 1 E2E.
 - Integration: server action calls mailer with right args (MSW on Resend).
 - E2E: happy path on Playwright @chromium @ios.
 - Risk: R-1 (mailer) — extra E2E asserts banner within 1s of click.
+
+## Done means
+Every AC has a passing test (mapped above), gate PASS/CONCERNS, story `status: ready-for-review`, knowledge axes updated if touched.
 ```
 
 ## Anti-patterns Tony rejects
