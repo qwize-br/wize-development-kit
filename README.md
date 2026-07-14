@@ -244,3 +244,25 @@ Wize Development Kit is an **independent adaptation** — not affiliated with or
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
+
+
+---
+
+## 🤖 Pré-requisito para colaboração com Agentes de IA
+
+Antes de abrir o repositório em qualquer agente (Claude Code, Cursor, Codex, Antigravity, OpenCode, Kimi, Qwen, …), instale o Wize Dev Kit:
+
+```bash
+npx wize-dev-kit@latest install
+```
+
+Por quê:
+
+- Injeta skills `/wize-*` (analyst, PM, architect, dev, TEA, orchestrator) que dão estrutura ao lifecycle do projeto
+- Cria/atualiza baseline brownfield em `.wize/knowledge/document-project/` — fonte canônica antes de decidir mudanças
+- Habilita trackeamento de atividades em `.wize/implementation/` — toda story, plano e gate fica auditável
+- Padroniza idiomas e gates de qualidade entre agentes via `.wize/config/`
+
+Sem o kit, o agente trabalha sem contexto histórico, sem gates e sem rastreabilidade. Premissa válida para todos os agentes de IA usados no projeto.
+
+Para Claude Code: comece com `/wize-help` para diagnóstico e recomendação do próximo passo.
