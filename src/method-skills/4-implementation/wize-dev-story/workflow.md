@@ -91,6 +91,18 @@ feat(invite): validate email per AC-02-1 / AC-02-2
 
 Until every AC has at least one test + minimum code that makes it pass.
 
+### 7.5. Loop verification (auto-check)
+
+Before declaring the loop done, run these checks:
+
+| Check | How | Fail → |
+|---|---|---|
+| **Evidence of iteration** | `git log --oneline` shows ≥2 commits with AC IDs (skip if story has only 1 AC) | Return to step 2 |
+| **AC-to-test mapping** | Every AC in the story file has a corresponding test case name | Return to step 3 (Red) |
+| **All AC tests green** | `npx vitest run --reporter=verbose` (or equivalent) — grep output for each AC's test name | Return to step 4 (Green) |
+
+**Max-cycles guard.** If the same AC cycles through Red→Green→Refactor 3+ times without staying green, stop and escalate to Wizer: the test design may be wrong, the AC may be mis-sized, or the approach may need Tony.
+
 ### 8. Knowledge update (inline, ~60s)
 
 Before opening the PR, ask: **did this story touch any of the 5 baseline axes** documented in `.wize/knowledge/document-project/`?
@@ -137,7 +149,13 @@ PR description includes:
 
 ### 11. Address gate findings
 
-If `tea-review` flags issues, fix them in the same PR or open a follow-up if the story has shipped a separate value-bearing slice.
+If `tea-review` or `tea-gate` flags issues, fix them in the same PR or open a follow-up if the story has shipped a separate value-bearing slice.
+
+**Loop-back protocol:**
+1. Read each finding's `severity` and `blocking` flag.
+2. For each `blocking: true` finding → return to step 3 (Red) for the affected AC.
+3. For each `blocking: false` finding → log in story `notes` and fix in same PR before re-submitting to gate.
+4. **Max-retry guard:** if the same story cycles through gate → fix → gate 3+ times, stop and escalate to Wizer. The story may be mis-sized, the test design may be wrong, or the ACs may need renegotiation with Hill.
 
 ## Security + perf during implementation
 

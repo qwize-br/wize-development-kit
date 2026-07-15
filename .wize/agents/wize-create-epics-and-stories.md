@@ -10,9 +10,13 @@ Tony drives. Output lands in `.wize/solutioning/epics/` and `.wize/solutioning/s
 
 ## Inputs
 
-- `.wize/planning/prd.md`
+Read central docs first, then expand by dependency — don't load unrelated files for padding:
+
+- `AGENTS.md` + `.wize/config/project.toml` — active profiles, languages, conventions.
+- `.wize/planning/prd.md` — the AC source (never reword ACs downstream).
 - `.wize/solutioning/architecture.md`
 - `.wize/planning/ux/ux-design/` (every story references one or more screens)
+- `.wize/knowledge/document-project/` — brownfield baseline, if present.
 
 ## Outputs
 
@@ -101,25 +105,38 @@ linked_acs: [AC-02-1, AC-02-2]
 ## Context
 Comes right after sign-up. The user lands here with no team yet. The screen is the moment-of-truth from S1: if the user invites a teammate here, the product earned its value moment.
 
+## Sources of truth (Shuri reads before coding)
+- `AGENTS.md` + `.wize/config/project.toml` · `.wize/knowledge/document-project/*`.
+- `prd.md` (AC source) · `architecture.md` · `ux-design/onboarding-step-1.md` · parent epic `01-onboarding.md`.
+- The TEA test contract for this story · related code + tests already on this path.
+
 ## Acceptance criteria
 - **AC-02-1:** Given a new admin on `/onboarding`, When they enter a valid email and click "Send invite", Then a `teammate_invited` event fires and the screen advances to "Invite sent" within 1s.
 - **AC-02-2:** Given an invalid email, When the user blurs the field, Then error text appears (200ms) identifying which rule failed.
 
-## Out of scope
-- Bulk invite (multiple emails) — separate story E01-S07.
-- Custom invite message — defer to E02-S03.
+## Restrictions
+- **Out of scope:** bulk invite → E01-S07; custom invite message → E02-S03.
+- **Protected behaviors:** existing sign-up + session flow must not change.
+- **Compatibility:** `(team_id, email)` idempotency key — don't break existing invite rows.
+- **Security:** validate email at the server boundary; auth context required on `inviteTeammate`.
 
 ## Notes for Shuri (Dev)
-
 - Touch points: `app/(onboarding)/invite/page.tsx`, new server action `inviteTeammate`, `lib/email/send-invite.ts`.
 - Reuse `Button`, `Input`, `Banner` from design system.
 - Add `data-testid="invite-form"`, `"invite-email"`, `"invite-cta"` (Hawkeye depends on these).
 
-## Notes for Hawkeye (TEA)
+## Validation contract
+- **AC → test:** AC-02-1 → E2E `invite happy path` + unit `validateInviteEmail`; AC-02-2 → unit `invalid email` + component error-state.
+- **Required checks:** the unit/integration/E2E split Hawkeye declares below, plus lint, format, type-check, build. Authz asserted on the server action.
+- **States:** loading, empty, error rendered and asserted.
 
+## Notes for Hawkeye (TEA)
 - Tests required: 2 unit (validation), 1 integration (server action calls mailer with right args), 1 E2E (happy path on Playwright).
 - Mocks: outbound email via MSW; auth context via fixture.
 - NFR sample: response p95 ≤ 800ms locally (NFR 1.A allows up to 1s end-to-end).
+
+## Done means
+Every AC has a passing test (mapped above), gate PASS/CONCERNS, story `status: ready-for-review`, knowledge axes updated if touched.
 ```
 
 ## Steps
@@ -135,6 +152,10 @@ For each epic, walk the linked scenarios in `ux-scenarios.md`. Slice into storie
 ### 3. ACs map exactly
 
 Every story declares the AC IDs it advances (from PRD). The union of stories per epic equals the AC set of that epic — no gaps, no overlap.
+
+### 3.5 Fill the contract fields
+
+Each story carries its own **sources of truth**, **restrictions** (out-of-scope + protected behaviors + compatibility + security), and a **validation contract** (AC → test map + required checks). These aren't optional prose — they are what makes AC → code → test → gate traceable. A story missing them is not ready for dev.
 
 ### 4. Estimates
 

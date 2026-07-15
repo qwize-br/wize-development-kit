@@ -11,6 +11,10 @@ agent: wize-agent-dev
 
 Wizer authorizes the shortcut (via routing). Shuri runs it. Hawkeye does smoke-only.
 
+## Operating contract (light)
+
+Still a **mission contract**, just a small one: `.wize/` + `AGENTS.md` + skills are the instructions. Inspect before editing, reuse ladder before new code, smallest sufficient change, test-first when the change has a testable surface, run the real smoke + checks, no success claim without evidence. If it grows past ~1h or touches a new feature/architecture/UX/security surface, stop and re-route to Full Lifecycle — don't force it through here.
+
 ## When to use (yes)
 
 - Bug fix with a clear root cause.
@@ -111,6 +115,15 @@ No behavior change; copy-only.
 |---|---|---|---|---|
 | 2026-06-11 | shuri | … | PASS | #N |
 ```
+
+## Done report (compact)
+
+Report in four lines — no ceremony:
+
+1. What changed + why.
+2. Files changed.
+3. Checks run + results (smoke, lint, format, type-check). Name any that couldn't run and why.
+4. Recommended next action, if any.
 
 ## Disabling
 

@@ -14,10 +14,12 @@ Maria Hill chairs. Wizer is on call for cross-cutting decisions. The human alway
 
 ## When to run
 
-- `wize-sprint-status` flagged a risk: “slipping” or “at risk”.
-- The team says "we won’t make it" during a stand-up.
-- A story’s TEA gate came back as `FAIL` mid-sprint.
+- `wize-sprint-status` flagged a risk: "slipping" or "at risk".
+- The team says "we won't make it" during a stand-up.
+- A story's TEA gate came back as `FAIL` mid-sprint.
 - An external event (incident, vendor outage) consumed capacity.
+- **Automatic trigger:** any skill that completes step 7.5 (loop verification) and hits the max-cycles guard escalates to Wizer, who runs this skill.
+- **Staleness monitor:** if `wize-sprint-status` has not been updated in 2+ days, Wizer auto-runs this skill on session start (detected in step 1).
 
 ## Inputs
 
