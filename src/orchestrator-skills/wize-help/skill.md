@@ -50,6 +50,8 @@ Read these if they exist (absence is information too):
 
 Never pick Quick Dev to dodge writing artifacts. If the demand needs an AC, it is Full Lifecycle. When unsure, ask one question rather than guess the class.
 
+**Fuzzy demand → suggest a grill.** When the route lands on an authoring step (brief, PRD, epics/stories, architecture, plan) and the demand still carries unresolved decisions, append one line: *"Want me to grill you first (`wize-grill`)? Sharper answers, sharper {artifact}."* Suggest, never force — and never for Quick Dev.
+
 Otherwise apply this heuristic top-down; stop at the first match:
 
 | # | State | Next step |
@@ -108,11 +110,11 @@ For `mission`, emit the filled **Mission contract** (see the section below) from
 
 ## Step 4 — offer to act
 
-End with one of: "Want me to call {persona}?" · "Want me to baseline the repo first?" (brownfield, no document-project) · "Want me to convene party-mode with {p1} + {p2}?" (cross-cutting decision).
+End with one of: "Want me to call {persona}?" · "Want me to baseline the repo first?" (brownfield, no document-project) · "Want me to convene party-mode with {p1} + {p2}?" (cross-cutting decision) · "Want me to grill you first (`wize-grill`)?" (fuzzy demand heading into an authoring step).
 
 ## Mission contract (`/wize-help mission`)
 
-When asked for a mission, fill this from project state and hand it to the executing persona. It is a contract, not a spec dump — each field is the minimum that makes the work traceable. Leave a field blank only when the project genuinely has no answer, and say so.
+When asked for a mission, fill this from project state and hand it to the executing persona. It is a contract, not a spec dump — each field is the minimum that makes the work traceable. Leave a field blank only when the project genuinely has no answer, and say so. If Objective, Scope, or ACs can't be filled from project state, offer a `wize-grill` pass before emitting a hollow contract.
 
 ```
 MISSION CONTRACT — {demand in one line}
