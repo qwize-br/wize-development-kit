@@ -5,6 +5,22 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-07-31
+
+Entrada da demanda ganha entrevista estruturada (**`wize-grill`**, adaptado do princípio grill-me) e o loop de implementação ganha verificação automática com guardas de ciclo. Suite verde (247 testes, validate 74 arquivos).
+
+### Added
+
+- **`wize-grill`** (nova skill core) — entrevista exaustiva do usuário até entendimento compartilhado, antes de redigir briefs, PRDs, epics, stories ou planos. 5 regras: uma pergunta por vez · toda pergunta traz resposta recomendada · fatos são buscados no repo/`.wize/` (só decisões vão ao usuário) · árvore de decisão em ordem de dependência · nada de redigir antes da confirmação. Question ladder de 7 degraus (problema → outcome → audiência → escopo → constraints → riscos → validação) mapeada aos campos dos artefatos; profundidade calibrada por classe (Quick Dev nunca é grelhado; incremental usa passe curto; new value usa a escada inteira); atalho de momentum (3 "como você recomenda" seguidos → modo batch). Sem artefato próprio: decisões vão para os campos do artefato alvo, pendências viram Open questions com dono.
+- **`wize-dev-story`** — Step 7.5 "Loop verification": auto-check antes de declarar o loop concluído (evidência de iteração no `git log`, mapa AC→teste completo, todos os testes de AC verdes) com retorno ao passo correto em caso de falha, e **max-cycles guard** (mesmo AC falhando 3+ ciclos → escala pra Wizer). Step 11 ganha **loop-back protocol** para findings de gate (blocking → volta ao Red; non-blocking → corrige no mesmo PR) com max-retry guard.
+- **`wize-correct-course`** — auto-trigger pelo max-cycles guard e monitor de staleness, além da invocação manual.
+
+### Changed
+
+- **`wize-help`** — sugere `wize-grill` (sempre sugestivo, nunca imposto): no Step 2 quando a demanda difusa ruma a um passo de autoria, no Step 4 como oferta, e em `/wize-help mission` antes de emitir um contrato oco (Objective/Scope/ACs sem resposta no estado do projeto).
+- **`wize-product-brief` / `wize-create-prd` / `wize-create-epics-and-stories`** — ganchos de grill nos pontos de autoria: mais de uma decisão aberta → oferecer entrevista em vez de chutar; respostas caem direto nos campos do artefato.
+- **`wize-spec`** — modo guided referencia o protocolo grill (uma pergunta por turno, recomendação anexada).
+
 ## [0.9.0] — 2026-07-14
 
 A cadeia do WDK passa a operar por **mission contracts** — cada etapa declara objetivo, fontes de verdade, escopo, critérios de aceite, contratos de execução/validação e persistência em `.wize/`, no formato que modelos de longo horizonte executam melhor. Suite verde (246 testes, validate 73 arquivos).
