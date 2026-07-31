@@ -13,6 +13,9 @@ skills:
   - code: wize-advanced-elicitation
     name: "Advanced Elicitation"
     description: "Structured technique stack (laddering, 5-why, SCAMPER) callable by any agent."
+  - code: wize-grill
+    name: "Grill"
+    description: "Exhaustive one-question-at-a-time interview to reach shared understanding before drafting briefs, PRDs, epics, stories, or plans."
   - code: wize-brainstorming
     name: "Brainstorming"
     description: "Divergent-then-convergent ideation; produces idea-pool.md."
