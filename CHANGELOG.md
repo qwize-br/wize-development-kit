@@ -7,7 +7,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [0.10.0] — 2026-07-31
 
-Entrada da demanda ganha entrevista estruturada (**`wize-grill`**, adaptado do princípio grill-me) e o loop de implementação ganha verificação automática com guardas de ciclo. Suite verde (247 testes, validate 74 arquivos).
+Entrada da demanda ganha entrevista estruturada (**`wize-grill`**, adaptado do princípio grill-me) e o loop de implementação ganha verificação automática com guardas de ciclo. Suite verde (246 testes, validate 74 arquivos).
 
 ### Added
 
