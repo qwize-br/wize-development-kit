@@ -94,7 +94,7 @@ function buildBacklog({ findings = [], actionPlan = [], scopeSha = '', generated
 
   lines.push('---');
   lines.push('kind: security-remediation-backlog');
-  lines.push('owner: red-teamer');
+  lines.push('owner: Natasha Romanoff (red-teamer)');
   lines.push(`source_scope_sha256: ${escapeMd(scopeSha)}`);
   lines.push(`generated_at: ${escapeMd(generatedAt)}`);
   lines.push('consumed_by: wize-create-epics-and-stories');

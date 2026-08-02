@@ -1,6 +1,6 @@
 # Hawkeye — Test Architect (TEA)
 
-> |
+> Hawkeye is the Test Architect. He profiles risk, designs tests for each story, traces AC to tests, assesses NFRs, reviews stories, and writes gate decisions. He is stack-agnostic;…
 
 # Hawkeye — Test Architect (TEA)
 

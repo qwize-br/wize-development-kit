@@ -28,7 +28,12 @@ test('orchestrator runs phases in canonical order: recon -> enumerate -> exploit
     loadScopeFn: fakeScope,
     invokePhase: mockInvoke
   });
-  assert.deepEqual(calls, ['wize-sec-recon', 'wize-sec-enumerate', 'wize-sec-exploit', 'wize-sec-report']);
+  // Each phase fans out into its sub-scripts (recon: recon+gitleaks+osv,
+  // exploit: nuclei+nikto+sqlmap+ffuf), so `calls` repeats a phase once per
+  // sub-script. The canonical *phase* order is the de-duplicated sequence.
+  const phaseOrder = calls.filter((c, i) => calls.indexOf(c) === i);
+  assert.deepEqual(phaseOrder, ['wize-sec-recon', 'wize-sec-enumerate', 'wize-sec-exploit', 'wize-sec-report']);
+  assert.equal(calls.length, 9, 'recon(3) + enumerate(1) + exploit(4) + report(1) sub-scripts');
   assert.equal(result.ok, true);
 });
 
@@ -41,7 +46,8 @@ test('orchestrator propagates --active to every phase invocation (AC-E03-2)', as
     loadScopeFn: fakeScope,
     invokePhase: mockInvoke
   });
-  assert.equal(seen.length, 4);
+  // One entry per sub-script (recon×3, enumerate×1, exploit×4, report×1).
+  assert.equal(seen.length, 9);
   for (const entry of seen) {
     assert.equal(entry.active, true, `phase ${entry.skill} should receive active=true`);
   }
@@ -61,9 +67,11 @@ test('orchestrator continues past a failed phase (AC-E03-2 — NFR Reliability #
     loadScopeFn: fakeScope,
     invokePhase: mockInvoke
   });
-  assert.deepEqual(calls, ['wize-sec-recon', 'wize-sec-enumerate', 'wize-sec-exploit', 'wize-sec-report']);
+  const phaseOrder = calls.filter((c, i) => calls.indexOf(c) === i);
+  assert.deepEqual(phaseOrder, ['wize-sec-recon', 'wize-sec-enumerate', 'wize-sec-exploit', 'wize-sec-report']);
   assert.equal(result.ok, true, 'pipeline ok=true if at least one phase succeeded');
-  assert.deepEqual(result.skipped, ['wize-sec-recon']);
+  // Only the first sub-script (recon/recon) failed; skips are tracked per sub.
+  assert.deepEqual(result.skipped, ['wize-sec-recon/recon']);
 });
 
 test('orchestrator returns ok=false only when every phase failed', async () => {

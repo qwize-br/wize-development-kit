@@ -23,7 +23,7 @@ Pepper drives. Peggy edits prose. Output lands in `.wize/planning/brief.md`.
 
 ### 1. Frame in one paragraph
 
-What is being asked, by whom, and by when. If you can't write it in three sentences, you don't understand it yet. Ask one clarifying question, then write.
+What is being asked, by whom, and by when. If you can't write it in three sentences, you don't understand it yet. One open decision → ask one clarifying question, then write. More than one → offer a `wize-grill` pass (one question at a time, recommendation attached) and interview until shared understanding; answers land straight in the brief fields below, unresolved ones in *Open questions*.
 
 ### 2. Audience
 

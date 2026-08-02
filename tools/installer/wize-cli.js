@@ -578,6 +578,7 @@ function cmdList() {
     ['wize-agent-dev', 'Shuri']
   ];
   for (const [code, name] of list) console.log(`  ${code.padEnd(36)} ${name}`);
+  console.log(`  ${'wize-sec-red-teamer'.padEnd(36)} Natasha Romanoff  (security-overlay, opt-in)`);
 
   console.log('\nWorkflows directories:');
   const phases = ['1-analysis', '2-plan-workflows', '3-solutioning', '4-implementation'];

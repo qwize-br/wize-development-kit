@@ -104,7 +104,7 @@ Next: /{workflow} ({persona}).
 
 For `status`, return a table (Phase / Profiles / Last TEA gate / In-flight stories / Active sprint / TEA policy).
 
-For `personas`, list only personas whose role applies. Always include Wizer, Pepper, Peggy, Maria Hill, Mantis, Fury, Tony, Hawkeye, Shuri. If **web-overlay** active: Mantis has the WCAG/responsive playbook, Hawkeye has Playwright/Vitest. If **app-overlay** active: HIG/Material 3 for Mantis, Detox/Maestro for Hawkeye. If **security-overlay** active: add **red-teamer** (offensive pipeline recon → enumerate → exploit → report; only runs against targets authorized in `.wize/security/scope.md`).
+For `personas`, list only personas whose role applies. Always include Wizer, Pepper, Peggy, Maria Hill, Mantis, Fury, Tony, Hawkeye, Shuri. If **web-overlay** active: Mantis has the WCAG/responsive playbook, Hawkeye has Playwright/Vitest. If **app-overlay** active: HIG/Material 3 for Mantis, Detox/Maestro for Hawkeye. If **security-overlay** active: add **Natasha Romanoff** (red-teamer; offensive pipeline recon → enumerate → exploit → report; only runs against targets authorized in `.wize/security/scope.md`).
 
 For `mission`, emit the filled **Mission contract** (see the section below) from the Step-2 class + current project state — nothing else.
 

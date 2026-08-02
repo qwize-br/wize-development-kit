@@ -49,7 +49,7 @@ Inside the spec folder:
 4. When input is mixed (brain dump, transcript, email), sort claims using the three-lens load-bearing test and route to the kernel field or a companion.
 5. Distill into the five-field kernel using `assets/spec-template.md`. When input is rich, extract directly. When input is sparse, choose:
    - **express** — best-effort distill, every gap becomes an `open_questions[]` entry
-   - **guided** — walk the five fields with the user one at a time
+   - **guided** — walk the five fields with the user one at a time, `wize-grill` style: one question per turn, recommendation attached
 6. Write lean: every sentence must earn its place.
 7. If input is genuinely too thin (e.g. "an app for hikers" with no context), stop and suggest `wize-product-brief` or `wize-create-prd`.
 

@@ -13,10 +13,44 @@ const path = require('node:path');
 const { walkAgents, walkWorkflows, walkSkills } = require('./validators/walk.js');
 
 function readYamlField(content, field) {
-  const re = new RegExp('^' + field + ':\\s*(?:"([^"]*)"|\'([^\']*)\'|(.*?))\\s*$', 'm');
-  const m = content.match(re);
-  if (!m) return null;
-  return (m[1] || m[2] || m[3] || '').trim();
+  const lines = content.split('\n');
+  const keyRe = new RegExp('^' + field + ':\\s*(.*)$');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(keyRe);
+    if (!m) continue;
+    const inline = m[1].trim();
+
+    // Block scalar (| literal, > folded) with optional chomp/indent indicator.
+    const block = inline.match(/^([|>])[+-]?\d*\s*$/);
+    if (block) {
+      const folded = block[1] === '>';
+      const collected = [];
+      let baseIndent = null;
+      for (let j = i + 1; j < lines.length; j++) {
+        const line = lines[j];
+        if (line.trim() === '') { collected.push(''); continue; }
+        const indent = line.match(/^(\s*)/)[1].length;
+        if (indent === 0) break; // dedent to a sibling top-level key ends the block
+        if (baseIndent === null) baseIndent = indent;
+        collected.push(line.slice(baseIndent));
+      }
+      while (collected.length && collected[collected.length - 1] === '') collected.pop();
+      if (folded) {
+        // Folded: blank line -> newline, otherwise join lines with a space.
+        return collected.reduce((acc, ln, idx) => {
+          if (idx === 0) return ln;
+          if (ln === '' || collected[idx - 1] === '') return acc + '\n' + ln;
+          return acc + ' ' + ln;
+        }, '').trim();
+      }
+      return collected.join('\n').trim();
+    }
+
+    // Inline scalar: quoted or plain.
+    const q = inline.match(/^"([^"]*)"$/) || inline.match(/^'([^']*)'$/);
+    return (q ? q[1] : inline).trim();
+  }
+  return null;
 }
 
 function readFrontmatter(content) {
@@ -197,9 +231,30 @@ function renderAnthropicSkills(kitRoot, targetDir, opts = {}) {
 
 // Convenience emitter for a root-level AGENTS.md — read by Codex, Cursor,
 // Windsurf and Antigravity as a baseline pointer to the kit's deeper docs.
+// Canonical roster order so AGENTS.md is deterministic regardless of the
+// filesystem walk order. Codes not listed sort last, alphabetically.
+const AGENT_ORDER = [
+  'wize-orchestrator',
+  'wize-agent-analyst',
+  'wize-agent-tech-writer',
+  'wize-agent-pm',
+  'wize-agent-ux-designer',
+  'wize-agent-solution-strategist',
+  'wize-agent-architect',
+  'wize-agent-test-architect',
+  'wize-agent-dev',
+  'wize-sec-red-teamer'
+];
+
 function renderAgentsMd(kitRoot, projectRoot, opts = {}) {
   const assets = collectAssets(kitRoot, opts);
-  const agents = assets.filter(a => a.kind === 'agent');
+  const rank = (code) => {
+    const i = AGENT_ORDER.indexOf(code);
+    return i === -1 ? AGENT_ORDER.length : i;
+  };
+  const agents = assets
+    .filter(a => a.kind === 'agent')
+    .sort((a, b) => rank(a.code) - rank(b.code) || a.code.localeCompare(b.code));
   const file = path.join(projectRoot, 'AGENTS.md');
   if (fs.existsSync(file) && !opts.overwrite) {
     return { written: [], skipped: ['AGENTS.md (already present; not overwritten)'] };
@@ -230,7 +285,8 @@ function renderAgentsMd(kitRoot, projectRoot, opts = {}) {
     ''
   ];
   for (const a of agents) {
-    lines.push(`- **${a.name}** (\`${a.code}\`) — ${a.title}. ${clipOneLine(a.description, 180)}`);
+    const optIn = a.code.startsWith('wize-sec-') ? ' _(security-overlay, opt-in)_' : '';
+    lines.push(`- **${a.name}** (\`${a.code}\`)${optIn} — ${a.title}. ${clipOneLine(a.description, 180)}`);
   }
   lines.push('', '## Where to start', '', 'Activate the orchestrator: `wize-orchestrator` (Wizer). Then ask `/wize-help`.', '');
 

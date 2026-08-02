@@ -28,18 +28,20 @@ function signedScope() {
   };
 }
 
-test('filterNucleiArgs returns passive templates by default (no --active)', () => {
+test('filterNucleiArgs limits severity by default (passive, no --active)', () => {
+  // nuclei v3 has no `-t passive` template path: passive = lower severities
+  // (info,low,medium) on the default template set, throttled by rate-limit.
   const args = filterNucleiArgs('http://localhost:3000', false, '/tmp/out.json');
-  assert.ok(args.includes('-t'), 'should include -t flag');
-  // -t value should be 'passive'.
-  const tIdx = args.indexOf('-t');
-  assert.equal(args[tIdx + 1], 'passive', 'default template set is passive');
+  const sevIdx = args.indexOf('-severity');
+  assert.ok(sevIdx !== -1, 'should include -severity flag');
+  assert.equal(args[sevIdx + 1], 'info,low,medium', 'passive limits to lower severities');
+  assert.ok(!args.includes('high'), 'passive must not request high/critical');
 });
 
-test('filterNucleiArgs returns default templates when --active', () => {
+test('filterNucleiArgs widens severity when --active', () => {
   const args = filterNucleiArgs('http://localhost:3000', true, '/tmp/out.json');
-  const tIdx = args.indexOf('-t');
-  assert.equal(args[tIdx + 1], 'default', 'active mode uses default templates');
+  const sevIdx = args.indexOf('-severity');
+  assert.equal(args[sevIdx + 1], 'info,low,medium,high,critical', 'active covers full severity range');
 });
 
 test('runNuclei writes OWASP-tagged findings to dast.md (AC-E06-1)', async () => {

@@ -11,6 +11,8 @@ description: "3-solutioning: Create Epics and Stories"
 
 Tony drives. Output lands in `.wize/solutioning/epics/` and `.wize/solutioning/stories/`.
 
+When slicing raises decisions the PRD doesn't answer — priority order, sequencing, protected behaviors, what's out of a story — offer a short `wize-grill` pass with the user instead of guessing. Decisions land in the epic/story fields; unresolved ones become open questions with owners.
+
 ## Inputs
 
 Read central docs first, then expand by dependency — don't load unrelated files for padding:

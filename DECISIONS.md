@@ -6,7 +6,7 @@
 
 ## Estado
 
-- **Fase atual:** Entrevista — Discovery
+- **Fase atual:** Construído e publicado — manutenção contínua (v0.10.0).
 - **Pasta destino:** `wize-dev-kit/`
 - **Repositório de inspiração:** BMAD Method (raiz deste repo)
 
@@ -152,6 +152,14 @@
 
 - **D9.1 — Security Overlay neste kit:** o perfil `security-overlay` (AI Pentester) passa a ser distribuído **dentro do `wize-dev-kit`** como 4º perfil opt-in do installer, com a persona **red-teamer** (`wize-sec-red-teamer`) em `src/security-overlay/`. _Supersede parcialmente D1.1 (3 perfis → 4 perfis), D3.2 (9 papéis → 9 core + 1 overlay) e D3.5 (security deixava de ser reservado para kit futuro)._ As entradas históricas permanecem inalteradas como registro.
 - **D9.2 — OpenCode com wiring nativo (0.8.0):** o adapter OpenCode passa a gerar **agents e commands nativos** (`.opencode/agents/` + `.opencode/commands/`), com commands vinculados à persona dona e workers de fan-out isolados — em vez do fallback genérico.
+
+### Fase 10 — Mission contracts, grill, loop e polish (2026-08)
+
+- **D10.1 — Mission contracts (0.9.0):** cada etapa da cadeia passa a operar por um contrato explícito (objetivo, fontes de verdade, escopo & limites, ACs, contratos de execução/validação, persistência em `.wize/`). `/wize-help mission` emite o contrato preenchido a partir do estado do projeto; templates de story ganham campos de contrato (sources of truth, restrictions, validation, done-means). Motivo: modelos de longo horizonte executam melhor com o alvo declarado.
+- **D10.2 — `wize-grill` (0.10.0):** nova skill core de entrevista-até-entendimento antes de qualquer passo de autoria (brief, PRD, epics, stories, planos). Sempre sugestiva, nunca imposta; sem artefato próprio (decisões caem nos campos do artefato alvo). Adaptado do princípio grill-me.
+- **D10.3 — Loop verification + max-cycles guard (0.10.0):** `wize-dev-story` ganha auto-check antes de declarar o loop concluído (evidência de iteração, mapa AC→teste completo, testes verdes) e guarda de ciclo (mesmo AC falhando 3+ vezes → escala para `wize-correct-course`, agora também auto-disparado).
+- **D10.4 — Persona do overlay ganha nome Marvel:** o `red-teamer` passa a ter o nome de exibição **Natasha Romanoff** (espionagem/operação ofensiva sob mandato — casa com o scope-gate do overlay). Mudança **apenas de nome de exibição**: o `code` permanece `wize-sec-red-teamer` (identificador de invocação e diretório dos 9 adapters, estável). "Red-Teamer" fica no `title`. _Deadpool foi avaliado e rejeitado: o nome entra no corpo do SKILL.md como instrução e o personagem é o que mais ignora autorização — conflita com o design de consentimento do overlay._ Remove Black Widow do pool de personas reservadas no `ROSTER.md`.
+- **D10.5 — Correções de tooling/qualidade:** (a) `readYamlField` passa a ler **block scalars** (`description: |`) — antes toda descrição renderizada terminava em `— |` nos 9 adapters; (b) `npm test` deixa de usar glob não-recursivo e passa a rodar também `test/security-overlay/**` (evita 8 testes stale passarem despercebidos); (c) adicionado workflow de **CI** (`ci.yml`) em push/PR (Node 20+24), já que só existia `publish.yml` por tag; (d) roster do `AGENTS.md` gerado passa a ser ordenado deterministicamente e marca a persona opt-in do overlay.
 
 ## Perguntas em aberto
 

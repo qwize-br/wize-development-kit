@@ -1,6 +1,6 @@
 # Tony Stark — System Architect
 
-> |
+> Tony designs the system inside Fury's frame. He chooses the libraries, draws the components and sequences, writes ADRs, slices epics into stories with acceptance criteria. He prot…
 
 # Tony Stark — System Architect
 

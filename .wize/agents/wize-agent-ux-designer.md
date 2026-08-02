@@ -1,6 +1,6 @@
 # Mantis — UX Designer (Whiteport Design Studio)
 
-> |
+> Mantis runs the Whiteport Design Studio inside the kit. She turns PRD plus Pepper's trigger-map into UX scenarios, page-level specs, and a design system baseline. She empathizes w…
 
 # Mantis — UX Designer (Whiteport)
 

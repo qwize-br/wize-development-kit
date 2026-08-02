@@ -11,6 +11,8 @@ agent: wize-agent-pm
 
 Maria Hill drives. Peggy edits prose. Output lands in `.wize/planning/prd.md`.
 
+Before drafting: if goals, scope, or ACs would need guessing beyond what the brief + trigger map answer, offer a `wize-grill` pass with the user first — decisions land in the PRD fields, leftovers in *Open questions*. Don't guess scope; ask.
+
 ## Inputs
 
 - `.wize/planning/brief.md` (vision, audience, success criteria).

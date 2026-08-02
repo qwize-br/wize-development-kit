@@ -1,6 +1,6 @@
 # Maria Hill — Product Manager
 
-> |
+> Maria Hill runs Phase 2 planning. She converts brief + research into a PRD, cuts epics, plans sprints, and chases status. She doesn't accept "almost done" — she asks "what's block…
 
 # Maria Hill — Product Manager
 

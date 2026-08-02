@@ -1,6 +1,8 @@
-# Wize Development Kit — Arquitetura Proposta v1
+# Wize Development Kit — Arquitetura
 
-> Consolidação das Fases 1-7 da entrevista. Pré-build.
+> Estado: **construído e publicado** — snapshot mantido em dia com a v0.10.0.
+> (As Fases 1-7 originais da entrevista deram origem a este documento; ele deixou
+> de ser "proposta/pré-build" a partir da v0.8.0.)
 > Referências de inspiração: BMAD Method v6.8.0 + WDS Expansion (Norse).
 > Tema do roster: **Marvel**.
 
@@ -27,7 +29,7 @@ wize-dev-kit (pacote npm)
 ├── Wize Dev Core      ← base completa (sempre instalada)
 ├── Wize Web Dev       ← overlay opt-in
 ├── Wize App Development ← overlay opt-in
-└── Wize Security Overlay ← overlay opt-in (AI Pentester / red-teamer)
+└── Wize Security Overlay ← overlay opt-in (AI Pentester / Natasha Romanoff, red-teamer)
                      (overlays podem coexistir no mesmo repo)
 ```
 
@@ -50,7 +52,7 @@ wize-dev-kit (pacote npm)
 | Tony Stark | `wize-agent-architect` | System Architect | 3 (Solutioning) |
 | Hawkeye | `wize-agent-test-architect` | Test Architect (TEA) | Gates 2/3/4 |
 | Shuri | `wize-agent-dev` | Senior Developer | 4 (Implementation) |
-| red-teamer | `wize-sec-red-teamer` | AI Pentester (security-overlay, opt-in) | Transversal |
+| Natasha Romanoff | `wize-sec-red-teamer` | Red-Teamer / AI Pentester (security-overlay, opt-in) | Transversal |
 
 ---
 
@@ -358,7 +360,7 @@ wize-dev-kit/
 │   │   ├── wize-app-store-listing/
 │   │   └── module.yaml
 │   └── security-overlay/       # Wize Security Overlay (AI Pentester, opt-in)
-│       ├── agents/             # red-teamer (wize-sec-red-teamer)
+│       ├── agents/red-teamer/  # Natasha Romanoff (wize-sec-red-teamer)
 │       ├── skills/
 │       ├── data/
 │       └── _shared/
