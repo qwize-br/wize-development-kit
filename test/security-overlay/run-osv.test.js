@@ -89,6 +89,9 @@ test('runOsv degrades when both osv-scanner and grype are missing (AC-E05-3)', a
 test('runOsv falls back to grype when osv-scanner is missing', async () => {
   const sec = mkProject();
   fs.mkdirSync(sec, { recursive: true });
+  // A manifest must exist in manifestRoot or runOsv degrades before scanning.
+  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-osv-grype-proj-'));
+  fs.writeFileSync(path.join(proj, 'package.json'), '{"name":"x","version":"1.0.0"}');
   let invoked = null;
   const mockExec = (bin) => {
     invoked = bin;
@@ -107,6 +110,7 @@ test('runOsv falls back to grype when osv-scanner is missing', async () => {
     securityDir: sec,
     scope: signedScope(),
     active: false,
+    manifestRoot: proj,
     execFn: mockExec,
     detectFn: () => ({ 'osv-scanner': { present: false }, grype: { present: true } })
   });

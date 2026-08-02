@@ -3,7 +3,7 @@ code: wize-sec-recon
 name: wize-sec-recon
 overlay: security
 module: security-overlay
-owner: red-teamer
+owner: wize-sec-red-teamer  # Natasha Romanoff
 status: ready
 ---
 

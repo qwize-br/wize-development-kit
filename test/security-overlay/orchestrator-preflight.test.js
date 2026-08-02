@@ -61,7 +61,7 @@ test('orchestrator writes install-pentest-tools.sh when tools are missing', asyn
   const scriptPath = path.join(sec, 'install-pentest-tools.sh');
   assert.ok(fs.existsSync(scriptPath), 'install-pentest-tools.sh should be written');
   const content = fs.readFileSync(scriptPath, 'utf8');
-  assert.match(content, /^#!\/bin\/bash/);
+  assert.match(content, /^#!\/usr\/bin\/env bash/);
   assert.match(content, /apt-get install/);
 });
 
@@ -95,5 +95,8 @@ test('orchestrator still runs all phases even when tools are missing (permissive
     loadScopeFn: () => signedScope(),
     invokePhase: async (phase) => { calls.push(phase); return { ok: true, code: 0, stdout: '', stderr: '' }; }
   });
-  assert.deepEqual(calls, ['wize-sec-recon', 'wize-sec-enumerate', 'wize-sec-exploit', 'wize-sec-report']);
+  // Phases fan out into sub-scripts; the canonical phase order is the
+  // de-duplicated call sequence.
+  const phaseOrder = calls.filter((c, i) => calls.indexOf(c) === i);
+  assert.deepEqual(phaseOrder, ['wize-sec-recon', 'wize-sec-enumerate', 'wize-sec-exploit', 'wize-sec-report']);
 });

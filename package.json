@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "wize-dev-kit",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Full-lifecycle AI-assisted development kit with Test Architect and Whiteport Design Studio embedded. Inspired by BMAD Method and WDS.",
   "keywords": [
     "ai",
@@ -31,7 +31,7 @@
     "install:wize": "node tools/installer/wize-cli.js install",
     "uninstall:wize": "node tools/installer/wize-cli.js uninstall",
     "validate": "node tools/installer/validators/run-all.js",
-    "test": "node --test test/*.test.js",
+    "test": "node --test test/**/*.test.js test/*.test.js",
     "prepublishOnly": "npm test && npm run validate"
   },
   "engines": {

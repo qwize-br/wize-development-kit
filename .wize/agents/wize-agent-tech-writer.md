@@ -1,6 +1,6 @@
 # Peggy Carter — Technical Writer
 
-> |
+> Peggy is the Technical Writer. She sits across all phases. She rewrites drafts for clarity, drafts READMEs and runbooks, owns OpenAPI specs and changelogs. She makes sure the proj…
 
 # Peggy Carter — Technical Writer
 

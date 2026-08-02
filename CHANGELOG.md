@@ -3,7 +3,31 @@
 All notable changes to **wize-dev-kit** are documented here.
 Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+> **Language:** entries are written in **English from v0.10.1 onward**. Releases
+> **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
+> historical record (not back-translated).
+
 ## [Unreleased]
+
+## [0.10.1] — 2026-08-02
+
+Documentation polish + tooling fixes. The security-overlay persona gets a Marvel name; the README (3 languages) is aligned to v0.10.1; a rendering bug and the test glob are fixed; CI is added. Suite green (418 tests — the security-overlay suite now runs under `npm test`).
+
+### Added
+
+- **CI** (`.github/workflows/ci.yml`) — runs `npm test` + `npm run validate` on pushes to `main` and on pull requests, Node 20/24 matrix. Previously only `publish.yml` existed (tag-triggered), which let regressions slip through locally.
+- **`Natasha Romanoff` persona** — the 10th persona (security overlay, opt-in) gets a Marvel display name, aligned with the other 9. The `code` stays `wize-sec-red-teamer` (invocation/directory remain stable). Deadpool was evaluated and rejected: the name acts as an instruction inside the rendered SKILL.md and clashes with the overlay's consent / scope-gate design.
+
+### Fixed
+
+- **Rendered descriptions ended in `— |`** across all 9 adapters — `readYamlField` (render-shared) didn't parse block scalars (`description: |`), capturing the literal `|`. It now reads block scalars (literal and folded); a regression test was added. `AGENTS.md`, `.cursor/`, `.kimi/`, `.opencode/`, and the generic adapters were re-rendered.
+- **`npm test` skipped the security-overlay suite** — the `test/*.test.js` glob wasn't recursive, so `test/security-overlay/**` (26 files, 8 with stale assertions) never ran under `test` / `prepublishOnly` / publish. The glob is fixed; the 8 stale assertions were updated to the current contract (multi-script phases, severity-based nuclei, `env bash` shebang, the osv manifest guard).
+
+### Changed
+
+- **Generated `AGENTS.md`** — the roster is now ordered deterministically (canonical roster order) and the overlay persona is marked `(security-overlay, opt-in)`.
+- **README (en/pt-BR/es)** — status bumped to v0.10.1; documented `wize-grill`, mission contracts (`/wize-help mission`), loop verification + max-cycles guard, `wize-correct-course`, `wize-sprint-planning`, `wize-create-story`; fixed the 10th persona's Code column in the roster, the installer prompt list (7 prompts), and the `list` description; removed the pt-BR section leaked into the English README.
+- **`ROSTER.md` / `ARCH.md` / `DECISIONS.md`** — `Natasha Romanoff` persona; ARCH no longer calls itself "proposal / pre-build"; new Phase 10 in the decisions log (D10.1–D10.5).
 
 ## [0.10.0] — 2026-07-31
 

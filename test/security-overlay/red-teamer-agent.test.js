@@ -16,8 +16,8 @@ test('red-teamer agent.yaml exists (AC-E03-1)', () => {
 
 test('red-teamer agent.yaml declares name, overlay, and commands pointing to wize-sec-pentest', () => {
   const src = fs.readFileSync(AGENT_YAML, 'utf8');
-  // name field — the persona's name
-  assert.match(src, /^name:\s+red-teamer/m, 'agent.yaml must declare name: red-teamer');
+  // name field — the persona's display name (Marvel persona; code stays wize-sec-red-teamer)
+  assert.match(src, /^name:\s+Natasha Romanoff/m, 'agent.yaml must declare name: Natasha Romanoff');
   // overlay field — marks this agent as belonging to the security overlay
   assert.match(src, /^overlay:\s+security/m, 'agent.yaml must declare overlay: security');
   // commands must point to wize-sec-pentest (the orchestrator skill)

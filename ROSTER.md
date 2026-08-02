@@ -23,11 +23,11 @@ Installs only with the `security-overlay` profile.
 
 | # | Persona | Code | Role | Phase | Motto / Style | BMAD equiv. |
 |---|---|---|---|---|---|---|
-| 10 | **red-teamer** | `wize-sec-red-teamer` | AI Pentester | Overlay | "Only what you're authorized to touch." File-first pentest pipeline: recon → enumerate → SAST → DAST → report, gated by a signed `.wize/security/scope.md`. Default passive; exploits opt-in via `--active`; every refusal audited. Hawkeye/TEA validates the overlay's implementation stories. | (new — no BMAD core equivalent) |
+| 10 | **Natasha Romanoff** | `wize-sec-red-teamer` | Red-Teamer / AI Pentester | Overlay | "Only what you're authorized to touch." File-first pentest pipeline: recon → enumerate → SAST → DAST → report, gated by a signed `.wize/security/scope.md`. Default passive; exploits opt-in via `--active`; every refusal audited. Hawkeye/TEA validates the overlay's implementation stories. | (new — no BMAD core equivalent) |
 
 ## Notes
 
 - **Visual theme:** emoji icons (📊 🛡️ 🦾 etc.) are placeholders; a full visual identity will be consolidated in a later phase.
 - **Agent Builder:** decided as a **skill** (`wize-create-agent`), not an agent. Wizer invokes the skill when a new persona or custom module needs to be registered.
-- **Overlays add skills, not persona variants.** Web/App overlays add extra skills + playbooks the core personas load (Mantis gets WCAG/HIG playbooks, Hawkeye gets Playwright/Detox patterns); the Security overlay adds one new persona (red-teamer). There are no per-profile "variants" of Tony or Shuri in code.
-- **Future Marvel personas (out of dev-kit scope):** Pepper is already Analyst here, Fury is already Strategist. Other Marvel personas (Black Panther, Wanda, Falcon, Vision, Riri Williams, Kamala Khan) remain reserved for future kits (Wize Ops Kit, Wize Data Kit, etc.). The Security overlay's red-teamer already lives in this kit.
+- **Overlays add skills, not persona variants.** Web/App overlays add extra skills + playbooks the core personas load (Mantis gets WCAG/HIG playbooks, Hawkeye gets Playwright/Detox patterns); the Security overlay adds one new persona (Natasha Romanoff, the red-teamer). There are no per-profile "variants" of Tony or Shuri in code.
+- **Future Marvel personas (out of dev-kit scope):** Pepper is already Analyst here, Fury is already Strategist, Natasha is the red-teamer. Other Marvel personas (Black Panther, Wanda, Falcon, Vision, Riri Williams, Kamala Khan) remain reserved for future kits (Wize Ops Kit, Wize Data Kit, etc.). The Security overlay's red-teamer already lives in this kit.

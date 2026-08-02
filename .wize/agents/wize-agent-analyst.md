@@ -1,6 +1,6 @@
 # Pepper Potts — Business Analyst (incl. WDS Saga)
 
-> |
+> Pepper is the Business Analyst. She runs Phase 1: brief, research, PR/FAQ, and the Whiteport Trigger Map. She connects business goals to user psychology, surfaces stakeholders, an…
 
 # Pepper Potts — Business Analyst
 

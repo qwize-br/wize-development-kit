@@ -34,7 +34,7 @@ O Wize Development Kit (WDK) é uma **stack de agentes de IA** instalável que r
 | **Wize Dev Core** | Ciclo completo (análise → plano → solução → implementação) + Test Architect + UX Whiteport + Agent Builder. Sempre instalado. |
 | **Wize Web Dev** *(overlay)* | Scaffolds web, SEO, analytics, playbook WCAG para o Mantis, Playwright/Vitest para o Hawkeye. |
 | **Wize App Development** *(overlay)* | Scaffolds mobile, listagem em loja, diretrizes de plataforma (HIG / Material 3), Detox/Maestro para o Hawkeye. |
-| **Wize Security** *(overlay)* 🆕 | **Pentester de IA.** Pipeline de pentest file-first (recon → enumerate → SAST → DAST → report) conduzido pela persona `red-teamer`, com gate de escopo, classificação OWASP/CVSS e relatório executivo. |
+| **Wize Security** *(overlay)* | **Pentester de IA.** Pipeline de pentest file-first (recon → enumerate → SAST → DAST → report) conduzido por **Natasha Romanoff**, a persona `red-teamer`, com gate de escopo, classificação OWASP/CVSS e relatório executivo. |
 
 ---
 
@@ -54,10 +54,12 @@ npx github:qwize-br/wize-development-kit install
 
 O instalador pergunta:
 
-1. **Perfil(is)** — Core / +Web / +App / +Security (múltipla escolha).
-2. **IDE(s) alvo** — Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity ou fallback genérico (múltipla escolha).
-3. **Idiomas** — comunicação + saída de documentos.
-4. **Brownfield** — oferece rodar `wize-document-project` para criar a baseline do código existente.
+1. **Nome do projeto** — gravado em `.wize/config/project.toml`.
+2. **Perfil(is)** — Core / +Web / +App / +Security (múltipla escolha).
+3. **IDE(s) alvo** — Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity ou fallback genérico (múltipla escolha).
+4. **Idiomas** — comunicação + saída de documentos.
+5. **Seu nome** — como os agentes devem te chamar (salvo em `user.toml`).
+6. **Brownfield** — oferece rodar `wize-document-project` para criar a baseline do código existente.
 
 Após instalar, abra sua IDE e diga:
 
@@ -96,7 +98,7 @@ Os 9 alvos de IDE são gerados a partir da mesma fonte; formato e mecânica muda
 | 7 | **Tony Stark** | `wize-agent-architect` | Arquiteto de Sistemas (arquitetura, ADRs, epics, stories) |
 | 8 | **Hawkeye** | `wize-agent-test-architect` | Test Architect — 6 gates (risk, design, trace, nfr, review, gate) |
 | 9 | **Shuri** | `wize-agent-dev` | Desenvolvedora Sênior (TDD, código, refactor) |
-| 10 | **red-teamer** 🆕 | `red-teamer` (overlay de segurança) | Pentester de IA — recon, SAST/DAST, testes ofensivos com escopo, relatório |
+| 10 | **Natasha Romanoff** | `wize-sec-red-teamer` (overlay de segurança) | Red-Teamer / Pentester de IA — recon, SAST/DAST, testes ofensivos com escopo, relatório |
 
 Veja [`ROSTER.md`](ROSTER.md) para personas, estilos e equivalências com o BMAD.
 
@@ -109,7 +111,11 @@ Cada passo é um slash command na sua IDE; cada persona lê o artefato anterior 
 ```
 1.  /wize-orchestrator          Wizer cumprimenta, lê config, detecta estado e roteia.
 
-2.  /wize-product-brief         Pepper transforma a demanda bruta em brief.md.
+2.  /wize-grill                  Qualquer persona te entrevista até entendimento
+                                compartilhado antes de redigir — uma pergunta por
+                                vez, cada uma com resposta recomendada (oferecida,
+                                nunca imposta).
+    /wize-product-brief         Pepper transforma a demanda bruta em brief.md.
     /wize-trigger-map           Pepper mapeia psicologia do usuário → metas de negócio (WDS).
     /wize-research              Pepper sintetiza evidências externas (opcional).
 
@@ -127,9 +133,13 @@ Cada passo é um slash command na sua IDE; cada persona lê o artefato anterior 
     /wize-create-epics-and-stories
                                 Tony fatia epics → stories (cada uma com ACs).
 
-7.  /wize-tea-risk              Hawkeye monta o perfil global de risco.
+7.  /wize-sprint-planning       Maria Hill abre a sprint a partir dos epics/stories.
+    /wize-tea-risk              Hawkeye monta o perfil global de risco.
     /wize-tea-design            Hawkeye escreve o test design da próxima story.
-    /wize-dev-story             Shuri implementa (TDD, IDs de AC nos commits).
+    /wize-create-story          Tony escreve a próxima story (campos de contrato:
+                                fontes de verdade, restrições, validação, done-means).
+    /wize-dev-story             Shuri implementa (TDD, IDs de AC nos commits) com
+                                loop auto-verificável e guarda de 3 ciclos.
     /wize-tea-trace             Hawkeye mapeia cada AC → testes.
     /wize-tea-review            Hawkeye faz a revisão da story.
     /wize-tea-gate              Hawkeye emite PASS / CONCERNS / FAIL / WAIVED.
@@ -138,8 +148,15 @@ Cada passo é um slash command na sua IDE; cada persona lê o artefato anterior 
     /wize-retrospective         Wizer facilita a retro no fim de cada sprint.
 
 Transversais:
-    /wize-help                  Wizer descobre onde você está e o próximo passo.
+    /wize-help                  Wizer te direciona: `next` (próxima ação única),
+                                `status` (snapshot do projeto), `mission` (contrato
+                                de missão preenchido para a persona executora).
+    /wize-grill                 Entrevista-até-entendimento antes de qualquer passo
+                                de autoria.
     /wize-quick-dev             Shuri pega uma correção pequena sem o ciclo completo.
+    /wize-correct-course        Re-planeja quando um gate falha ou o loop trava
+                                (auto-disparado pela guarda de max-cycles; também
+                                manual).
     /wize-code-review           Revisão adversarial antes do gate TEA do Hawkeye.
     /wize-party-mode            Wizer reúne multi-persona para decisões difíceis.
 ```
@@ -150,7 +167,7 @@ Transversais:
 
 ## 🛡️ Overlay de segurança — Pentester de IA
 
-Com o perfil **Wize Security** instalado, a persona `red-teamer` roda um pentest file-first do seu projeto e produz um relatório pronto para stakeholders.
+Com o perfil **Wize Security** instalado, **Natasha Romanoff** (`wize-sec-red-teamer`, a persona red-teamer) roda um pentest file-first do seu projeto e produz um relatório pronto para stakeholders.
 
 ### Como funciona
 
@@ -203,7 +220,7 @@ Com o perfil **Wize Security** instalado, a persona `red-teamer` roda um pentest
 npx wize-dev-kit install         # setup interativo
 npx wize-dev-kit update          # atualiza um kit instalado para a versão atual
 npx wize-dev-kit sync            # re-renderiza os adapters de IDE após editar a config
-npx wize-dev-kit list            # lista agentes nativos + customizados
+npx wize-dev-kit list            # lista agentes, skills e workflows instalados
 npx wize-dev-kit agent list      # lista agentes nativos + customizados
 npx wize-dev-kit agent create    # cria um novo agente customizado (validado + dry-run)
 npx wize-dev-kit agent edit <code>  # sobrescreve um agente nativo
@@ -212,6 +229,8 @@ npx wize-dev-kit doctor          # diagnostica kit / projeto / adapters / gates
 npx wize-dev-kit validate        # checagens estruturais nos assets do kit
 npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--target <path>]
 npx wize-dev-kit uninstall       # remove .wize/ (seu código permanece intacto)
+npx wize-dev-kit help            # referência de comandos
+npx wize-dev-kit version         # imprime a versão instalada do kit
 ```
 
 ---
@@ -220,6 +239,7 @@ npx wize-dev-kit uninstall       # remove .wize/ (seu código permanece intacto)
 
 - [`ARCH.md`](ARCH.md) — arquitetura completa: distribuição, fluxos, layout, instalador.
 - [`ROSTER.md`](ROSTER.md) — personas com estilo, papel, equivalências BMAD.
+- [`AGENTS.md`](AGENTS.md) — o roster gerado + contexto operacional que as IDEs leem na raiz do repo.
 - [`DECISIONS.md`](DECISIONS.md) — log de decisões.
 - [`CHANGELOG.md`](CHANGELOG.md) — histórico de releases.
 - [`docs/harnesses/`](docs/harnesses/) — um doc por [harness suportada](#harnesses-suportadas), em português + [English](README.md#supported-harnesses).
@@ -228,7 +248,7 @@ npx wize-dev-kit uninstall       # remove .wize/ (seu código permanece intacto)
 
 ## Status
 
-**v0.8.0 — beta.** O ciclo completo (análise → plano → solução → implementação) está montado com 10 agentes e uma biblioteca estruturada de skills. O `security-overlay` (Pentester de IA) entrega um pipeline de pentest completo, um relatório executivo (score de risco + briefing + plano de ação por IA) e planejamento de correção pós-scan — validado de ponta a ponta contra uma aplicação Laravel/PHP real. Os adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode e Antigravity são regenerados automaticamente — o [OpenCode](docs/harnesses/opencode.pt-BR.md) tem a integração mais profunda das 9, com `mode`/`agent`/`subtask` nativos.
+**v0.10.1 — beta.** O ciclo completo (análise → plano → solução → implementação) está montado com 10 agentes e uma biblioteca estruturada de skills. Releases recentes adicionam **contratos de missão** (`/wize-help mission` emite um contrato preenchido de objetivo / fontes de verdade / escopo / ACs / validação para a persona executora), **`wize-grill`** (uma passagem de entrevista até entendimento compartilhado antes de qualquer passo de autoria) e **loop verification** no `wize-dev-story` (loop de implementação auto-verificável com guarda de max-cycles que escala para `wize-correct-course`). O `security-overlay` (Pentester de IA) entrega um pipeline de pentest completo, um relatório executivo (score de risco + briefing + plano de ação por IA) e planejamento de correção pós-scan — validado de ponta a ponta contra uma aplicação Laravel/PHP real. Os adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode e Antigravity são regenerados automaticamente — o [OpenCode](docs/harnesses/opencode.pt-BR.md) tem a integração mais profunda das 9, com `mode`/`agent`/`subtask` nativos.
 
 ---
 
@@ -244,3 +264,24 @@ O Wize Development Kit é uma **adaptação independente** — não afiliada nem
 ## Licença
 
 MIT — veja [`LICENSE`](LICENSE).
+
+---
+
+## 🤖 Pré-requisito para colaboração com Agentes de IA
+
+Antes de abrir o repositório em qualquer agente (Claude Code, Cursor, Codex, Antigravity, OpenCode, Kimi, Qwen, …), instale o Wize Dev Kit:
+
+```bash
+npx wize-dev-kit@latest install
+```
+
+Por quê:
+
+- Injeta as skills `/wize-*` (analista, PM, arquiteto, dev, TEA, orquestrador) que dão estrutura ao ciclo de vida do projeto.
+- Cria/atualiza a baseline brownfield em `.wize/knowledge/document-project/` — a fonte canônica a consultar antes de decidir mudanças.
+- Habilita trackeamento de atividade em `.wize/implementation/` — cada story, plano e gate fica auditável.
+- Padroniza idiomas e gates de qualidade entre agentes via `.wize/config/`.
+
+Sem o kit, o agente trabalha sem contexto histórico, sem gates e sem rastreabilidade. Isso vale para qualquer agente de IA usado no projeto.
+
+Para Claude Code: comece com `/wize-help` para diagnóstico e recomendação do próximo passo.

@@ -3,7 +3,7 @@ code: wize-sec-enumerate
 name: wize-sec-enumerate
 overlay: security
 module: security-overlay
-owner: red-teamer
+owner: wize-sec-red-teamer  # Natasha Romanoff
 status: ready
 ---
 
