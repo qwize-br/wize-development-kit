@@ -45,7 +45,7 @@ After `wize-create-prd` produces `status: ready-for-validation`. Run once per ma
 ### Quality
 - [ ] Every AC is observable (testable by Hawkeye without ambiguity).
 - [ ] No AC contains the word "easy", "intuitive", "responsive" without a numeric criterion.
-- [ ] INVEST: every backbone story passes (independent, negotiable, valuable, estimable, small, testable).
+- [ ] INVEST: every backbone story passes (independent, negotiable, valuable, small, testable) — "Estimable" is dropped; we don't estimate, we only check it fits one PR.
 - [ ] No goal repeats a brief constraint as if it were a goal.
 
 ### Cross-checks

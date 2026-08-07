@@ -9,6 +9,25 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.11.0] — 2026-08-06
+
+**No-estimates policy.** The method now refuses to produce development estimates at any step — no hours, days, story points, or S/M/L/XL t-shirt sizes. Following the BMAD stance already stated in the architecture skill ("AI development speed has fundamentally changed"), estimates are treated as noise that only burns time and tokens. The only sizing signal that remains is binary: **does a story fit one PR? If not, slice it.** Suite green (417 tests, validate 74 files).
+
+### Removed
+
+- **`estimate` frontmatter field** from the story and epic templates (`wize-create-story`, `wize-create-epics-and-stories`).
+- **`estimateFor()`** helper and the `- **Estimativa:**` / `est S|M|L` output from the security remediation backlog (`security-overlay/_shared/backlog.js`) — the red-teamer's remediation epics/stories no longer carry a size estimate.
+- **"Estimation rough guide"** (S ≤ 4h, M 4h–1d, …) from `wize-create-story`.
+
+### Changed
+
+- **INVEST** — the "Estimable" letter is dropped on purpose across `wize-create-prd`, `wize-validate-prd`, `wize-create-story`, and `wize-create-epics-and-stories`. "Small (≤ 1 PR)" is now the only sizing test.
+- **`wize-sprint-planning`** — planning is by story count and priority, not velocity or person-day math; "Optimistic velocity" anti-pattern replaced with "don't estimate."
+- **`wize-retrospective`** — the dashboard reports stories committed vs shipped (a count) instead of velocity; the example retro no longer references M/L estimates.
+- **`wize-checkpoint-preview`** — the snapshot records "Commits so far" instead of "Time spent"; triggers refer to "larger stories," not "M/L stories."
+- **`wize-help`** — the Quick Dev classifier drops the "~≤1h" time threshold; it now reads "trivially scoped."
+- Each affected skill carries an explicit **"No estimates"** note so the rule holds when the skill is loaded standalone.
+
 ## [0.10.1] — 2026-08-02
 
 Documentation polish + tooling fixes. The security-overlay persona gets a Marvel name; the README (3 languages) is aligned to v0.10.1; a rendering bug and the test glob are fixed; CI is added. Suite green (418 tests — the security-overlay suite now runs under `npm test`).

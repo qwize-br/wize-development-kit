@@ -45,7 +45,7 @@ Read these if they exist (absence is information too):
 
 | Class | When | Route |
 |---|---|---|
-| **Quick Dev** | Small, predictable, ~≤1h for a careful dev, and touches **no** new feature, architecture, UX, or security surface — bug fix, copy edit, small refactor, dep bump, hotfix, brownfield maintenance. | **Shuri / `wize-quick-dev`** (light TEA) — skip the phase heuristic below. |
+| **Quick Dev** | Small, predictable, trivially scoped, and touches **no** new feature, architecture, UX, or security surface — bug fix, copy edit, small refactor, dep bump, hotfix, brownfield maintenance. | **Shuri / `wize-quick-dev`** (light TEA) — skip the phase heuristic below. |
 | **Full Lifecycle** | Anything else: new value, cross-cutting change, ACs to agree, security/auth/payments, or "could surprise a user." | Apply the phase heuristic below, top-down. |
 
 Never pick Quick Dev to dodge writing artifacts. If the demand needs an AC, it is Full Lifecycle. When unsure, ask one question rather than guess the class.

@@ -12,6 +12,8 @@ status: ready
 
 Maria Hill chairs. Tony advises on slicing. Hawkeye flags risk. Shuri commits to the load.
 
+> **No estimates.** Plan by story count and priority, never by velocity, points, or person-day math. Estimates only burn time and tokens. Pull what fits, keep a buffer, and let shipped-vs-committed counts (not a velocity number) tell you next time.
+
 ## Inputs
 
 - Story backlog: `.wize/solutioning/stories/`
@@ -26,10 +28,10 @@ Maria Hill chairs. Tony advises on slicing. Hawkeye flags risk. Shuri commits to
 
 ## Steps
 
-1. **Look back** — what shipped, what slipped, what surprised.
-2. **Refresh capacity** — person-days × utilization − overhead.
+1. **Look back** — what shipped, what slipped, what surprised (counts, not velocity).
+2. **Gauge availability** — who's around this interval and who's out. No person-day math.
 3. **Pull stories** — continuation first, then priority, then risk.
-4. **Reserve 10–15% buffer** for unknowns.
+4. **Leave slack** for unknowns — pull fewer stories than feel possible, not a padded number.
 5. **Walk the gate plan** — design/trace/review/gate per story.
 6. **Commit** — verbal + written into YAML.
 
@@ -65,11 +67,12 @@ development_status:
 
 ## Anti-patterns
 
-- Optimistic velocity.
+- Estimating — velocity, points, or person-days. Just don't.
+- Over-committing because "it looks like it fits."
 - Stories without owners.
 - Stretch goals that are really plan.
 - Pulling blocked dependencies.
-- Zero buffer.
+- Zero slack.
 
 ## Hand-off
 
@@ -83,4 +86,4 @@ development_status:
 >
 > `/loop /wize-dev-story` drives one story at a time: TDD red-green-refactor, AC IDs in commits, `tea-design.md` contract, knowledge update on the 5 baseline axes, and a clean gate at the end. `/loop` keeps it going across the sprint's `ready-for-dev` queue until the user pauses.
 >
-> Next: `/wize-sprint-status` (Maria Hill) to acompanhar o progresso.
+> Next: `/wize-sprint-status` (Maria Hill) to track progress.

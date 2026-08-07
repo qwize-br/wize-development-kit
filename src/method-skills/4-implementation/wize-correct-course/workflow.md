@@ -43,7 +43,7 @@ Wizer pulls the latest status file. If `last_updated` is older than 2 days, the 
 
 Pick exactly one cause:
 
-- **Cut scope.** Story is bigger than estimated, or a non-essential AC can be deferred.
+- **Cut scope.** Story turned out larger than one PR, or a non-essential AC can be deferred.
 - **Re-route.** Story needs a different agent (e.g., Mantis for UX) or skill (e.g., `wize-investigate` for a regression).
 - **Escalate.** Story needs more hands, or a decision outside the team.
 

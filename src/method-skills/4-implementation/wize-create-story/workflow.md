@@ -12,6 +12,8 @@ status: ready
 
 Tony drives. Shuri reads and proposes refinements before pulling the story.
 
+> **No estimates.** Never attach a time or effort estimate (hours, days, story points, S/M/L/XL) to a story — at any step. AI development speed has made them noise that only burns time and tokens. The only sizing question is binary: **does it fit one PR?** If not, slice it. Nothing else.
+
 ## When to use
 
 - New story splits from an epic (most common — done in `wize-create-epics-and-stories`).
@@ -47,7 +49,6 @@ story_id: E01-S03
 epic: 01-onboarding
 status: ready-for-dev
 priority: 2          # 1=now, 2=next, 3=later
-estimate: M          # S | M | L  (XL → slice further before merging here)
 linked_screens: [onboarding-step-1, invite-modal]
 linked_acs: [AC-02-1, AC-02-2]
 ---
@@ -95,20 +96,12 @@ Every story passes:
 - **I**ndependent.
 - **N**egotiable.
 - **V**aluable.
-- **E**stimable (Tony sizes).
-- **S**mall (≤ 1 PR).
+- **S**mall (≤ 1 PR) — the *only* sizing test; if it doesn't fit one PR, slice.
 - **T**estable.
 
+(INVEST's "Estimable" is dropped on purpose — see **No estimates** above. We don't size in time or points.)
+
 If any letter fails, fix before queueing.
-
-## Estimation rough guide
-
-- **S** ≤ 4h.
-- **M** 4h–1d.
-- **L** 1–2d.
-- **XL** > 2d → split.
-
-These are intervals, not commitments. Hill plans capacity against M-median.
 
 ## Full story template
 
@@ -118,7 +111,6 @@ story_id: E01-S03
 epic: 01-onboarding
 status: ready-for-dev
 priority: 2
-estimate: M
 linked_screens: [onboarding-step-1, invite-modal]
 linked_acs: [AC-02-1, AC-02-2]
 ---

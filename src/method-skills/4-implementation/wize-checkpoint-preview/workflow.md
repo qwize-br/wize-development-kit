@@ -8,19 +8,19 @@ status: ready
 
 # Checkpoint Preview
 
-**Goal.** Pause mid-story to validate direction before continuing. For M/L stories where the cost of going off-rail is high, a quick checkpoint catches drift before it becomes rework.
+**Goal.** Pause mid-story to validate direction before continuing. For larger stories where the cost of going off-rail is high, a quick checkpoint catches drift before it becomes rework.
 
 Shuri drives. Tony on call for architectural drift. Hawkeye on call for test design drift.
 
 ## When to run
 
-- Manually, when a story is taking longer than expected.
-- After the first 2-3 commits of an M or L story.
+- Manually, when a story is running long or feels off-track.
+- After the first 2-3 commits of a larger story.
 - When a new constraint is mentioned (security review, perf budget, vendor change).
 
 ## When NOT to run
 
-- Quick-dev / S stories (overhead exceeds the value).
+- Quick-dev / small stories (overhead exceeds the value).
 - When the story is < 50% done and no surprise has come up yet.
 
 ## Inputs
@@ -49,7 +49,7 @@ Write 5 lines:
 - ACs done vs. remaining: (X / Y)
 - Tests added: (count, by split)
 - New dependencies: (list)
-- Time spent: (estimate)
+- Commits so far: (count)
 
 ### 3. Sanity check (3 questions)
 
@@ -92,7 +92,7 @@ author: Shuri
 - ACs done vs. remaining: 1 / 4
 - Tests added: 2 unit, 1 integration
 - New dependencies: none
-- Time spent: ~3h
+- Commits so far: 3
 
 ## Sanity check
 - Right problem? Yes.
