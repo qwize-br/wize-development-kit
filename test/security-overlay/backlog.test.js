@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { buildBacklog, priorityFor, estimateFor, groupFindings, CTA_COMMAND } =
+const { buildBacklog, priorityFor, groupFindings, CTA_COMMAND } =
   require('../../src/security-overlay/_shared/backlog.js');
 
 function f(section, severity, raw, owasp) {
@@ -17,12 +17,6 @@ test('priorityFor maps severity to P0/P1/P2', () => {
   assert.equal(priorityFor('Low'), 'P2');
   assert.equal(priorityFor('Info-surface'), 'P2');
   assert.equal(priorityFor('unknown'), 'P2');
-});
-
-test('estimateFor maps a group size to S/M/L', () => {
-  assert.equal(estimateFor(1), 'S');
-  assert.equal(estimateFor(5), 'M');
-  assert.equal(estimateFor(40), 'L');
 });
 
 test('groupFindings groups by section/theme, not 1-per-finding', () => {
@@ -75,6 +69,9 @@ test('buildBacklog produces an epics/stories markdown consumable by wize-create-
   assert.match(md, /CVE-1|deps/);
   // Carries the source scope hash for provenance.
   assert.match(md, /abc123/);
+  // No-estimates policy: the backlog must never emit a size/effort estimate.
+  assert.doesNotMatch(md, /Estimativa/i, 'backlog must not carry an estimate field');
+  assert.doesNotMatch(md, /\best [SML]\b/, 'story lines must not carry S/M/L estimates');
 });
 
 test('buildBacklog seeds epics from the AI action plan when present', () => {

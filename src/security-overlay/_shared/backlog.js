@@ -27,13 +27,6 @@ function priorityFor(severity) {
   }
 }
 
-// Group size -> rough estimate.
-function estimateFor(count) {
-  if (count <= 2) return 'S';
-  if (count <= 10) return 'M';
-  return 'L';
-}
-
 // Human label + remediation intent per section.
 const SECTION_THEME = {
   secrets: { theme: 'Rotacionar e remover segredos expostos', owasp: 'A07:2021' },
@@ -121,8 +114,6 @@ function buildBacklog({ findings = [], actionPlan = [], scopeSha = '', generated
   const planByTheme = {};
   for (const a of (actionPlan || [])) planByTheme[(a.title || '').toLowerCase()] = a;
 
-  const actionable = groups.filter(g => g.worstSeverity !== 'Info-surface' || g.priority !== 'P2' ? true : true);
-
   if (groups.length === 0) {
     lines.push('## (sem itens)');
     lines.push('');
@@ -134,7 +125,6 @@ function buildBacklog({ findings = [], actionPlan = [], scopeSha = '', generated
   let epicN = 0;
   for (const g of groups) {
     epicN++;
-    const est = estimateFor(g.count);
     // Find a matching action-plan detail by theme keyword overlap.
     let planDetail = '';
     for (const [title, a] of Object.entries(planByTheme)) {
@@ -150,14 +140,13 @@ function buildBacklog({ findings = [], actionPlan = [], scopeSha = '', generated
     lines.push(`- **Prioridade:** ${g.priority} (pior severidade: ${g.worstSeverity})`);
     lines.push(`- **Findings cobertos:** ${g.count}`);
     if (g.owasp) lines.push(`- **OWASP:** ${g.owasp}`);
-    lines.push(`- **Estimativa:** ${est}`);
     if (planDetail) lines.push(`- **Como corrigir:** ${planDetail}`);
     lines.push('');
     lines.push('### Stories');
     lines.push('');
     // For large groups, a single remediation story + a verification story.
-    lines.push(`- **${g.theme}** (${g.priority}, est ${est}) — corrigir os ${g.count} finding(s) de \`${g.section}\`. _Origem: ${g.section} (${g.count} findings, ${g.worstSeverity})._`);
-    lines.push(`- **Verificar correção de ${g.section}** (${g.priority}, est S) — re-rodar \`/wize-sec-pentest\` e confirmar que os findings de \`${g.section}\` sumiram (DoD).`);
+    lines.push(`- **${g.theme}** (${g.priority}) — corrigir os ${g.count} finding(s) de \`${g.section}\`. _Origem: ${g.section} (${g.count} findings, ${g.worstSeverity})._`);
+    lines.push(`- **Verificar correção de ${g.section}** (${g.priority}) — re-rodar \`/wize-sec-pentest\` e confirmar que os findings de \`${g.section}\` sumiram (DoD).`);
     lines.push('');
     // Sample of source findings for traceability (cap at 5).
     const sample = g.findings.slice(0, 5);
@@ -177,4 +166,4 @@ function buildBacklog({ findings = [], actionPlan = [], scopeSha = '', generated
   return lines.join('\n');
 }
 
-module.exports = { buildBacklog, priorityFor, estimateFor, groupFindings, CTA_COMMAND };
+module.exports = { buildBacklog, priorityFor, groupFindings, CTA_COMMAND };

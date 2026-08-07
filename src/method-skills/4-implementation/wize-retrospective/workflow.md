@@ -48,7 +48,7 @@ Going over 60 minutes is a sign the retro became therapy. Time-box.
 ### 1. Open with stats
 
 Wizer reads the sprint dashboard from `sprint-status.md`:
-- Velocity vs commitment.
+- Stories committed vs shipped (a count, not a velocity metric — we don't estimate).
 - Number of gates: PASS / CONCERNS / FAIL / WAIVED.
 - Blockers and their resolution times.
 - Carry-over count.
@@ -102,9 +102,9 @@ attendees: [Hill, Tony, Mantis, Pepper, Fury, Hawkeye, Shuri]
 - Mantis' "before/after" recordings in PRs accelerated review.
 
 ## Didn't work
-- Sprint-status entries went stale on Days 7–8 (Hill on vacation).
-- E02-S02 estimated M, actually L; we over-committed.
-- Vendor outage with no fallback caught us cold for 4h.
+- Sprint-status entries went stale mid-sprint (Hill on vacation).
+- E02-S02 was too big for one PR and should have been sliced; it stalled the sprint.
+- Vendor outage with no fallback caught us cold.
 
 ## Surprised us
 - A11y audit caught 3 issues on a screen Mantis had already signed off on (axe found dynamic-content edge cases).
@@ -113,7 +113,7 @@ attendees: [Hill, Tony, Mantis, Pepper, Fury, Hawkeye, Shuri]
 ## Changes for Sprint 8
 
 1. **Sprint-status delegation rotation** — when Hill is OOO, Wizer takes over. *Owner: Wizer. By: Sprint 8 Day 1.*
-2. **L estimates require justification** — any L gets one paragraph "why L not M" in the story file. *Owner: Tony. By: Sprint 8 planning.*
+2. **Slice-check every story at planning** — any story that can't be described as a single PR gets split before it's pulled. *Owner: Tony. By: Sprint 8 planning.*
 3. **Vendor fallback drill** — quarterly, simulate top-3 vendor outages. *Owner: Hawkeye + Tony. By: end of Q3.*
 
 ## Decisions made

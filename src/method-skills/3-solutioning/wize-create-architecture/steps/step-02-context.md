@@ -108,7 +108,7 @@ Prepare the section to append:
 **Scale & Complexity:**
 - Primary domain: {{domain}}
 - Complexity level: {{level}}
-- Estimated architectural components: {{count}}
+- Architectural components: {{count}}
 
 ### Technical Constraints & Dependencies
 {{list}}

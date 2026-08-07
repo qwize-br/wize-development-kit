@@ -12,6 +12,8 @@ status: ready
 
 Tony drives. Output lands in `.wize/solutioning/epics/` and `.wize/solutioning/stories/`.
 
+> **No estimates.** Epics and stories never carry a time or effort estimate (hours, days, story points, S/M/L/XL) — at any step. AI development speed has made them noise that only burns time and tokens. The only sizing question is binary: **does a story fit one PR?** If not, slice it.
+
 When slicing raises decisions the PRD doesn't answer — priority order, sequencing, protected behaviors, what's out of a story — offer a short `wize-grill` pass with the user instead of guessing. Decisions land in the epic/story fields; unresolved ones become open questions with owners.
 
 ## Inputs
@@ -47,7 +49,6 @@ owner: Tony Stark + Maria Hill
 linked_prd: E01
 trigger_map_row: 1
 priority: 1
-estimate: M
 ---
 
 # Epic 01: Sign-up + first invite
@@ -76,8 +77,7 @@ Each story passes:
 - **I**ndependent — can be implemented without waiting for another in-flight story.
 - **N**egotiable — wording can move; intent stays.
 - **V**aluable — a real outcome to a real user (or a clear test path that proves a slice).
-- **E**stimable — Tony can size: S/M/L/XL.
-- **S**mall — fits in one PR (≤ 1 day for an experienced dev, including tests).
+- **S**mall — fits in one PR, tests included. This is the *only* sizing test; no time or point estimate (see **No estimates** above).
 - **T**estable — every AC is observable.
 
 If a story is XL, slice it before merging it to `stories/`.
@@ -101,7 +101,6 @@ story_id: E01-S03
 epic: 01-onboarding
 status: ready-for-dev
 priority: 2
-estimate: M
 linked_screens: [onboarding-step-1, invite-modal]
 linked_acs: [AC-02-1, AC-02-2]
 ---
@@ -163,9 +162,9 @@ Every story declares the AC IDs it advances (from PRD). The union of stories per
 
 Each story carries its own **sources of truth**, **restrictions** (out-of-scope + protected behaviors + compatibility + security), and a **validation contract** (AC → test map + required checks). These aren't optional prose — they are what makes AC → code → test → gate traceable. A story missing them is not ready for dev.
 
-### 4. Estimates
+### 4. Slice check (no estimates)
 
-Story estimates S/M/L/XL. XL gets sliced before merging. If everything is L, slicing pattern is too coarse; revisit.
+Don't estimate stories — size them by one question: does each fit a single PR? Anything that doesn't gets sliced before it lands in `stories/`. If most stories feel too big to slice cleanly, the slicing pattern is too coarse; revisit it.
 
 ### 5. Hand off
 
