@@ -28,4 +28,7 @@ skills:
   - code: wize-spec
     name: "Spec"
     description: "Distills any intent input into a canonical five-field spec kernel + companions."
+  - code: wize-pre-pr-check
+    name: "Pre-PR Check"
+    description: "Quando for abrir um Pull Request ou PR leia — gate local para lint, format, build e testes rápidos antes de submeter código."
 
