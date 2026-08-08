@@ -152,6 +152,8 @@ Cross-cutting:
                                 mission contract for the executing persona).
     /wize-grill                 Interview-to-understanding before any authoring step.
     /wize-quick-dev             Shuri takes a small fix without the full ride.
+    /wize-pre-pr-check          Run lint/format/build/unit tests locally before
+                                opening a PR — fail fast, zero CI runner cost.
     /wize-correct-course        Re-plan when a gate fails or a loop stalls (auto-
                                 triggered by the max-cycles guard; also manual).
     /wize-code-review           Adversarial peer review before Hawkeye's TEA gate.
@@ -245,7 +247,7 @@ npx wize-dev-kit version         # print the installed kit version
 
 ## Status
 
-**v0.11.0 — beta.** The method never produces development estimates — no hours, points, or t-shirt sizes; a story is sized only by whether it fits a single PR. The full lifecycle (analysis → plan → solution → implementation) is wired with 10 agents and a structured skill library. Recent releases add **mission contracts** (`/wize-help mission` emits a filled objective / sources-of-truth / scope / ACs / validation contract for the executing persona), **`wize-grill`** (an interview-to-shared-understanding pass before any authoring step), and **loop verification** in `wize-dev-story` (a self-checking implementation loop with a max-cycles guard that escalates to `wize-correct-course`). The `security-overlay` (AI Pentester) ships a complete pentest pipeline, a stakeholder report (risk score + briefing + AI action plan), and post-scan remediation planning — validated end-to-end against a real Laravel/PHP app. IDE adapters for Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, and Antigravity are regenerated automatically — [OpenCode](docs/harnesses/opencode.md) gets native `mode`/`agent`/`subtask` wiring, the deepest integration of the 9.
+**v0.12.1 — beta.** The method never produces development estimates — no hours, points, or t-shirt sizes; a story is sized only by whether it fits a single PR. The full lifecycle (analysis → plan → solution → implementation) is wired with 10 agents and a structured skill library. Recent releases add **mission contracts** (`/wize-help mission`), **`wize-grill`** (interview-to-shared-understanding before any authoring step), **`wize-pre-pr-check`** (local lint/format/build/unit-test gate before opening a PR — zero CI runner cost), and **loop verification** in `wize-dev-story` (a self-checking implementation loop with a max-cycles guard that escalates to `wize-correct-course`). The `security-overlay` (AI Pentester) ships a complete pentest pipeline, a stakeholder report (risk score + briefing + AI action plan), and post-scan remediation planning — validated end-to-end against a real Laravel/PHP app. IDE adapters for Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, and Antigravity are regenerated automatically — [OpenCode](docs/harnesses/opencode.md) gets native `mode`/`agent`/`subtask` wiring, the deepest integration of the 9.
 
 ---
 

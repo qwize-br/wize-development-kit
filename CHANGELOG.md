@@ -9,6 +9,14 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.12.1] — 2026-08-08
+
+**Pre-PR Check — gate local antes de abrir PR.** Nova skill core para rodar lint, format, build e testes unitários localmente antes de submeter código, evitando ciclagem cara de CI no Actions. Agnóstica de tecnologia (detecta stack via `package.json`, `composer.json`, `Cargo.toml`, etc.). Registrada em todos os 9 harness adapters.
+
+### Added
+
+- **`wize-pre-pr-check`** (core skill) — gate local que detecta a stack do projeto e roda checks rápidos (lint, format, type-check, build, unit tests) antes de `git push` ou abertura de PR. Pare no primeiro erro. Complementa o CI; não substitui testes de integração/E2E. Description: *"Quando for abrir um Pull Request ou PR leia."*
+
 ## [0.12.0] — 2026-08-08
 
 **Intent-first UX overhaul (Epic 09).** The kit now routes by user intent, not just by lifecycle phase. 10 stories across 3 sprints: block-scalar parser fix, intent descriptions on all 68 skills, 56-entry intent routing table, `/wize` primary alias, onboarding one-liner, research dispatcher, `--sign-scope`, non-interactive install + honest uninstall, release/changelog skills, CI on push/PR. Suite green (532 tests, validate 78 files).

@@ -155,6 +155,8 @@ Transversales:
     /wize-grill                 Entrevista-hasta-entendimiento antes de cualquier
                                 paso de autoría.
     /wize-quick-dev             Shuri toma un arreglo pequeño sin el ciclo completo.
+    /wize-pre-pr-check          Corre lint/format/build/tests unitarios localmente
+                                antes de abrir un PR — falla rápido, cero costo de runner.
     /wize-correct-course        Re-planifica cuando un gate falla o el loop se
                                 estanca (auto-disparado por la guarda de max-cycles;
                                 también manual).
@@ -250,7 +252,7 @@ npx wize-dev-kit version         # imprime la versión instalada del kit
 
 ## Estado
 
-**v0.11.0 — beta.** El método nunca produce estimaciones de desarrollo — ni horas, ni puntos, ni tallas de camiseta; una story se dimensiona solo por si cabe en un único PR. El ciclo completo (análisis → plan → solución → implementación) está montado con 10 agentes y una biblioteca estructurada de skills. Los releases recientes suman **contratos de misión** (`/wize-help mission` emite un contrato lleno de objetivo / fuentes de verdad / alcance / ACs / contrato de validación para la persona ejecutora), **`wize-grill`** (una pasada de entrevista hasta entendimiento compartido antes de cualquier paso de autoría) y **loop verification** en `wize-dev-story` (un loop de implementación auto-verificable con guarda de max-cycles que escala a `wize-correct-course`). El `security-overlay` (Pentester de IA) entrega un pipeline de pentest completo, un informe ejecutivo (puntuación de riesgo + briefing + plan de acción por IA) y planificación de remediación post-scan — validado de principio a fin contra una aplicación Laravel/PHP real. Los adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode y Antigravity se regeneran automáticamente — [OpenCode](docs/harnesses/opencode.md) recibe wiring nativo de `mode`/`agent`/`subtask`, la integración más profunda de las 9.
+**v0.12.1 — beta.** El método nunca produce estimaciones de desarrollo — ni horas, ni puntos, ni tallas de camiseta; una story se dimensiona solo por si cabe en un único PR. El ciclo completo (análisis → plan → solución → implementación) está montado con 10 agentes y una biblioteca estructurada de skills. Los releases recientes suman **contratos de misión** (`/wize-help mission`), **`wize-grill`** (entrevista-hasta-entendimiento antes de cualquier paso de autoría), **`wize-pre-pr-check`** (gate local de lint/format/build/tests unitarios antes de abrir un PR — cero costo de runner de CI) y **loop verification** en `wize-dev-story` (un loop de implementación auto-verificable con guarda de max-cycles que escala a `wize-correct-course`). El `security-overlay` (Pentester de IA) entrega un pipeline de pentest completo, un informe ejecutivo (puntuación de riesgo + briefing + plan de acción por IA) y planificación de remediación post-scan — validado de principio a fin contra una aplicación Laravel/PHP real. Los adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode y Antigravity se regeneran automáticamente — [OpenCode](docs/harnesses/opencode.md) recibe wiring nativo de `mode`/`agent`/`subtask`, la integración más profunda de las 9.
 
 ---
 

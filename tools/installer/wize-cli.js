@@ -3,7 +3,7 @@
  * wize-dev-kit — CLI entry point
  * Subcommands: install, update, uninstall, list, sync, agent, workflow, help
  *
- * v0.11.0 — Full-lifecycle CLI with install, update, uninstall, list, sync,
+ * v0.12.1 — Full-lifecycle CLI with install, update, uninstall, list, sync,
  * agent, workflow, validate, doctor, and document-project commands. Adapters
  * render for 9 IDE targets. Security overlay ships with 8 tools.
  */
