@@ -9,6 +9,35 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.12.0] — 2026-08-08
+
+**Intent-first UX overhaul (Epic 09).** The kit now routes by user intent, not just by lifecycle phase. 10 stories across 3 sprints: block-scalar parser fix, intent descriptions on all 68 skills, 56-entry intent routing table, `/wize` primary alias, onboarding one-liner, research dispatcher, `--sign-scope`, non-interactive install + honest uninstall, release/changelog skills, CI on push/PR. Suite green (532 tests, validate 78 files).
+
+### Added
+
+- **`/wize` alias** — primary entry point; `/wize-help` remains canonical. Onboarding reduced to `→ /wize`.
+- **Intent routing table** — 56 intent phrases mapped to skills in `wize-help` (e.g., "concorrência" → `wize-market-research`). Falls back to phase heuristic only when ambiguous.
+- **Intent descriptions** — all 68 skills/workflows carry a one-sentence `description:` telling the harness WHEN to invoke them. Block-scalar parser (`|`, `>`) now supported.
+- **`wize-sec-scope`** — guided scope creation for the security overlay (4 questions → `scope.md` + signed hash).
+- **`--sign-scope`** flag on `wize-sec-pentest` — recomputes SHA-256 without manual editing.
+- **Non-interactive install** — `install --profiles core,security --targets claude-code --yes` for CI/scripted installs. `--dry-run` supported.
+- **Honest uninstall** — removes rendered adapter directories (`.claude/skills/`, `.cursor/rules/`, etc.) in addition to `.wize/`. `--dry-run` supported.
+- **`wize-release`** skill — version bump + changelog + git tag from gated stories.
+- **`wize-changelog`** skill — Keep a Changelog format generated from done stories.
+- **CI workflow** — `.github/workflows/ci.yml` runs `npm test` + `npm run validate` on push/PR against Node 20.x and 22.x.
+- **Tool contract tests** — smoke tests for nmap, gitleaks, osv-scanner, grype, nuclei, nikto, sqlmap, ffuf (skip if absent, catch CLI drift).
+
+### Changed
+
+- **`wize-research`** — now a dispatcher that classifies intent and delegates to `wize-market-research`, `wize-domain-research`, or `wize-technical-research`.
+- **Phase labels** — normalized across all workflows (`2-plan-workflows` → `2-plan`, `2-to-3-boundary` → `3-solutioning`).
+- **Onboarding** — contextual one-liner (`→ /wize`) instead of multi-line menu. Detects brownfield/security-overlay.
+- **AGENTS.md template** — references `/wize` as primary, `/wize-help` as canonical.
+
+### Fixed
+
+- **Block scalar parser** — `readFrontmatter` now handles `|`, `>`, `|-`, `|+`, `|2` and chomp indicators. Fixes the `— |` bug that corrupted all 10 persona descriptions.
+
 ## [0.11.0] — 2026-08-06
 
 **No-estimates policy.** The method now refuses to produce development estimates at any step — no hours, days, story points, or S/M/L/XL t-shirt sizes. Following the BMAD stance already stated in the architecture skill ("AI development speed has fundamentally changed"), estimates are treated as noise that only burns time and tokens. The only sizing signal that remains is binary: **does a story fit one PR? If not, slice it.** Suite green (417 tests, validate 74 files).

@@ -1,5 +1,7 @@
 ---
+
 code: wize-app-store-listing
+description: "Use quando o app estiver próximo do lançamento e precisar preparar a listagem na loja (copy, assets, metadados)."
 name: App Store Listing
 overlay: app
 owner: wize-agent-analyst   # Pepper (copy) + Mantis (visual brief)

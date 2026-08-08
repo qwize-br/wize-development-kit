@@ -50,13 +50,14 @@ releases 0.7.x/0.8.0 deixaram itens em aberto (levantados no review de 2026-07-1
 > foram entregues: `src/security-overlay/_shared/partial.js` (`writePartial`, usado por
 > todos os scripts SAST/DAST) e `_shared/backlog.js` + CTA em `wize-sec-report`.
 
-### Épico E09 — Melhor aproveitamento de components e intenção do usuário (novo)
+### ✅ Épico E09 — Melhor aproveitamento de components e intenção do usuário (concluído 2026-08-08)
 
-Aberto pelo review de 2026-07-11 (`REVIEW-2026-07-11.md`). Stories em
-`.wize/solutioning/epics/09-ux-intent.md`. Maior impacto: bug de descrição block-scalar
-(`— |`) em todas as skills de persona; roteamento por intenção no Wizer/wize-help;
-`--sign-scope` + criação guiada de escopo; `uninstall` que remove os adapters de fato;
-skills de _ship_ (release/changelog); CI que roda testes em push/PR.
+10 stories, 3 sprints, todas done. Retrospectiva: `.wize/implementation/retrospective/2026-08-08.md`.
+Entregue: block scalar parser fix, intent descriptions (61 files), intent routing (56 intents),
+onboarding revamp, research dispatcher, sign-scope + guided scope, non-interactive install +
+honest uninstall, release/changelog skills, CI workflow, metadata hygiene.
+3 HIGH findings do code review permanecem em aberto (H1: wize-sec-scope agent.yaml,
+H2: intent routing table, H3: sprint_status.yaml typo no wize-release).
 
 ### Próximo epic dirigido por uso real
 

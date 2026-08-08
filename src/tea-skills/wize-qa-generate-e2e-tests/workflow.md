@@ -1,5 +1,7 @@
 ---
+
 code: wize-qa-generate-e2e-tests
+description: "Use quando o UX design e PRD estiverem validados e precisar gerar casos de teste E2E a partir das telas e ACs."
 name: Generate E2E Tests
 owner: wize-agent-test-architect   # Hawkeye
 status: ready

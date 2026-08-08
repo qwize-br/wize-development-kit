@@ -1,5 +1,7 @@
 ---
+
 code: wize-web-seo-audit
+description: "Use quando o projeto web estiver no ar e precisar de auditoria de SEO."
 name: Web SEO Audit
 overlay: web
 owner: wize-agent-pm   # Maria Hill commissions; Mantis + Tony execute

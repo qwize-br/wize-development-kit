@@ -1,5 +1,7 @@
 ---
+
 code: wize-spec
+description: "Use quando precisar destilar qualquer entrada de intenção (ideia, PRD, RFC, transcrição) em um contrato canônico SPEC.md para consumo downstream."
 name: Spec
 module: core
 status: ready

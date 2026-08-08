@@ -1,5 +1,7 @@
 ---
+
 code: wize-grill
+description: "Use quando uma demanda chegar vaga e precisar de entrevista exaustiva para alcançar entendimento compartilhado antes de produzir qualquer artefato."
 name: Grill
 module: core
 status: ready
@@ -9,7 +11,7 @@ status: ready
 
 **Goal.** Interview the user exhaustively about a demand until both sides reach **shared understanding** — before any artifact is drafted. Sharper answers make a sharper brief, PRD, epic, story, or plan. Grill is an input-quality tool, not an artifact of its own.
 
-Any persona about to author an artifact can invoke it: Pepper before a brief, Maria Hill before a PRD, Tony before epics/stories/architecture, Wizer when a demand arrives fuzzy. Wizer also **suggests** it from `/wize-help` — always suggest, never force.
+Any persona about to author an artifact can invoke it: Pepper before a brief, Maria Hill before a PRD, Tony before epics/stories/architecture, Wizer when a demand arrives fuzzy. Wizer also **suggests** it from `/wize` (or `/wize-help`) — always suggest, never force.
 
 ## The five rules
 

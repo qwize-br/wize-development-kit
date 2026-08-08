@@ -1,5 +1,7 @@
 ---
+
 code: wize-editorial-review-prose
+description: "Use quando um artefato Wize (brief, PRD, ADR, gate) precisar de revisão de prosa — clareza, tom, jargão e precisão."
 name: Editorial Review — Prose
 module: core
 status: ready

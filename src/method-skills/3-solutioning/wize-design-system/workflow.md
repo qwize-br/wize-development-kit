@@ -1,5 +1,7 @@
 ---
+
 code: wize-design-system
+description: "Use quando o UX design estiver avançando e precisar estabelecer a baseline do design system (tokens, componentes, grids)."
 name: Design System
 phase: 3-solutioning
 owner: wize-agent-ux-designer   # Mantis (WDS Freya — Phase 7)

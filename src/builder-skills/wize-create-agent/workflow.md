@@ -1,5 +1,7 @@
 ---
+
 code: wize-create-agent
+description: "Use quando precisar criar um novo agente customizado sob .wize/custom/agents/."
 name: Create Agent
 owner: builder
 status: stub

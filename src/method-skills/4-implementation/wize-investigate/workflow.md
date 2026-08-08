@@ -1,5 +1,7 @@
 ---
+
 code: wize-investigate
+description: "Use quando um bug ou comportamento inesperado surgir e precisar de investigação estruturada com root cause analysis."
 name: Investigate
 phase: 4-implementation
 owner: wize-agent-dev   # Shuri (+ wize-agent-test-architect Hawkeye on call)

@@ -1,5 +1,7 @@
 ---
+
 code: wize-create-skill
+description: "Use quando precisar criar uma nova skill single-step sob .wize/custom/skills/."
 name: Create Skill
 owner: builder
 status: stub

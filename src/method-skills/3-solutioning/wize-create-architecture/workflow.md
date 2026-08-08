@@ -1,5 +1,7 @@
 ---
+
 code: wize-create-architecture
+description: "Use quando o PRD e UX design estiverem prontos e precisar projetar a arquitetura do sistema com componentes, sequências e ADRs."
 name: Create Architecture
 phase: 3-solutioning
 owner: wize-agent-architect   # Tony Stark

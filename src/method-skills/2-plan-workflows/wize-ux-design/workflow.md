@@ -1,5 +1,7 @@
 ---
+
 code: wize-ux-design
+description: "Use quando os cenários UX estiverem prontos e precisar produzir especificações página por página para arquitetura e implementação."
 name: UX Design
 phase: 2-plan
 owner: wize-agent-ux-designer   # Mantis

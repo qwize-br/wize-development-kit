@@ -1,5 +1,5 @@
 # generated: 2026-06-14
-# last_updated: 2026-07-11
+# last_updated: 2026-08-08
 # project: wize-dev-kit
 # project_key: WDK
 # tracking_system: file-system
@@ -25,14 +25,18 @@
 # - Stories can be worked in parallel if team capacity allows
 # - Developer typically creates next story after previous one is 'done'
 #
+# 2026-08-08 — Epic 09 (UX/Intent) closed. 10 stories, 3 sprints, all done.
+# Retrospective at .wize/implementation/retrospective/2026-08-08.md.
+# 3 HIGH findings from code review remain open (H1: wize-sec-scope agent.yaml,
+# H2: intent routing table, H3: sprint_status.yaml typo in wize-release).
 # 2026-07-11 — regenerated against the real .wize/solutioning/stories tree.
 # The previous state machine still described the pre-security-overlay story set
 # (old E01..E06 flat stories) deleted in commit 370dc60. It now tracks the
 # shipped security-overlay cycle: 8 epics / 27 stories, all done (v0.6.0).
 
 generated: 2026-06-17
-last_updated: 2026-07-11
-active_cycle: security-overlay
+last_updated: 2026-08-08
+active_cycle: epic-09-ux-intent
 project: wize-dev-kit
 project_key: WDK
 tracking_system: file-system
@@ -84,13 +88,21 @@ development_status:
   E08-S01: done
   # Sprint retrospective — .wize/implementation/retrospective/2026-06-21.md
   security-overlay-retrospective: done
-  # Epic 9 — UX / intent (opened by the 2026-07-11 review; not yet started)
-  epic-9: backlog
-  E09-S01: backlog
-  E09-S02: backlog
-  E09-S03: backlog
-  E09-S04: backlog
-  E09-S05: backlog
-  E09-S06: backlog
-  E09-S07: backlog
-  E09-S08: backlog
+  # Epic 9 — UX / intent (opened by the 2026-07-11 review)
+  # Sprint plan created 2026-08-07 by Maria Hill. 3 sprints, 10 stories.
+  # Closed 2026-08-08. Retrospective: .wize/implementation/retrospective/2026-08-08.md
+  epic-9: done
+  epic-9-retrospective: done
+  # Sprint 1 — Foundation (unblock the rest)
+  E09-S01: done           # P0 bugfix: block-scalar descriptions — owner: Shuri
+  E09-S08: done           # CI + metadata hygiene (CI early per epic spec) — owner: Tony + Hawkeye
+  E09-S10: done           # /wize alias + /wize-help canonical — owner: Shuri
+  # Sprint 2 — Intent layer
+  E09-S02: done           # Intent descriptions on all workflows/skills — owner: Peggy + Tony
+  E09-S03: done           # Intent routing in Wizer/wize-help — owner: Wizer/Tony
+  E09-S04: done           # Research family consolidation — owner: Pepper
+  E09-S09: done           # Onboarding revamp (→ /wize one-liner) — owner: Mantis + Shuri
+  # Sprint 3 — Ship & security
+  E09-S05: done           # --sign-scope + guided scope creation — owner: red-teamer + Shuri
+  E09-S06: done           # Non-interactive install + uninstall honest — owner: Shuri
+  E09-S07: done           # Release/changelog skills — owner: Shuri + Maria Hill

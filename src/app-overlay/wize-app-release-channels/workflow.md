@@ -1,5 +1,7 @@
 ---
+
 code: wize-app-release-channels
+description: "Use quando o app estiver pronto para distribuição e precisar configurar canais de release (beta, produção)."
 name: App Release Channels
 overlay: app
 owner: wize-agent-pm   # Maria Hill

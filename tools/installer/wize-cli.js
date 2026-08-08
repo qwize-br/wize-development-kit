@@ -3,9 +3,9 @@
  * wize-dev-kit — CLI entry point
  * Subcommands: install, update, uninstall, list, sync, agent, workflow, help
  *
- * This is a v0.1 scaffold. The interactive prompt logic and adapter rendering
- * are stubs; the dispatcher and basic install/uninstall create the .wize/
- * folder layout so downstream agents can be activated.
+ * v0.11.0 — Full-lifecycle CLI with install, update, uninstall, list, sync,
+ * agent, workflow, validate, doctor, and document-project commands. Adapters
+ * render for 9 IDE targets. Security overlay ships with 8 tools.
  */
 'use strict';
 
@@ -13,13 +13,14 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const readline = require('node:readline');
+const { execSync } = require('node:child_process');
 const prompts = require('prompts');
 const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
-const { cmdUpdate } = require('./commands/update.js');
+const { cmdUpdate, loadProjectConfig } = require('./commands/update.js');
 const { printUpdateHintIfAny } = require('./version-check.js');
 const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
-const { cmdDoctor } = require('./commands/doctor.js');
+const { cmdDoctor, adapterTargetPath } = require('./commands/doctor.js');
 const { cmdDocumentProject } = require('./commands/document-project.js');
 const { compose: composeOnboarding } = require('./onboarding.js');
 
@@ -425,52 +426,167 @@ function renderAdapters({ kitRoot, projectRoot, targets, profiles }) {
   return results;
 }
 
+// Parse --key value and --flag from an argv slice. Returns { flags, positional }.
+function parseArgs(args) {
+  const flags = {};
+  const positional = [];
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a.startsWith('--')) {
+      const key = a.slice(2);
+      if (key.includes('=')) {
+        const [k, v] = key.split('=', 2);
+        flags[k] = v;
+      } else if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
+        flags[key] = args[++i];
+      } else {
+        flags[key] = true;
+      }
+    } else {
+      positional.push(a);
+    }
+  }
+  return { flags, positional };
+}
+
+function resolveProfiles(flags) {
+  if (!flags.profiles) return null;
+  const codes = flags.profiles.split(',').map(s => s.trim()).filter(Boolean);
+  const resolved = [];
+  for (const c of codes) {
+    const p = PROFILES.find(p => p.code === c);
+    if (p) resolved.push(p);
+    else console.log(`⚠  perfil desconhecido: "${c}" — ignorado`);
+  }
+  if (resolved.length === 0) return null;
+  return resolved;
+}
+
+function resolveTargets(flags) {
+  if (!flags.targets) return null;
+  const codes = flags.targets.split(',').map(s => s.trim()).filter(Boolean);
+  const resolved = [];
+  for (const c of codes) {
+    const t = TARGETS.find(t => t.code === c);
+    if (t) resolved.push(t);
+    else console.log(`⚠  target desconhecido: "${c}" — ignorado`);
+  }
+  if (resolved.length === 0) return null;
+  return resolved;
+}
+
+function resolveLang(flags) {
+  if (!flags.lang) return null;
+  const code = flags.lang.trim();
+  if (/^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})?$/.test(code)) return code;
+  console.log(`⚠  código de idioma inválido: "${code}" — usando pt-BR`);
+  return null;
+}
+
+function resolveName(flags) {
+  if (flags.name) return flags.name.trim();
+  if (flags.yes) {
+    try { return execSync('git config user.name', { encoding: 'utf-8' }).trim(); } catch (_) {}
+    return process.env.USER || process.env.USERNAME || 'Developer';
+  }
+  return null;
+}
+
+function defaultProfiles() {
+  return PROFILES.filter(p => p.required || p.code === 'core');
+}
+
+function defaultTargets() {
+  return TARGETS.filter(t => t.default);
+}
+
 async function cmdInstall(args) {
   const cwd = process.cwd();
+  const { flags } = parseArgs(args);
+  const dryRun = !!flags['dry-run'];
+  const nonInteractive = !!flags.yes;
+
   console.log(logo());
-  console.log('Installing Wize Development Kit into:', cwd);
+  if (dryRun) console.log('[DRY-RUN] Nenhum arquivo será modificado.\n');
+  console.log('Instalando Wize Development Kit em:', cwd);
+
   if (!isGitRepo(cwd)) {
-    console.log('\n⚠ not a git repo. Initialize git first or proceed at your own risk.');
-    const ok = await confirm('Continue anyway?', false);
+    console.log('\n⚠ não é um repositório git. Inicialize o git primeiro ou prossiga por sua conta e risco.');
+    if (nonInteractive) {
+      console.log('Modo não-interativo: abortando. Use --yes apenas em repositórios git.');
+      process.exit(1);
+    }
+    const ok = await confirm('Continuar mesmo assim?', false);
     if (!ok) process.exit(1);
   }
 
   const detection = detectBrownfield(cwd);
   if (detection.brownfield) {
-    console.log(`\nBrownfield signals detected: ${detection.signals.join(', ')}`);
+    console.log(`\nSinais de brownfield detectados: ${detection.signals.join(', ')}`);
   } else {
-    console.log('\nGreenfield repo detected.');
+    console.log('\nRepositório greenfield detectado.');
   }
 
-  const project_name = (await promptText(`Project name`, path.basename(cwd))) || path.basename(cwd);
-  const profiles = await multiSelect('Select profile(s) to install', PROFILES);
-  const targets = await multiSelect('Select IDE target(s)', TARGETS);
+  // Resolve flags or fall back to interactive prompts.
+  let project_name, profiles, targets, communication_language, document_output_language, user_name, wantsGitignore;
 
-  const communication_language = await selectLanguage(
-    'Communication language (how agents will talk to you in chat)',
-    'en'
-  );
-  const document_output_language = await selectLanguage(
-    `Document output language (language used in generated files; ENTER for "${communication_language}")`,
-    communication_language
-  );
+  if (nonInteractive) {
+    project_name = flags.name ? resolveName(flags) : (path.basename(cwd));
+    profiles = resolveProfiles(flags) || defaultProfiles();
+    targets = resolveTargets(flags) || defaultTargets();
+    communication_language = resolveLang(flags) || 'pt-BR';
+    document_output_language = resolveLang(flags) || communication_language;
+    user_name = resolveName(flags);
+    wantsGitignore = true;
+  } else {
+    project_name = (await promptText(`Nome do projeto`, path.basename(cwd))) || path.basename(cwd);
+    profiles = await multiSelect('Selecione o(s) perfil(is) para instalar', PROFILES);
+    targets = await multiSelect('Selecione o(s) IDE target(s)', TARGETS);
 
-  // Personal touch — the user_name lands in .wize/config/user.toml (per-developer).
-  // Always ask; do not silently accept the OS username, because the install must
-  // feel personal and avoid misnaming the user in agent conversations.
-  const defaultName = (os.userInfo().username || '').trim();
-  const user_name = await promptTextMandatory(
-    'How should the agents call you?',
-    defaultName
-  );
+    communication_language = await selectLanguage(
+      'Idioma de comunicação (como os agentes vão falar com você no chat)',
+      'pt-BR'
+    );
+    document_output_language = await selectLanguage(
+      `Idioma dos documentos (idioma usado nos arquivos gerados; ENTER para "${communication_language}")`,
+      communication_language
+    );
 
-  // Gitignore — opt-in, idempotent.
-  const wantsGitignore = await confirm(
-    'Add the suggested entries to .gitignore (user.toml + scratch + generated adapter outputs)?',
-    true
-  );
+    const defaultName = (os.userInfo().username || '').trim();
+    user_name = await promptTextMandatory(
+      'Como os agentes devem te chamar?',
+      defaultName
+    );
 
-  console.log('\nCreating .wize/ skeleton...');
+    wantsGitignore = await confirm(
+      'Adicionar as entradas sugeridas ao .gitignore (user.toml + scratch + outputs de adapters)?',
+      true
+    );
+  }
+
+  // Show resolved config.
+  console.log(`\nConfiguração:`);
+  console.log(`  Projeto:       ${project_name}`);
+  console.log(`  Perfis:        ${profiles.map(p => p.code).join(', ')}`);
+  console.log(`  IDE targets:   ${targets.map(t => t.code).join(', ')}`);
+  console.log(`  Idioma comm:   ${communication_language}`);
+  console.log(`  Idioma docs:   ${document_output_language}`);
+  if (user_name) console.log(`  Nome:          ${user_name}`);
+  if (dryRun) console.log(`  Modo:          dry-run`);
+
+  if (dryRun) {
+    console.log('\n[DRY-RUN] Criaria estrutura .wize/:');
+    for (const dir of WIZE_DIRS) console.log(`  - ${dir}/`);
+    console.log(`[DRY-RUN] Escreveria .wize/config/project.toml`);
+    console.log(`[DRY-RUN] Escreveria .wize/config/user.toml`);
+    console.log(`[DRY-RUN] Escreveria .wize/config/tea.toml`);
+    if (wantsGitignore) console.log(`[DRY-RUN] Atualizaria .gitignore`);
+    console.log(`\n[DRY-RUN] Geraria adapters para: ${targets.map(t => t.code).join(', ')}`);
+    console.log('\n[DRY-RUN] Concluído. Nenhum arquivo foi modificado.');
+    return;
+  }
+
+  console.log('\nCriando estrutura .wize/...');
   for (const dir of WIZE_DIRS) mkdirp(path.join(cwd, dir));
 
   writeIfMissing(path.join(cwd, '.wize/config/project.toml'), projectToml({
@@ -479,26 +595,26 @@ async function cmdInstall(args) {
   writeIfMissing(path.join(cwd, '.wize/config/user.toml'), generateUserToml({ name: user_name }));
   writeIfMissing(path.join(cwd, '.wize/config/tea.toml'), teaToml());
 
-  console.log('✓ .wize/ created');
-  console.log(`✓ profiles: ${profiles.map(p => p.code).join(', ')}`);
+  console.log('✓ .wize/ criado');
+  console.log(`✓ perfis: ${profiles.map(p => p.code).join(', ')}`);
   console.log(`✓ ide targets: ${targets.map(t => t.code).join(', ')}`);
-  if (user_name) console.log(`✓ user.toml: agents will call you "${user_name}"`);
+  if (user_name) console.log(`✓ user.toml: agentes vão te chamar de "${user_name}"`);
 
   if (profiles.some(p => p.code === 'security-overlay')) {
-    console.log('\n⚠  security-overlay selected — authorized use only.');
+    console.log('\n⚠  security-overlay selecionado — uso autorizado apenas.');
     console.log('   Uso autorizado. Você é responsável por obter permissão antes de testar alvos que não são seus.');
     console.log('   O kit detecta alvos fora do scope.md e recusa automaticamente; ainda assim, use com responsabilidade.');
   }
 
   if (wantsGitignore) {
     const r = applyGitignore(cwd);
-    if (r.changed) console.log(`✓ .gitignore ${r.mode} with the wize-dev-kit block`);
-    else           console.log(`= .gitignore already up to date`);
+    if (r.changed) console.log(`✓ .gitignore ${r.mode} com o bloco wize-dev-kit`);
+    else           console.log(`= .gitignore já está atualizado`);
   } else {
-    console.log('= .gitignore untouched (you opted out of suggested entries)');
+    console.log('= .gitignore não modificado (você optou por não adicionar as entradas sugeridas)');
   }
 
-  console.log('\nGenerating IDE adapters...');
+  console.log('\nGerando adapters IDE...');
   const renderResults = renderAdapters({
     kitRoot: KIT_ROOT,
     projectRoot: cwd,
@@ -506,61 +622,191 @@ async function cmdInstall(args) {
     profiles
   });
   for (const r of renderResults) {
-    if (r.skipped) console.log(`  - ${r.code}: skipped (${r.reason})`);
-    else if (r.written) console.log(`  ✓ ${r.code}: ${r.written} skill(s) emitted`);
+    if (r.skipped) console.log(`  - ${r.code}: pulado (${r.reason})`);
+    else if (r.written) console.log(`  ✓ ${r.code}: ${r.written} skill(s) emitidas`);
     else if (r.error) console.log(`  ✖ ${r.code}: ${r.error}`);
   }
 
   if (detection.brownfield) {
     if (process.env.WIZE_SKIP_BASELINE === '1') {
-      console.log('\nWIZE_SKIP_BASELINE=1 — not running the baseline.');
-    } else if (!INTERACTIVE) {
-      console.log('\nNon-interactive install detected; running quick baseline...');
+      console.log('\nWIZE_SKIP_BASELINE=1 — baseline não será executado.');
+    } else if (!INTERACTIVE || nonInteractive) {
+      console.log('\nInstalação não-interativa detectada; executando baseline rápido...');
       cmdDocumentProject({ kitRoot: KIT_ROOT, projectRoot: cwd, args: ['quick'], opts: { log: console.log } });
     } else {
       const mode = await select(
-        'Document the existing repo now?',
+        'Documentar o repositório existente agora?',
         [
-          { title: 'Quick baseline (default, 6 files)', value: 'quick' },
-          { title: 'Initial scan (pattern + conditional docs)', value: 'initial_scan' },
-          { title: 'Full rescan (archive old state, re-run)', value: 'full_rescan' },
-          { title: 'Skip documentation for now', value: 'skip' }
+          { title: 'Baseline rápido (padrão, 6 arquivos)', value: 'quick' },
+          { title: 'Scan inicial (documentos de padrão + condicionais)', value: 'initial_scan' },
+          { title: 'Rescan completo (arquiva estado anterior, re-executa)', value: 'full_rescan' },
+          { title: 'Pular documentação por enquanto', value: 'skip' }
         ],
         'quick'
       );
       if (mode !== 'skip') {
         cmdDocumentProject({ kitRoot: KIT_ROOT, projectRoot: cwd, args: [mode], opts: { log: console.log } });
       } else {
-        console.log('\nSkipped documentation. Run `wize-dev-kit document-project` later.');
+        console.log('\nDocumentação pulada. Execute `wize-dev-kit document-project` depois.');
       }
     }
   }
 
   console.log('\n──────────────────────────────────────────────────────────────');
-  console.log('Done.');
+  console.log('Concluído.');
   console.log('');
-  console.log('⚠  Restart your IDE — many harnesses load skills only at startup.');
+  console.log('⚠  Reinicie seu IDE — muitos harnesses carregam skills apenas na inicialização.');
   console.log(composeOnboarding(detection, profiles));
   console.log('');
-  console.log('Keep the kit in sync over time:');
-  console.log('  • `npx wize-dev-kit update`  refresh adapters after a new kit version');
-  console.log('  • `npx wize-dev-kit sync`    re-render adapters after editing config');
-  console.log('  • `npx wize-dev-kit agent list | create | edit <code>`  manage agents');
+  console.log('Mantenha o kit sincronizado:');
+  console.log('  • `npx wize-dev-kit update`  atualizar adapters após nova versão do kit');
+  console.log('  • `npx wize-dev-kit sync`    re-renderizar adapters após editar config');
+  console.log('  • `npx wize-dev-kit agent list | create | edit <code>`  gerenciar agentes');
   console.log('──────────────────────────────────────────────────────────────');
 }
 
-async function cmdUninstall() {
+// AGENTS.md signature — used to detect whether the file was generated by the kit.
+const AGENTS_SIGNATURE = '# Agents — Wize Development Kit';
+
+function isKitAgentsMd(filePath) {
+  if (!fs.existsSync(filePath)) return false;
+  try {
+    const head = fs.readFileSync(filePath, 'utf-8').slice(0, 200);
+    return head.includes(AGENTS_SIGNATURE);
+  } catch { return false; }
+}
+
+// Delete wize-* entries from an adapter target directory. Returns count of
+// removed items (files + dirs). Safe: only deletes entries whose name starts
+// with "wize-".
+function cleanAdapterTarget(targetDir) {
+  if (!fs.existsSync(targetDir)) return 0;
+  let count = 0;
+  let entries;
+  try { entries = fs.readdirSync(targetDir); } catch { return 0; }
+  for (const name of entries) {
+    if (!name.startsWith('wize-')) continue;
+    const full = path.join(targetDir, name);
+    try {
+      fs.rmSync(full, { recursive: true, force: true });
+      count++;
+    } catch { /* skip permission errors */ }
+  }
+  return count;
+}
+
+async function cmdUninstall(args) {
   const cwd = process.cwd();
-  const dir = path.join(cwd, '.wize');
-  if (!fs.existsSync(dir)) {
-    console.log('No .wize/ folder found here.');
+  const { flags } = parseArgs(args || []);
+  const dryRun = !!flags['dry-run'];
+
+  if (dryRun) console.log('[DRY-RUN] Nenhum arquivo será removido.\n');
+
+  const wizeDir = path.join(cwd, '.wize');
+  if (!fs.existsSync(wizeDir)) {
+    console.log('Nenhuma pasta .wize/ encontrada aqui.');
     return;
   }
-  const ok = await confirm(`Remove ${dir}? Your project source code is not touched.`, false);
-  if (!ok) return;
-  fs.rmSync(dir, { recursive: true, force: true });
-  console.log('Removed .wize/.');
-  console.log('(stub) IDE adapter files (.claude/skills/wize-*, .cursor/rules/wize-*) would be cleaned here.');
+
+  // Read project.toml to discover which IDE targets were configured.
+  let ideTargets = [];
+  try {
+    const cfg = loadProjectConfig(cwd);
+    ideTargets = (cfg.install && cfg.install.ide_targets) || [];
+  } catch { /* project.toml may be missing or corrupt */ }
+
+  // Build the list of what would be removed.
+  const toRemove = [];
+
+  // 1. Adapter target dirs (wize-* entries).
+  const adapterDirs = [];
+  for (const code of ideTargets) {
+    const dir = adapterTargetPath(code, cwd);
+    if (!dir) continue;
+    if (!fs.existsSync(dir)) continue;
+    let entries;
+    try { entries = fs.readdirSync(dir); } catch { continue; }
+    for (const name of entries) {
+      if (!name.startsWith('wize-')) continue;
+      adapterDirs.push({ target: code, dir, name, full: path.join(dir, name) });
+    }
+  }
+
+  // 2. .wize/ directory.
+  toRemove.push({ kind: 'diretório', path: wizeDir, label: '.wize/' });
+
+  // 3. AGENTS.md if kit-generated.
+  const agentsMd = path.join(cwd, 'AGENTS.md');
+  if (isKitAgentsMd(agentsMd)) {
+    toRemove.push({ kind: 'arquivo', path: agentsMd, label: 'AGENTS.md' });
+  }
+
+  // Show what will be removed.
+  if (adapterDirs.length > 0) {
+    console.log('Arquivos de adapter que serão removidos:');
+    const byTarget = {};
+    for (const a of adapterDirs) {
+      byTarget[a.target] = byTarget[a.target] || [];
+      byTarget[a.target].push(a.name);
+    }
+    for (const [code, names] of Object.entries(byTarget)) {
+      console.log(`  ${code}: ${names.length} entrada(s) (${names.slice(0, 5).join(', ')}${names.length > 5 ? '...' : ''})`);
+    }
+  } else {
+    console.log('Nenhum arquivo de adapter wize-* encontrado.');
+  }
+
+  console.log(`\nSerá removido:`);
+  for (const item of toRemove) {
+    console.log(`  - ${item.label} (${item.kind})`);
+  }
+  if (adapterDirs.length > 0) {
+    console.log(`  - ${adapterDirs.length} entrada(s) wize-* nos diretórios de adapter`);
+  }
+
+  if (dryRun) {
+    console.log('\n[DRY-RUN] Concluído. Nenhum arquivo foi removido.');
+    return;
+  }
+
+  const totalItems = toRemove.length + adapterDirs.length;
+  if (totalItems === 0) {
+    console.log('\nNada para remover.');
+    return;
+  }
+
+  const ok = await confirm(`\nRemover ${totalItems} item(ns)? O código-fonte do seu projeto não será afetado.`, false);
+  if (!ok) {
+    console.log('Cancelado.');
+    return;
+  }
+
+  // Capture AGENTS.md status before deletion.
+  const hadAgentsMd = isKitAgentsMd(agentsMd);
+
+  // Delete adapter entries first.
+  let adapterCount = 0;
+  for (const a of adapterDirs) {
+    try {
+      fs.rmSync(a.full, { recursive: true, force: true });
+      adapterCount++;
+    } catch (err) {
+      console.log(`  ✖ erro ao remover ${a.name}: ${err.message}`);
+    }
+  }
+
+  // Delete .wize/ and AGENTS.md.
+  for (const item of toRemove) {
+    try {
+      fs.rmSync(item.path, { recursive: true, force: true });
+    } catch (err) {
+      console.log(`  ✖ erro ao remover ${item.label}: ${err.message}`);
+    }
+  }
+
+  console.log(`\n✓ Removido: .wize/ + ${adapterCount} entrada(s) de adapter`);
+  if (hadAgentsMd) console.log('✓ AGENTS.md removido');
+  console.log('\nO código-fonte do seu projeto não foi alterado.');
 }
 
 function cmdList() {
@@ -581,7 +827,7 @@ function cmdList() {
   console.log(`  ${'wize-sec-red-teamer'.padEnd(36)} Natasha Romanoff  (security-overlay, opt-in)`);
 
   console.log('\nWorkflows directories:');
-  const phases = ['1-analysis', '2-plan-workflows', '3-solutioning', '4-implementation'];
+  const phases = ['1-analysis', '2-plan', '3-solutioning', '4-implementation'];
   for (const phase of phases) {
     const dir = path.join(KIT_ROOT, 'src/method-skills', phase);
     if (!fs.existsSync(dir)) continue;
@@ -640,7 +886,7 @@ async function main() {
   switch (cmd) {
     case 'install':   return cmdInstall(rest);
     case 'update':    return cmdUpdate({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
-    case 'uninstall': return cmdUninstall();
+    case 'uninstall': return cmdUninstall(rest);
     case 'list':      return cmdList();
     case 'sync':      return cmdSync();
     case 'agent':     return cmdAgent(rest);

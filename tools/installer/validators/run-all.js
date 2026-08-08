@@ -13,7 +13,7 @@ const { walkAgents, walkWorkflows, walkSkills } = require('./walk.js');
 function checkAgent(file) {
   const content = fs.readFileSync(file, 'utf-8');
   const errs = [];
-  if (!/^code:\s+wize-/m.test(content)) errs.push('missing or invalid "code:" prefix');
+  if (!/^code:\s+wize(-|$)/m.test(content)) errs.push('missing or invalid "code:" prefix');
   if (!/^name:/m.test(content))         errs.push('missing "name:"');
   if (!/^title:/m.test(content))        errs.push('missing "title:"');
   if (!/^description:/m.test(content))  errs.push('missing "description:"');
@@ -24,9 +24,10 @@ function checkWorkflow(file) {
   const content = fs.readFileSync(file, 'utf-8');
   const errs = [];
   if (!/^---\s*$/m.test(content))    errs.push('missing YAML frontmatter');
-  if (!/^code:\s+wize-/m.test(content)) errs.push('missing or invalid "code:" prefix');
+  if (!/^code:\s+wize(-|$)/m.test(content)) errs.push('missing or invalid "code:" prefix');
   if (!/^name:/m.test(content))      errs.push('missing "name:"');
   if (!/^owner:/m.test(content) && !/^module:/m.test(content)) errs.push('missing "owner:" or "module:"');
+  if (!/^description:/m.test(content)) errs.push('missing "description:"');
   return errs;
 }
 

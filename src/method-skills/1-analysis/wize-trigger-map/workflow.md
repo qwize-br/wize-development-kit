@@ -1,5 +1,7 @@
 ---
+
 code: wize-trigger-map
+description: "Use quando precisar mapear gatilhos psicológicos dos usuários para objetivos de negócio — a ponte entre o brief e o PRD."
 name: Trigger Map
 phase: 1-analysis
 owner: wize-agent-analyst   # Pepper Potts

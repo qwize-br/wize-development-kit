@@ -1,5 +1,7 @@
 ---
+
 code: wize-dev-story
+description: "Use quando uma story estiver pronta para implementação e precisar ser desenvolvida com TDD e commits rastreáveis."
 name: Dev Story
 phase: 4-implementation
 owner: wize-agent-dev   # Shuri
@@ -14,7 +16,7 @@ Shuri drives. Hawkeye observes (test design is binding). Tony stays available fo
 
 ## Operating contract
 
-I work inside a repo with WDK installed: `.wize/`, `AGENTS.md`, and the `wize-*` skills are my instructions and memory, not background reading. This section is the execution slice of the story's **mission contract** (see `/wize-help mission`).
+I work inside a repo with WDK installed: `.wize/`, `AGENTS.md`, and the `wize-*` skills are my instructions and memory, not background reading. This section is the execution slice of the story's **mission contract** (see `/wize mission` or `/wize-help mission`).
 
 - **Inspect before editing.** Read the story, its sources of truth, and the touched code first.
 - **Reuse ladder before new code** (see `wize-agent-dev` persona): needs to exist → already here → stdlib → framework feature → installed dep → one-liner → only then new code.

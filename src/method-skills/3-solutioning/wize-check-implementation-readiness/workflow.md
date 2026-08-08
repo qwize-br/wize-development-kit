@@ -1,5 +1,7 @@
 ---
+
 code: wize-check-implementation-readiness
+description: "Use quando a arquitetura e as stories estiverem prontas e precisar verificar se o projeto está pronto para entrar em implementação."
 name: Check Implementation Readiness
 phase: 3-solutioning
 owner: wize-agent-architect   # Tony Stark (with Hawkeye + Hill)

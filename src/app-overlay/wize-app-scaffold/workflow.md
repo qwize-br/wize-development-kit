@@ -1,5 +1,7 @@
 ---
+
 code: wize-app-scaffold
+description: "Use quando precisar criar o scaffold inicial de um projeto mobile com a stack aprovada pelo Fury."
 name: App Scaffold
 overlay: app
 owner: wize-agent-architect   # Tony

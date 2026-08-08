@@ -1,32 +1,25 @@
 /*
  * Onboarding handoff — Wizer-driven triage after install.
  *
- * Stub: in v0.1 this just prints the first action Wizer would take.
- * In a real run this would be a workflow executed by the active IDE adapter.
+ * Returns a clean, minimal message (≤3 lines) that always ends with "→ /wize".
+ * The message adapts to brownfield detection and active profiles without
+ * turning into a wall of text.
  */
 'use strict';
 
 function compose(detection, profiles) {
-  const lines = [
-    '',
-    '╭─ Wizer ─────────────────────────────────────╮',
-    '│ Welcome back. What are we working on?       │',
-    '╰─────────────────────────────────────────────╯'
-  ];
-  if (detection.brownfield) {
-    lines.push('');
-    lines.push('I see this repo already has code. I can ask Pepper and Peggy to baseline it before we plan.');
-    lines.push('  → /wize-document-project');
+  const lines = [];
+  const profileCodes = new Set(profiles.map(p => p.code));
+
+  if (detection && detection.brownfield) {
+    lines.push('Brownfield detected — baseline ready.');
   }
-  lines.push('');
-  lines.push('When ready, name the next step:');
-  lines.push('  → /wize-product-brief          (Pepper)');
-  lines.push('  → /wize-create-prd             (Maria Hill, if brief exists)');
-  lines.push('  → /wize-create-architecture    (Tony, if PRD exists)');
-  lines.push('  → /wize-quick-dev              (Shuri, for small fixes)');
-  if (profiles.find(p => p.code === 'web-overlay')) lines.push('  → /wize-web-scaffold           (overlay)');
-  if (profiles.find(p => p.code === 'app-overlay')) lines.push('  → /wize-app-scaffold           (overlay)');
-  if (profiles.find(p => p.code === 'security-overlay')) lines.push('  → /wize-sec-pentest         (overlay)');
+
+  if (profileCodes.has('security-overlay')) {
+    lines.push('Security pentest available (/wize-sec-recon).');
+  }
+
+  lines.push('→ /wize');
   return lines.join('\n');
 }
 

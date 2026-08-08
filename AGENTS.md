@@ -10,8 +10,8 @@ Treat `.wize/`, this `AGENTS.md`, and the installed `wize-*` skills as your oper
 instructions and persistent memory — not background reading. Read project state before
 acting; write what you change back into `.wize/` so the next session inherits it.
 
-Before editing, classify the demand via `/wize-help`: **Quick Dev** (small, predictable,
-~≤1h, no new feature / architecture / UX / security) or **Full Lifecycle**. Never pick
+Before editing, classify the demand via `/wize` (or `/wize-help`): **Quick Dev** (small, predictable,
+trivially scoped, no new feature / architecture / UX / security) or **Full Lifecycle**. Never pick
 Quick Dev just to skip artifacts.
 
 When a skill fans out to subagents, match the model tier to the task: a lightweight tier
@@ -34,4 +34,4 @@ decisions, or final adversarial review.
 
 ## Where to start
 
-Activate the orchestrator: `wize-orchestrator` (Wizer). Then ask `/wize-help`.
+Activate the orchestrator: `/wize` (or `/wize-help`). Wizer will guide you.

@@ -1,5 +1,7 @@
 ---
+
 code: wize-create-epics-and-stories
+description: "Use quando a arquitetura estiver definida e precisar fatiar o escopo em epics e stories com acceptance criteria."
 name: Create Epics and Stories
 phase: 3-solutioning
 owner: wize-agent-architect   # Tony Stark

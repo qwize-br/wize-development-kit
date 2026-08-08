@@ -1,6 +1,9 @@
 ---
+
 code: wize-tea-trace
+description: "Use quando uma story estiver em implementação e precisar mapear cada AC para testes concretos no repositório."
 name: TEA Traceability
+phase: 4-implementation
 gate: trace
 owner: wize-agent-test-architect   # Hawkeye
 when: during-or-after-implementation

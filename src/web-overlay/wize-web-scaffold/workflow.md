@@ -1,5 +1,7 @@
 ---
+
 code: wize-web-scaffold
+description: "Use quando precisar criar o scaffold inicial de um projeto web com a stack aprovada pelo Fury."
 name: Web Scaffold
 overlay: web
 owner: wize-agent-architect   # Tony executes; Fury approves stack family

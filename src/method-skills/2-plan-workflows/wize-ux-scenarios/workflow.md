@@ -1,5 +1,7 @@
 ---
+
 code: wize-ux-scenarios
+description: "Use quando o PRD estiver validado e precisar produzir o mapa de cenários UX que ancora todo o design."
 name: UX Scenarios
 phase: 2-plan
 owner: wize-agent-ux-designer   # Mantis (absorbs WDS Freya)

@@ -1,6 +1,9 @@
 ---
+
 code: wize-tea-review
+description: "Use quando uma story terminar implementação e precisar de revisão estruturada de AC fulfillment, disciplina de teste e cobertura de risco."
 name: TEA Story Review
+phase: 4-implementation
 gate: review
 owner: wize-agent-test-architect   # Hawkeye
 when: story-end

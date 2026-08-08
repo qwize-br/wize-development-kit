@@ -1,5 +1,7 @@
 ---
+
 code: wize-web-deploy
+description: "Use quando o projeto web estiver pronto para deploy e precisar do playbook de publicação."
 name: Web Deploy Playbook
 overlay: web
 owner: wize-agent-architect   # Tony

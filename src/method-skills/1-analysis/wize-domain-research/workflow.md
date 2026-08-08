@@ -4,7 +4,14 @@ name: Domain Research
 phase: 1-analysis
 owner: wize-agent-analyst   # Pepper Potts
 status: ready
+description: "Use quando precisar pesquisar um domínio de negócio, indústria ou setor."
 ---
+
+> **Variante de pesquisa.** Para outros tipos de pesquisa, veja:
+> - Mercado/concorrência → `/wize-market-research`
+> - Domínio/indústria → `/wize-domain-research`
+> - Técnica/stack → `/wize-technical-research`
+> - Pesquisa geral (dispatcher) → `/wize-research`
 
 # Domain Research
 

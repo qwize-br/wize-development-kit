@@ -1,5 +1,7 @@
 ---
+
 code: wize-sec-enumerate
+description: "Use quando o recon estiver concluído e precisar enumerar a superfície de ataque (portas, serviços, tecnologias) a partir dos alvos autorizados."
 name: wize-sec-enumerate
 overlay: security
 module: security-overlay

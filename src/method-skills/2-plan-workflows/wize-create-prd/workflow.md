@@ -1,5 +1,7 @@
 ---
+
 code: wize-create-prd
+description: "Use quando o brief + research + trigger map estiverem prontos e precisar convertê-los em um PRD com escopo e acceptance criteria."
 name: Create PRD
 phase: 2-plan
 owner: wize-agent-pm   # Maria Hill

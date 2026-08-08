@@ -1,5 +1,7 @@
 ---
+
 code: wize-correct-course
+description: "Use quando o projeto desviar do plano e precisar de correção de curso com decisão documentada."
 name: Correct Course
 phase: 4-implementation
 owner: wize-agent-pm   # Maria Hill, with wize-orchestrator

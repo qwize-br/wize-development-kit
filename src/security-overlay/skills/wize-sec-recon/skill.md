@@ -1,5 +1,7 @@
 ---
+
 code: wize-sec-recon
+description: "Use quando o scope de segurança estiver autorizado e precisar executar reconhecimento passivo (nmap) nos alvos."
 name: wize-sec-recon
 overlay: security
 module: security-overlay

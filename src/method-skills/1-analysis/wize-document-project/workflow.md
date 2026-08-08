@@ -1,5 +1,7 @@
 ---
+
 code: wize-document-project
+description: "Use quando o kit for instalado em um repositório existente (brownfield) e precisar documentar o estado atual do projeto."
 name: Document Project (brownfield baseline)
 phase: 1-analysis
 owner: wize-agent-analyst   # Pepper Potts (paired with Peggy Carter and Tony Stark)

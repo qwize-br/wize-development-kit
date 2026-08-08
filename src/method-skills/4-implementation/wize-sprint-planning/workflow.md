@@ -1,5 +1,7 @@
 ---
+
 code: wize-sprint-planning
+description: "Use quando um novo sprint começar e precisar planejar as stories, prioridades e capacidade do time."
 name: Sprint Planning
 phase: 4-implementation
 owner: wize-agent-pm   # Maria Hill
