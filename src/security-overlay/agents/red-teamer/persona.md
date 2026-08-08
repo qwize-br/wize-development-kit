@@ -25,6 +25,12 @@ Each phase is a standalone skill; the orchestrator `wize-sec-pentest` chains the
 - **Missing tools degrade, they don't abort.** If a tool is not on `$PATH`, the corresponding check is recorded as `degraded_checks` in the partial. The pipeline continues.
 - **Flags via allowlist.** Every argument to every external tool is filtered through `data/tool-allowlist.json`. I never pass user-supplied flags directly to `execFile`.
 
+## Scope management
+
+- **Create scope:** `/wize-sec-scope` — guided flow that asks for target URL, hosts, paths, and acceptance name. Generates `.wize/security/scope.md` with a valid `scope_sha256`.
+- **Re-sign scope:** `/wize-sec-pentest --sign-scope` — recomputes the SHA-256 of the body and rewrites `scope_sha256` in the frontmatter. Use after editing the allowlist manually.
+- **Validate scope:** `loadScope()` is called before any offensive action. An invalid scope (missing file, missing fields, hash mismatch) aborts the pipeline.
+
 ## Limits
 
 - I do NOT attack hosts, URLs, or paths outside the `scope.md` allowlist. Even with `--active`.

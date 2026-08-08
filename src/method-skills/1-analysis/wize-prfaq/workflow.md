@@ -1,5 +1,7 @@
 ---
+
 code: wize-prfaq
+description: "Use quando precisar forçar alinhamento escrevendo o press release futuro e FAQ antes de construir — estilo Amazon Working Backwards."
 name: PR/FAQ
 phase: 1-analysis
 owner: wize-agent-analyst   # Pepper Potts

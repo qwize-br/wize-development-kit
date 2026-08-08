@@ -12,6 +12,32 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { walkAgents, walkWorkflows, walkSkills } = require('./validators/walk.js');
 
+// Shared block-scalar reader used by both readYamlField (agent.yaml) and
+// readFrontmatter (skill.md / workflow.md). Returns { value, nextIndex }.
+function readBlockScalar(lines, startIndex, folded) {
+  const collected = [];
+  let baseIndent = null;
+  let i = startIndex;
+  for (; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.trim() === '') { collected.push(''); continue; }
+    const indent = line.match(/^(\s*)/)[1].length;
+    if (indent === 0) break; // dedent to a sibling top-level key ends the block
+    if (baseIndent === null) baseIndent = indent;
+    collected.push(line.slice(baseIndent));
+  }
+  while (collected.length && collected[collected.length - 1] === '') collected.pop();
+  if (folded) {
+    const value = collected.reduce((acc, ln, idx) => {
+      if (idx === 0) return ln;
+      if (ln === '' || collected[idx - 1] === '') return acc + '\n' + ln;
+      return acc + ' ' + ln;
+    }, '').trim();
+    return { value, nextIndex: i };
+  }
+  return { value: collected.join('\n').trim(), nextIndex: i };
+}
+
 function readYamlField(content, field) {
   const lines = content.split('\n');
   const keyRe = new RegExp('^' + field + ':\\s*(.*)$');
@@ -23,27 +49,7 @@ function readYamlField(content, field) {
     // Block scalar (| literal, > folded) with optional chomp/indent indicator.
     const block = inline.match(/^([|>])[+-]?\d*\s*$/);
     if (block) {
-      const folded = block[1] === '>';
-      const collected = [];
-      let baseIndent = null;
-      for (let j = i + 1; j < lines.length; j++) {
-        const line = lines[j];
-        if (line.trim() === '') { collected.push(''); continue; }
-        const indent = line.match(/^(\s*)/)[1].length;
-        if (indent === 0) break; // dedent to a sibling top-level key ends the block
-        if (baseIndent === null) baseIndent = indent;
-        collected.push(line.slice(baseIndent));
-      }
-      while (collected.length && collected[collected.length - 1] === '') collected.pop();
-      if (folded) {
-        // Folded: blank line -> newline, otherwise join lines with a space.
-        return collected.reduce((acc, ln, idx) => {
-          if (idx === 0) return ln;
-          if (ln === '' || collected[idx - 1] === '') return acc + '\n' + ln;
-          return acc + ' ' + ln;
-        }, '').trim();
-      }
-      return collected.join('\n').trim();
+      return readBlockScalar(lines, i + 1, block[1] === '>').value;
     }
 
     // Inline scalar: quoted or plain.
@@ -59,9 +65,25 @@ function readFrontmatter(content) {
   if (end === -1) return {};
   const lines = content.slice(3, end).split('\n');
   const out = {};
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const m = line.match(/^([a-zA-Z_][a-zA-Z0-9_-]*):\s*(.*?)\s*$/);
-    if (m) out[m[1]] = m[2].replace(/^"|"$/g, '').replace(/^'|'$/g, '');
+    if (!m) continue;
+    const key = m[1];
+    const inline = m[2].trim();
+
+    // Block scalar (| literal, > folded) with optional chomp/indent indicator.
+    const block = inline.match(/^([|>])[+-]?\d*\s*$/);
+    if (block) {
+      const result = readBlockScalar(lines, i + 1, block[1] === '>');
+      out[key] = result.value;
+      i = result.nextIndex - 1; // -1 because the for loop will increment
+      continue;
+    }
+
+    // Inline scalar: quoted or plain.
+    const q = inline.match(/^"([^"]*)"$/) || inline.match(/^'([^']*)'$/);
+    out[key] = (q ? q[1] : inline).trim();
   }
   return out;
 }
@@ -154,7 +176,7 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
       code: fm.code,
       name: fm.name || fm.code,
       title: fm.phase || fm.gate || '',
-      description: `${fm.phase || fm.gate || 'workflow'}: ${fm.name || fm.code}`,
+      description: fm.description || `${fm.phase || fm.gate || 'workflow'}: ${fm.name || fm.code}`,
       body: bodyAfterFrontmatter(content),
       overlay: fm.overlay || null,
       owner: fm.owner || null,
@@ -175,7 +197,7 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
       code: fm.code,
       name: fm.name || fm.code,
       title: fm.module || '',
-      description: fm.module ? `${fm.module} skill: ${fm.name || fm.code}` : (fm.name || fm.code),
+      description: fm.description || (fm.module ? `${fm.module} skill: ${fm.name || fm.code}` : (fm.name || fm.code)),
       body: bodyAfterFrontmatter(content),
       overlay: fm.overlay || null,
       owner: fm.owner || null,
@@ -272,8 +294,8 @@ function renderAgentsMd(kitRoot, projectRoot, opts = {}) {
     'instructions and persistent memory — not background reading. Read project state before',
     'acting; write what you change back into `.wize/` so the next session inherits it.',
     '',
-    'Before editing, classify the demand via `/wize-help`: **Quick Dev** (small, predictable,',
-    '~≤1h, no new feature / architecture / UX / security) or **Full Lifecycle**. Never pick',
+    'Before editing, classify the demand via `/wize` (or `/wize-help`): **Quick Dev** (small, predictable,',
+    'trivially scoped, no new feature / architecture / UX / security) or **Full Lifecycle**. Never pick',
     'Quick Dev just to skip artifacts.',
     '',
     'When a skill fans out to subagents, match the model tier to the task: a lightweight tier',
@@ -288,7 +310,7 @@ function renderAgentsMd(kitRoot, projectRoot, opts = {}) {
     const optIn = a.code.startsWith('wize-sec-') ? ' _(security-overlay, opt-in)_' : '';
     lines.push(`- **${a.name}** (\`${a.code}\`)${optIn} — ${a.title}. ${clipOneLine(a.description, 180)}`);
   }
-  lines.push('', '## Where to start', '', 'Activate the orchestrator: `wize-orchestrator` (Wizer). Then ask `/wize-help`.', '');
+  lines.push('', '## Where to start', '', 'Activate the orchestrator: `/wize` (or `/wize-help`). Wizer will guide you.', '');
 
   if (opts.dryRun) return { written: ['[dry-run] AGENTS.md'], skipped: [] };
   fs.writeFileSync(file, lines.join('\n'), 'utf-8');

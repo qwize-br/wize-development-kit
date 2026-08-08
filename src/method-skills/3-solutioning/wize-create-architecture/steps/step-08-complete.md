@@ -47,7 +47,7 @@ lastStep: 8
 Architecture complete. Next:
 1. Hawkeye: run wize-tea-risk to build the global risk profile.
 2. Tony: run wize-create-epics-and-stories to slice the work.
-3. Use wize-help anytime to check what comes next.
+3. Use `/wize` (or `/wize-help`) anytime to check what comes next.
 ```
 
 ## On complete

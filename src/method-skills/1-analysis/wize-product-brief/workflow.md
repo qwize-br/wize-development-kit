@@ -1,5 +1,7 @@
 ---
+
 code: wize-product-brief
+description: "Use quando uma demanda bruta chegar e precisar ser convertida em um product brief de uma página."
 name: Product Brief
 phase: 1-analysis
 owner: wize-agent-analyst   # Pepper Potts

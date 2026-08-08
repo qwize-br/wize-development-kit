@@ -1,5 +1,7 @@
 ---
+
 code: wize-customize
+description: "Use quando precisar personalizar um agente, skill ou workflow built-in sem alterar os arquivos originais do kit."
 name: Customize
 module: core
 status: ready

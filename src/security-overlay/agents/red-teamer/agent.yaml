@@ -22,9 +22,11 @@ overlay: security
 
 skills:
   - wize-sec-pentest
+  - wize-sec-scope
 
 commands:
   - /wize-sec-pentest
+  - /wize-sec-scope
 
 inputs:
   - ".wize/security/scope.md (gate of authorization)"

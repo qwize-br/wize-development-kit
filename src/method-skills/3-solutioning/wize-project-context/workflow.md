@@ -1,5 +1,7 @@
 ---
+
 code: wize-project-context
+description: "Use quando precisar estabelecer ou atualizar o contexto do projeto (stack, convenções, restrições) para orientar a solução."
 name: Project Context
 phase: 3-solutioning
 owner: wize-agent-architect   # Tony Stark
@@ -60,7 +62,7 @@ Read `.wize/implementation/sprint-status.yaml` and include: sprint number, capac
 
 ### 6. Hand off
 
-Output is a markdown file. Wizer uses this file to seed `/wize-help`, `/wize-dev-story`, and `/wize-onboarding` reads.
+Output is a markdown file. Wizer uses this file to seed `/wize`, `/wize-help`, `/wize-dev-story`, and `/wize-onboarding` reads.
 
 ## Output template
 

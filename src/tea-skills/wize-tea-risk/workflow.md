@@ -1,6 +1,9 @@
 ---
+
 code: wize-tea-risk
+description: "Use quando a arquitetura for assinada e precisar construir a matriz probabilidade × impacto que prioriza todo o trabalho de TEA."
 name: TEA Risk Profile
+phase: 4-implementation
 gate: risk
 owner: wize-agent-test-architect   # Hawkeye
 when: once-after-architecture

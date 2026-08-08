@@ -1,5 +1,7 @@
 ---
+
 code: wize-sprint-status
+description: "Use quando precisar verificar o status atual do sprint — stories concluídas, em progresso e bloqueios."
 name: Sprint Status
 phase: 4-implementation
 owner: wize-agent-pm   # Maria Hill

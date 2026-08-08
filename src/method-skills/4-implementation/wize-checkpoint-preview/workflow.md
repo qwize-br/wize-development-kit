@@ -1,5 +1,7 @@
 ---
+
 code: wize-checkpoint-preview
+description: "Use quando uma story estiver parcialmente implementada e precisar de preview de checkpoint para validar direção antes de continuar."
 name: Checkpoint Preview
 phase: 4-implementation
 owner: wize-agent-dev   # Shuri (+ wize-agent-architect Tony on call)

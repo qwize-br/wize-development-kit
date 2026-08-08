@@ -1,5 +1,7 @@
 ---
+
 code: wize-retrospective
+description: "Use quando o sprint terminar e precisar de retrospectiva facilitada com todo o time."
 name: Retrospective
 phase: 4-implementation
 owner: wize-orchestrator   # Wizer facilitates; whole team contributes

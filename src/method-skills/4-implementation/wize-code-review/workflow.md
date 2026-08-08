@@ -1,5 +1,7 @@
 ---
+
 code: wize-code-review
+description: "Use quando um PR estiver aberto e precisar de revisão de código por pares focada em saúde do código."
 name: Code Review
 phase: 4-implementation
 owner: wize-agent-dev   # Shuri (peer review)

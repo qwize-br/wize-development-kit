@@ -1,6 +1,9 @@
 ---
+
 code: wize-tea-nfr
+description: "Use quando um epic estiver próximo do merge e precisar verificar se atende aos princípios de NFR definidos pelo Fury."
 name: TEA NFR Assessment
+phase: 4-implementation
 gate: nfr
 owner: wize-agent-test-architect   # Hawkeye
 when: pre-merge-per-epic

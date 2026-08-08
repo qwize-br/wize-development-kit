@@ -1,5 +1,7 @@
 ---
+
 code: wize-editorial-review-structure
+description: "Use quando um artefato Wize precisar de revisão estrutural — seções obrigatórias, ordenação e níveis de heading."
 name: Editorial Review — Structure
 module: core
 status: ready

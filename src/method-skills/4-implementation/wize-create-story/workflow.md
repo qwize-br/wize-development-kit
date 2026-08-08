@@ -1,5 +1,7 @@
 ---
+
 code: wize-create-story
+description: "Use quando um epic estiver definido e precisar criar uma story individual com acceptance criteria detalhados."
 name: Create Story
 phase: 4-implementation
 owner: wize-agent-architect   # Tony writes; Shuri may refine

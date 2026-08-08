@@ -1,5 +1,7 @@
 ---
+
 code: wize-party-mode
+description: "Use quando uma decisão cruzar preocupações de múltiplos agentes e precisar de discussão multi-agente facilitada."
 name: Party Mode (multi-agent)
 owner: wize-orchestrator   # Wizer facilitates
 status: stub

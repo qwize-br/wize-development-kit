@@ -1,7 +1,9 @@
 ---
+
 code: wize-edit-prd
+description: "Use quando o PRD existir e precisar de alteração pontual com registro de changelog."
 name: Edit PRD
-phase: 2-plan-workflows
+phase: 2-plan
 owner: wize-agent-pm   # Maria Hill
 status: ready
 ---

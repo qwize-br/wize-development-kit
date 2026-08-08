@@ -1,6 +1,9 @@
 ---
+
 code: wize-tea-gate
+description: "Use quando uma story chegar ao final e precisar da decisão de gate (PASS/CONCERNS/FAIL/WAIVED) com rationale documentado."
 name: TEA Gate Decision
+phase: 4-implementation
 gate: gate
 owner: wize-agent-test-architect   # Hawkeye
 when: story-final

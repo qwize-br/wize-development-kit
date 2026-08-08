@@ -1,5 +1,7 @@
 ---
+
 code: wize-quick-dev
+description: "Use quando a demanda for pequena e bem delimitada (bug fix, copy edit, refactor) e não justificar o ciclo completo."
 name: Quick Dev (lifecycle shortcut)
 phase: 4-implementation
 owner: wize-agent-dev   # Shuri

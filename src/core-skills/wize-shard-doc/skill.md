@@ -1,5 +1,7 @@
 ---
+
 code: wize-shard-doc
+description: "Use quando um documento markdown grande (PRD, arquitetura) precisar ser dividido em shards endereçáveis por ID."
 name: Shard Doc
 module: core
 status: stub

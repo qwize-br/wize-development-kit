@@ -33,6 +33,7 @@ routes_to:
   - wize-agent-tech-writer     # for docs
 
 skills:
+  - wize
   - wize-onboarding
   - wize-party-mode
   - wize-help

@@ -1,5 +1,7 @@
 ---
+
 code: wize-advanced-elicitation
+description: "Use quando uma resposta do usuário parecer subespecificada e precisar de técnicas de elicitação (5 Whys, laddering, premortem) para aprofundar o entendimento."
 name: Advanced Elicitation
 module: core
 status: stub

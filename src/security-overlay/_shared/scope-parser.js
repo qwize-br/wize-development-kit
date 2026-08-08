@@ -111,10 +111,37 @@ function loadScope(scopePath) {
   return scope;
 }
 
+// signScope(scopePath) — read, parse, recompute SHA-256 of the body, and
+// rewrite the scope_sha256 field in the frontmatter. Returns metadata about
+// the signed scope. Throws ScopeError on missing file or invalid format.
+// Idempotent: running twice on the same body produces the same hash.
+function signScope(scopePath) {
+  if (!fs.existsSync(scopePath)) {
+    throw new ScopeError('MISSING_FILE', null,
+      `scope.md ausente em ${scopePath} — crie com wize-sec-scope antes de assinar`);
+  }
+  const text = fs.readFileSync(scopePath, 'utf8');
+  const scope = parseScope(text);
+
+  const newHash = computeScopeSha256(scope.body);
+
+  // Replace scope_sha256 within the frontmatter block only (avoid
+  // accidental matches in the body).
+  const fmMatch = text.match(/^---\n([\s\S]*?)\n---\n/);
+  const fmBlock = fmMatch[0];
+  const newFmBlock = fmBlock.replace(/^(scope_sha256:\s*).*$/m, `$1${newHash}`);
+  const newText = text.replace(fmBlock, newFmBlock);
+
+  fs.writeFileSync(scopePath, newText, 'utf8');
+
+  return { path: scopePath, sha256: newHash, accepted_by: scope.frontmatter.accepted_by };
+}
+
 module.exports = {
   parseScope,
   validateScope,
   computeScopeSha256,
   loadScope,
+  signScope,
   ScopeError
 };

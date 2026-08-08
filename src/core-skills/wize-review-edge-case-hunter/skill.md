@@ -1,5 +1,7 @@
 ---
+
 code: wize-review-edge-case-hunter
+description: "Use quando um código ou PR precisar de caça sistemática de edge cases ranqueados por probabilidade × impacto."
 name: Edge Case Hunter
 module: core
 status: ready

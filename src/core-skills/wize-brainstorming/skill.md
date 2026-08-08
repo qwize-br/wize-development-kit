@@ -1,5 +1,7 @@
 ---
+
 code: wize-brainstorming
+description: "Use quando precisar gerar ideias divergentes e convergir para as melhores opções em qualquer fase de decisão."
 name: Brainstorming
 module: core
 status: stub

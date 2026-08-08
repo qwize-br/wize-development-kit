@@ -80,18 +80,59 @@ verificadas adversarialmente contra o código.
   (a) Normalizar labels de fase: `wize-edit-prd` usa `phase: 2-plan-workflows` (irmãos usam `2-plan`);
   `wize-tech-vision`/`wize-nfr-principles` dizem `2-to-3-boundary` mas vivem em `3-solutioning`; TEA
   usa `gate:` em vez de `phase:`. (b) Corrigir sugestões do `doctor.js` que imprimem skills como se
-  fossem comandos shell (`Run \`wize-refresh-knowledge\``). (c) Remover o alias `/wize` inexistente
-  (feito no `wize-help`, verificar demais). (d) Atualizar o comentário de cabeçalho "v0.1 scaffold" em
-  `wize-cli.js`. (e) Adicionar `.github/workflows/ci.yml` rodando `npm test` + `npm run validate` em
-  push/PR (hoje só roda no publish por tag). (f) Contrato real por ferramenta (RETRO-1).
+  fossem comandos shell (`Run \`wize-refresh-knowledge\``). (c) Atualizar o comentário de cabeçalho "v0.1 scaffold" em
+  `wize-cli.js`. (d) Adicionar `.github/workflows/ci.yml` rodando `npm test` + `npm run validate` em
+  push/PR (hoje só roda no publish por tag). (e) Contrato real por ferramenta (RETRO-1).
   _Owner: Tony + Hawkeye. Evidência: completeness-critic + ux-intents findings._
+
+- **E09-S09 — Onboarding revamp (→ /wize one-liner).**
+  Após `wize-dev-kit install`, o onboarding (`onboarding.js`) deve mostrar uma única linha:
+  `→ /wize` (ou `→ /wize-help`) em vez do menu multi-linha atual. O agente (Wizer) guia o
+  usuário a partir dali. Em harnesses com UI rica, Wizer pode mostrar menu de opções; em
+  harnesses text-only, faz uma pergunta por vez. O `onboarding.js` atual imprime um bloco
+  de ~15 linhas com todos os comandos — substituir pelo one-liner e delegar a descoberta ao
+  Wizer. _Owner: Mantis + Shuri. Evidência: grill session 2026-08-07; onboarding.js._
+
+- **E09-S10 — `/wize` como alias primário, `/wize-help` como canônico.**
+  Ambos devem funcionar e apontar para o mesmo skill. Hoje `/wize` não existe (S08-c removia
+  o alias quebrado). Implementar `/wize` como alias real (symlink ou redirect no harness)
+  apontando para `wize-help`; `wize-help` mantém o nome canônico. Atualizar `AGENTS.md`,
+  onboarding, e todas as referências internas para usar `/wize` como ponto de entrada
+  primário. _Owner: Shuri. Evidência: grill session 2026-08-07; wize-help workflow.md._
+
+## Sprint Plan (2026-08-07, Maria Hill)
+
+### Sprint 1 — Foundation (unblock the rest)
+| Story | Pri | Owner | Depends on |
+|---|---|---|---|
+| E09-S01 | P0 | Shuri | — |
+| E09-S08 | P1 | Tony + Hawkeye | — |
+| E09-S10 | P1 | Shuri | — |
+
+### Sprint 2 — Intent layer
+| Story | Pri | Owner | Depends on |
+|---|---|---|---|
+| E09-S02 | P0 | Peggy + Tony | S01 |
+| E09-S03 | P0 | Wizer/Tony | S01, S02, S04 |
+| E09-S04 | P1 | Pepper | S01 |
+| E09-S09 | P1 | Mantis + Shuri | S10 |
+
+### Sprint 3 — Ship & security
+| Story | Pri | Owner | Depends on |
+|---|---|---|---|
+| E09-S05 | P1 | red-teamer + Shuri | — |
+| E09-S06 | P1 | Shuri | — |
+| E09-S07 | P2 | Shuri + Maria Hill | S02, S03 |
 
 ## Dependencies
 - **E09-S01 é P0 e habilita S02/S03** — sem descrições reais, roteamento por intenção não tem substrato.
 - S03 depende de S01+S02 (as descrições são o insumo do roteador) e de S04 (variantes de pesquisa).
 - S05 é independente (security-overlay).
+- S06 é independente (CLI flags).
 - S07 depende de S02/S03 para ser descoberta.
-- S08 é higiene transversal; a CI (item e) deveria vir cedo para proteger o resto do épico.
+- S08 é higiene transversal; a CI (item d) deve vir cedo (Sprint 1) para proteger o resto do épico.
+- S09 (onboarding) depende de S10 (`/wize` alias) — o one-liner referencia `/wize`.
+- S10 é independente; habilita S09.
 
 ## Success
 - Nenhuma skill renderizada tem descrição `— |`; validador falha se isso ocorrer.
@@ -101,3 +142,5 @@ verificadas adversarialmente contra o código.
 - `wize-dev-kit install --profiles … --targets … --yes` roda sem TTY; `uninstall` remove os adapters.
 - Existe um caminho de release para o perfil core; `wize-help` o roteia.
 - CI roda testes + validate em push/PR.
+- Pós-install mostra `→ /wize` (uma linha); `/wize` e `/wize-help` são equivalentes.
+- Em harnesses text-only, Wizer faz uma pergunta por vez; em UI rica, mostra menu.

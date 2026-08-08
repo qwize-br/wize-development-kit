@@ -1,5 +1,7 @@
 ---
+
 code: wize-create-workflow
+description: "Use quando precisar criar um novo workflow multi-step sob .wize/custom/workflows/."
 name: Create Workflow
 owner: builder
 status: stub

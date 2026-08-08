@@ -1,5 +1,7 @@
 ---
+
 code: wize-onboarding
+description: "Use quando o kit for instalado e precisar fazer a triagem inicial: greenfield vs brownfield, perfil, objetivo e roteamento para a persona correta."
 name: Onboarding
 owner: wize-orchestrator   # Wizer
 status: ready
@@ -83,7 +85,7 @@ Never auto-launch the next workflow. The user must confirm.
 - Launching the next workflow without confirmation.
 - Re-asking the user’s name when it’s already in `user.toml`.
 - Dumping the full project state to the user. Summarize in ≤ 5 bullets.
-- Suggesting `wize-onboarding` from `/wize-help` once onboarding is complete. (Help should bypass onboarding for return users.)
+- Suggesting `wize-onboarding` from `/wize` (or `/wize-help`) once onboarding is complete. (Help should bypass onboarding for return users.)
 
 ## Hand-off
 

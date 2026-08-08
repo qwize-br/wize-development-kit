@@ -252,13 +252,13 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
       const age = f.days == null ? 'no last_refreshed' : `${f.days}d ago`;
       log(`  ${f.name.padEnd(28)} ${age}`);
       if (f.days != null && f.days > 60) {
-        suggestions.push({ level: 'warn', text: `\`${f.name}\` last refreshed ${f.days}d ago. Run \`wize-refresh-knowledge\` after current sprint.` });
+        suggestions.push({ level: 'warn', text: `\`${f.name}\` last refreshed ${f.days}d ago. Run \`/wize-refresh-knowledge\` after current sprint.` });
       }
     }
     if (knowledge.pendingLines > 0) {
       log(`  _pending.md:                ${knowledge.pendingLines} inline note(s) waiting consolidation`);
       if (knowledge.pendingLines >= 5) {
-        suggestions.push({ level: 'info', text: `${knowledge.pendingLines} notes piled up in _pending.md. Time to run \`wize-refresh-knowledge\`.` });
+        suggestions.push({ level: 'info', text: `${knowledge.pendingLines} notes piled up in _pending.md. Time to run \`/wize-refresh-knowledge\`.` });
       }
     }
     const markerText = knowledge.toBeGeneratedMarkers > 0 ? `${knowledge.toBeGeneratedMarkers} marker(s)` : 'none';

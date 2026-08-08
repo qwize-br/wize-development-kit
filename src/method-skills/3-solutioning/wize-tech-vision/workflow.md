@@ -1,7 +1,9 @@
 ---
+
 code: wize-tech-vision
+description: "Use quando o PRD estiver validado e precisar definir o norte técnico: stack family, build-buy-borrow e non-negotiables."
 name: Tech Vision
-phase: 2-to-3-boundary
+phase: 3-solutioning
 owner: wize-agent-solution-strategist   # Nick Fury
 status: ready
 ---

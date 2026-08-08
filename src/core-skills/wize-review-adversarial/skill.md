@@ -1,5 +1,7 @@
 ---
+
 code: wize-review-adversarial
+description: "Use quando um artefato (story, arquitetura, PRD) precisar de revisão adversarial — testar a ideia sob quatro personas hostis."
 name: Adversarial Review
 module: core
 status: stub

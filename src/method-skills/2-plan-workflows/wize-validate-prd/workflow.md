@@ -1,5 +1,7 @@
 ---
+
 code: wize-validate-prd
+description: "Use quando o PRD estiver pronto para validação e precisar decidir se ele pode avançar para Solutioning."
 name: Validate PRD
 phase: 2-plan
 owner: wize-agent-pm   # Maria Hill (with Pepper, Mantis, Fury input)

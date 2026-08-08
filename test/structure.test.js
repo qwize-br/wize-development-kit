@@ -80,3 +80,45 @@ test('all overlays declare overlay_of: method', () => {
     assert.match(yaml, /overlay_of:\s+method/, `${overlay} should declare overlay_of: method`);
   }
 });
+
+test('all workflow.md and skill.md files have a description field', () => {
+  const { walkWorkflows, walkSkills } = require('../tools/installer/validators/walk.js');
+  const missing = [];
+  for (const file of [...walkWorkflows(KIT), ...walkSkills(KIT)]) {
+    const content = fs.readFileSync(file, 'utf-8');
+    if (!content.startsWith('---')) {
+      missing.push(`${path.relative(KIT, file)}: no frontmatter`);
+      continue;
+    }
+    const end = content.indexOf('\n---', 3);
+    if (end === -1) {
+      missing.push(`${path.relative(KIT, file)}: malformed frontmatter`);
+      continue;
+    }
+    const fm = content.slice(3, end);
+    if (!/^description:/m.test(fm)) {
+      missing.push(`${path.relative(KIT, file)}: missing description`);
+    }
+  }
+  assert.strictEqual(missing.length, 0, `Files missing description:\n${missing.join('\n')}`);
+});
+
+test('no description is a phase-derived fallback', () => {
+  const { walkWorkflows, walkSkills } = require('../tools/installer/validators/walk.js');
+  const bad = [];
+  for (const file of [...walkWorkflows(KIT), ...walkSkills(KIT)]) {
+    const content = fs.readFileSync(file, 'utf-8');
+    if (!content.startsWith('---')) continue;
+    const end = content.indexOf('\n---', 3);
+    if (end === -1) continue;
+    const fm = content.slice(3, end);
+    const m = fm.match(/^description:\s*"?(.+?)"?\s*$/m);
+    if (!m) continue;
+    const desc = m[1];
+    // Phase-derived fallbacks look like "1-analysis: Product Brief" or "core skill: Grill"
+    if (/^\d-/.test(desc) || /^\w+ skill:/.test(desc) || /^\w+ workflow:/.test(desc)) {
+      bad.push(`${path.relative(KIT, file)}: "${desc}"`);
+    }
+  }
+  assert.strictEqual(bad.length, 0, `Files with phase-derived descriptions:\n${bad.join('\n')}`);
+});

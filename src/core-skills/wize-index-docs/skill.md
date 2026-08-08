@@ -1,5 +1,7 @@
 ---
+
 code: wize-index-docs
+description: "Use quando precisar reconstruir o índice da base de conhecimento (.wize/knowledge/index.md) a partir da árvore real de artefatos."
 name: Index Docs
 module: core
 status: ready
@@ -114,4 +116,4 @@ total_files: 24
 
 ## Hand-off
 
-> "Index rebuilt at `.wize/knowledge/index.md`. {N} files indexed across 5 sections. Next: `/wize-help` reads this file when answering."
+> "Index rebuilt at `.wize/knowledge/index.md`. {N} files indexed across 5 sections. Next: `/wize` (or `/wize-help`) reads this file when answering."
