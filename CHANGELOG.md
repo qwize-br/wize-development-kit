@@ -9,6 +9,14 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.13.0] — 2026-08-28
+
+**`install --yes` now installs everything.** The quick install (`npx wize-dev-kit install --yes`) previously defaulted to the core profile and the Claude Code + generic harnesses only. It now enables **all 4 profiles** (core + web-overlay + app-overlay + security-overlay) and **all 9 harnesses** (claude-code, cursor, windsurf, codex, continue, kimi-code, opencode, antigravity, generic) — a true one-shot full install. Explicit `--profiles` / `--targets` flags still narrow the selection.
+
+### Changed
+
+- **`install --yes` defaults** — `defaultProfiles()` and `defaultTargets()` now return the full set instead of core-only / claude-code+generic. One command boots every harness and every overlay.
+
 ## [0.12.1] — 2026-08-08
 
 **Pre-PR Check — gate local antes de abrir PR.** Nova skill core para rodar lint, format, build e testes unitários localmente antes de submeter código, evitando ciclagem cara de CI no Actions. Agnóstica de tecnologia (detecta stack via `package.json`, `composer.json`, `Cargo.toml`, etc.). Registrada em todos os 9 harness adapters.

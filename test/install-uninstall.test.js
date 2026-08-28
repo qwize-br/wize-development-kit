@@ -40,7 +40,7 @@ function initGit(dir) {
 
 // ---------- Non-interactive install ----------
 
-test('install --yes uses defaults (core profile, detected targets, pt-BR)', () => {
+test('install --yes uses full defaults (all profiles + all harnesses, pt-BR)', () => {
   const root = tmpProject('wize-inst-yes-');
   initGit(root);
 
@@ -59,16 +59,27 @@ test('install --yes uses defaults (core profile, detected targets, pt-BR)', () =
   assert.ok(fs.existsSync(path.join(root, '.wize/config/user.toml')), 'user.toml should exist');
   assert.ok(fs.existsSync(path.join(root, '.wize/config/tea.toml')), 'tea.toml should exist');
 
-  // Check project.toml has core profile and at least claude-code + generic.
+  // Check project.toml has ALL profiles (core + 3 overlays) and ALL targets.
   const toml = fs.readFileSync(path.join(root, '.wize/config/project.toml'), 'utf-8');
-  assert.match(toml, /profiles = \["core"\]/, 'should have core profile');
-  assert.match(toml, /claude-code/, 'should have claude-code target');
-  assert.match(toml, /generic/, 'should have generic target');
+  for (const p of ['core', 'web-overlay', 'app-overlay', 'security-overlay']) {
+    assert.match(toml, new RegExp(`"${p}"`), `should have profile ${p}`);
+  }
+  for (const t of ['claude-code', 'cursor', 'windsurf', 'codex', 'continue', 'kimi-code', 'opencode', 'antigravity', 'generic']) {
+    assert.match(toml, new RegExp(`"${t}"`), `should have target ${t}`);
+  }
   assert.match(toml, /communication = "pt-BR"/, 'should default to pt-BR');
 
-  // Check adapters were rendered.
+  // Check adapters were rendered (claude-code + cursor + generic).
   assert.ok(fs.existsSync(path.join(root, '.claude/skills/wize-orchestrator/SKILL.md')),
     'claude-code adapter should render skills');
+  assert.ok(fs.existsSync(path.join(root, '.cursor/rules/wize-orchestrator.mdc')),
+    'cursor adapter should render skills');
+  assert.ok(fs.existsSync(path.join(root, '.wize/agents/wize-orchestrator.md')),
+    'generic adapter should render skills');
+
+  // Security overlay skills should be rendered (all overlays on by default).
+  assert.ok(fs.existsSync(path.join(root, '.claude/skills/wize-sec-red-teamer/SKILL.md')),
+    'security overlay skill should be rendered');
 
   // Check user.toml has the git user name.
   const userToml = fs.readFileSync(path.join(root, '.wize/config/user.toml'), 'utf-8');

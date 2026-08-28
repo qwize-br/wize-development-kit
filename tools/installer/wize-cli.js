@@ -3,9 +3,10 @@
  * wize-dev-kit — CLI entry point
  * Subcommands: install, update, uninstall, list, sync, agent, workflow, help
  *
- * v0.12.1 — Full-lifecycle CLI with install, update, uninstall, list, sync,
+ * v0.13.0 — Full-lifecycle CLI with install, update, uninstall, list, sync,
  * agent, workflow, validate, doctor, and document-project commands. Adapters
  * render for 9 IDE targets. Security overlay ships with 8 tools.
+ * `install --yes` now enables all harnesses + all overlays by default.
  */
 'use strict';
 
@@ -492,12 +493,14 @@ function resolveName(flags) {
   return null;
 }
 
+// --yes quick install: everything on. All harnesses + all overlays, so
+// `npx wize-dev-kit install --yes` is a true one-shot full install.
 function defaultProfiles() {
-  return PROFILES.filter(p => p.required || p.code === 'core');
+  return PROFILES.slice();
 }
 
 function defaultTargets() {
-  return TARGETS.filter(t => t.default);
+  return TARGETS.slice();
 }
 
 async function cmdInstall(args) {
