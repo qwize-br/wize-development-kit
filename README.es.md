@@ -152,6 +152,9 @@ Transversales:
     /wize-help                  Wizer te enruta: `next` (única acción siguiente),
                                 `status` (snapshot del proyecto), `mission` (un
                                 contrato de misión lleno para la persona ejecutora).
+    /wize-check                 Checklist de avance de la demanda en vuelo: hecho
+                                (con evidencia), en curso, lo que falta — luego
+                                retoma el trabajo interrumpido.
     /wize-grill                 Entrevista-hasta-entendimiento antes de cualquier
                                 paso de autoría.
     /wize-quick-dev             Shuri toma un arreglo pequeño sin el ciclo completo.

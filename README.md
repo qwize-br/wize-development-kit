@@ -150,6 +150,9 @@ Cross-cutting:
     /wize-help                  Wizer routes you: `next` (single next action),
                                 `status` (project snapshot), `mission` (a filled
                                 mission contract for the executing persona).
+    /wize-check                 Progress checklist for the demand in flight:
+                                done (with evidence), in progress, what's left —
+                                then resumes the interrupted work.
     /wize-grill                 Interview-to-understanding before any authoring step.
     /wize-quick-dev             Shuri takes a small fix without the full ride.
     /wize-pre-pr-check          Run lint/format/build/unit tests locally before
