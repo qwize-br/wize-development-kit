@@ -19,6 +19,9 @@ skills:
   - code: wize-help
     name: "Help (Wizer)"
     description: "Canonical help skill. Project-state-aware help. Reads .wize/ and tells the user what to do next. Modes: default, next, status, personas."
+  - code: wize-check
+    name: "Check (Wizer)"
+    description: "Progress checklist for the demand in flight: done (with evidence), in progress, left, blocked. Read-only — reports, then resumes the interrupted work."
   - code: wize-onboarding
     name: "Onboarding"
     description: "Post-install triage: greenfield vs brownfield, profile, objective. Delegates to specialists."

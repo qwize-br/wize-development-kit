@@ -9,6 +9,10 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`wize-check`** (orchestrator skill) — read-only progress checklist for the demand in flight: objective (done condition), where we are, done / in progress / left / blocked, and one next step. Enforces an **evidence rule** (an item only reaches *Done* with a commit, `file:line`, a command that passed, or a recorded gate) so progress is never overstated, then **resumes the interrupted work**. Modes: default, `now`, `save`, `{topic}`. Complements `wize-sprint-status` (sprint detail) and `wize-checkpoint-preview` (continue/pivot decision) without replacing either. Intent phrases: "checklist", "o que falta", "o que já foi feito", "acompanhamento", "me atualiza".
+
 ## [0.13.0] — 2026-08-28
 
 **`install --yes` now installs everything.** The quick install (`npx wize-dev-kit install --yes`) previously defaulted to the core profile and the Claude Code + generic harnesses only. It now enables **all 4 profiles** (core + web-overlay + app-overlay + security-overlay) and **all 9 harnesses** (claude-code, cursor, windsurf, codex, continue, kimi-code, opencode, antigravity, generic) — a true one-shot full install. Explicit `--profiles` / `--targets` flags still narrow the selection.

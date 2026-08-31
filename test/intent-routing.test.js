@@ -246,6 +246,14 @@ test('"checkpoint" routes to wize-checkpoint-preview', () => {
   assert.ok(assertRoute(tableText, 'checkpoint', 'wize-checkpoint-preview'));
 });
 
+test('"checklist" routes to wize-check', () => {
+  assert.ok(assertRoute(tableText, 'checklist', 'wize-check'));
+});
+
+test('"o que falta" routes to wize-check', () => {
+  assert.ok(assertRoute(tableText, 'o que falta', 'wize-check'));
+});
+
 test('"criar story" routes to wize-create-story', () => {
   assert.ok(assertRoute(tableText, 'criar story', 'wize-create-story'));
 });

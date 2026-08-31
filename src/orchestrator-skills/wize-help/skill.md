@@ -182,6 +182,7 @@ Match is case-insensitive, substring-based. Longest match wins. When no intent m
 |---|---|
 | "help", "ajuda", "o que fazer", "próximo passo", "what next" | Show status + next step (no skill dispatch) |
 | "status", "como estamos", "onde estamos", "progresso" | Show sprint status / project snapshot |
+| "checklist", "o que falta", "o que já foi feito", "acompanhamento", "me atualiza", "cadê que paramos", "what's left" | `wize-check` |
 | "retrospective", "retrospectiva", "retro", "lições aprendidas" | `wize-retrospective` |
 | "personas", "quem faz o quê", "roster", "equipe" | List personas relevant to active profiles |
 | "mission", "missão", "contrato", "mission contract" | Emit filled mission contract |
