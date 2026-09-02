@@ -9,6 +9,19 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.16.1] — 2026-09-02
+
+**Publish fix.** The `0.16.0` release was published from a stale commit (missing the Hermes adapter and `wize-check`). `0.16.1` republishes the full `main` history plus `/wize-eli5`; `0.16.0` is deprecated on npm.
+
+## [0.16.0] — 2026-09-02
+
+**`/wize-eli5` — explain anything to anyone.** New core skill that detects the audience (age, grade level, job role, relationship) and calibrates vocabulary, analogies, tone, depth and framing to the listener — a concept, code, error, or decision explained for a 5-year-old, a manager, an engineer, or a client. Inspired by [ELI5](https://github.com/dreambigou/eli5) by Andrew Ou (credited in all 3 READMEs). Registered in the core module catalog; rendered by all 10 harness adapters (Claude Code, Antigravity, Codex, Kimi Code, Hermes, Cursor, Windsurf, Continue, OpenCode, Generic).
+
+### Added
+
+- **`wize-eli5` core skill** (`src/core-skills/wize-eli5/skill.md`) — audience detection → five-axis calibration (vocabulary, analogies, tone, depth, framing) → explanation → comprehension check; role-specific framing (manager, designer, engineer, client, child) and anti-patterns.
+- **READMEs (en/pt-BR/es)** — `/wize-eli5` listed in the cross-cutting commands walkthrough; ELI5 credited in the Inspiration & credits section.
+
 ## [0.15.0] — 2026-09-02
 
 **Hermes Agent is now the 10th supported harness.** New `hermes` IDE target renders the kit's agents/skills/workflows as project-local skills at `.hermes/skills/wize-{code}/SKILL.md` (Anthropic-compatible format, same as Claude Code/Codex/Kimi Code). Hermes discovers project skills at the git root, loads them only when the repo is trusted (`hermes skills trust`), and lets trusted project skills override same-named profile skills — vendored repo skills win inside their repo. Hermes also reads root `AGENTS.md` as project context, and its CLI (`hermes -z "<prompt>"`) is registered in the installer's brownfield baseline for headless runs. Highlighted in all 3 READMEs + `docs/harnesses/hermes.md` (+pt-BR); registered in the installer targets, `doctor`, `.gitignore` block, and 4 test suites.

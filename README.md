@@ -155,6 +155,9 @@ Cross-cutting:
                                 done (with evidence), in progress, what's left —
                                 then resumes the interrupted work.
     /wize-grill                 Interview-to-understanding before any authoring step.
+    /wize-eli5                  Explain anything to anyone — vocabulary, analogies,
+                                tone, depth and framing calibrated to the audience
+                                (age, role, relationship).
     /wize-quick-dev             Shuri takes a small fix without the full ride.
     /wize-pre-pr-check          Run lint/format/build/unit tests locally before
                                 opening a PR — fail fast, zero CI runner cost.
@@ -259,6 +262,7 @@ npx wize-dev-kit version         # print the installed kit version
 
 - [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) by Brian (BMad) Madison — agile AI lifecycle, agent personas, installer pattern, module system.
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — UX-first methodology, Norse pantheon (Saga, Freya), phase structure.
+- [ELI5](https://github.com/dreambigou/eli5) by Andrew Ou — audience-calibrated explanations; the inspiration for `/wize-eli5`.
 
 Wize Development Kit is an **independent adaptation** — not affiliated with or endorsed by BMAD or WDS authors. Marvel persona names are used as creative references under nominative fair use.
 

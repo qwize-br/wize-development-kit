@@ -16,6 +16,9 @@ skills:
   - code: wize-grill
     name: "Grill"
     description: "Exhaustive one-question-at-a-time interview to reach shared understanding before drafting briefs, PRDs, epics, stories, or plans."
+  - code: wize-eli5
+    name: "ELI5"
+    description: "Explain anything to anyone — adapts vocabulary, analogies, tone, depth and framing to the audience (age, role, relationship)."
   - code: wize-brainstorming
     name: "Brainstorming"
     description: "Divergent-then-convergent ideation; produces idea-pool.md."
