@@ -1,4 +1,4 @@
-// Sanity coverage across all 9 IDE adapters: each one must export a
+// Sanity coverage across all 10 IDE adapters: each one must export a
 // render(kitRoot, projectRoot, opts) function and must actually emit files
 // at the path documented in its adapter.yaml (no more "stub printing").
 
@@ -16,6 +16,7 @@ const ADAPTERS = [
   { code: 'antigravity',  expectFile: (root) => path.join(root, '.agent/skills/wize-orchestrator/SKILL.md') },
   { code: 'codex',        expectFile: (root) => path.join(root, '.agents/skills/wize-orchestrator/SKILL.md') },
   { code: 'kimi-code',    expectFile: (root) => path.join(root, '.kimi/skills/wize-orchestrator/SKILL.md') },
+  { code: 'hermes',       expectFile: (root) => path.join(root, '.hermes/skills/wize-orchestrator/SKILL.md') },
   { code: 'cursor',       expectFile: (root) => path.join(root, '.cursor/rules/wize-orchestrator.mdc') },
   { code: 'windsurf',     expectFile: (root) => path.join(root, '.windsurf/rules/wize-orchestrator.md') },
   { code: 'continue',     expectFile: (root) => path.join(root, '.continue/prompts/wize-orchestrator.prompt') },
@@ -57,7 +58,8 @@ const ANTHROPIC = [
   { code: 'claude-code',  base: '.claude' },
   { code: 'antigravity',  base: '.agent' },
   { code: 'codex',        base: '.agents' },
-  { code: 'kimi-code',    base: '.kimi' }
+  { code: 'kimi-code',    base: '.kimi' },
+  { code: 'hermes',       base: '.hermes' }
 ];
 
 for (const a of ANTHROPIC) {

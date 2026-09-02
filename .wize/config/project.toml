@@ -3,11 +3,11 @@
 
 [project]
 name = "wize-dev-kit"
-kit_version = "0.12.1"
+kit_version = "0.15.0"
 
 [install]
 profiles = ["core"]
-ide_targets = ["claude-code", "cursor", "codex", "continue", "kimi-code", "opencode", "antigravity", "generic"]
+ide_targets = ["claude-code", "cursor", "codex", "continue", "kimi-code", "hermes", "opencode", "antigravity", "generic"]
 
 [language]
 # Language used when agents talk to the team in chat.

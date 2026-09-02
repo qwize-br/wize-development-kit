@@ -1,0 +1,8 @@
+code: hermes
+description: "Hermes Agent skills (.hermes/skills/, Anthropic-compatible, project-local)."
+target_path: ".hermes/skills/"
+file_pattern: "wize-*/SKILL.md"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []

@@ -12,6 +12,7 @@ Each adapter renders the kit's agents/skills/workflows into the file layout that
 | `codex` | `.agents/skills/wize-*/` | `SKILL.md` per agent/workflow | OpenAI Codex. |
 | `continue` | `.continue/prompts/wize-*.prompt` | `.prompt` | Continue prompt slot. |
 | `kimi-code` | `.kimi/skills/wize-*/` | `SKILL.md` per agent/workflow | Moonshot Kimi Code. |
+| `hermes` | `.hermes/skills/wize-*/` | `SKILL.md` per agent/workflow | Hermes Agent (project-local skills, Anthropic-compatible). |
 | `opencode` | `.opencode/agents/wize-*.md` + `.opencode/commands/wize-*.md` | Markdown | OpenCode CLI. Native agents + commands. |
 | `antigravity` | `.agent/skills/wize-*/` | `SKILL.md` per agent/workflow | Antigravity CLI + IDE. |
 | `generic` | `.wize/agents/wize-*.md` | Markdown | Fallback for any agent that can read a folder of markdown. |

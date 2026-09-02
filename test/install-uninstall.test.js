@@ -64,7 +64,7 @@ test('install --yes uses full defaults (all profiles + all harnesses, pt-BR)', (
   for (const p of ['core', 'web-overlay', 'app-overlay', 'security-overlay']) {
     assert.match(toml, new RegExp(`"${p}"`), `should have profile ${p}`);
   }
-  for (const t of ['claude-code', 'cursor', 'windsurf', 'codex', 'continue', 'kimi-code', 'opencode', 'antigravity', 'generic']) {
+  for (const t of ['claude-code', 'cursor', 'windsurf', 'codex', 'continue', 'kimi-code', 'hermes', 'opencode', 'antigravity', 'generic']) {
     assert.match(toml, new RegExp(`"${t}"`), `should have target ${t}`);
   }
   assert.match(toml, /communication = "pt-BR"/, 'should default to pt-BR');

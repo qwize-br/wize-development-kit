@@ -9,6 +9,21 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.15.0] — 2026-09-02
+
+**Hermes Agent is now the 10th supported harness.** New `hermes` IDE target renders the kit's agents/skills/workflows as project-local skills at `.hermes/skills/wize-{code}/SKILL.md` (Anthropic-compatible format, same as Claude Code/Codex/Kimi Code). Hermes discovers project skills at the git root, loads them only when the repo is trusted (`hermes skills trust`), and lets trusted project skills override same-named profile skills — vendored repo skills win inside their repo. Hermes also reads root `AGENTS.md` as project context, and its CLI (`hermes -z "<prompt>"`) is registered in the installer's brownfield baseline for headless runs. Highlighted in all 3 READMEs + `docs/harnesses/hermes.md` (+pt-BR); registered in the installer targets, `doctor`, `.gitignore` block, and 4 test suites.
+
+### Added
+
+- **`hermes` IDE target** (`adapters/hermes/`) — renders via the shared Anthropic emitter to `.hermes/skills/`; companion files (`steps/`, `templates/`, `data/`) copied alongside `SKILL.md`. Selectable in `npx wize-dev-kit install` / `sync`; `install --yes` now enables 10 harnesses.
+- **`docs/harnesses/hermes.md` + `hermes.pt-BR.md`** — output layout, trust-gate setup (`hermes skills trust` / `skills.trusted_project_dirs`), precedence rules, and headless usage.
+
+### Changed
+
+- **Installer** — `TARGETS` gains `hermes`; `adapterTargetPath()` maps it to `.hermes/skills` (also covers `uninstall`); `.gitignore` block ignores `.hermes/skills/wize-*`; brownfield `baseline.js` detects the `hermes` CLI and runs `hermes -z` headlessly.
+- **Docs** — README (en/pt-BR/es) harness tables and summaries now list **10** IDE targets, with Hermes highlighted as new; `AGENTS.md` (repo + generated template) lists Hermes among the harnesses that read it.
+- **Tests** — adapter emit/companion coverage, structure, `install --yes` full-defaults, and `doctor` path mapping all now include `hermes`.
+
 ## [0.14.0] — 2026-08-31
 
 **`wize-check` — progress checklist with evidence.** A read-only orchestrator skill (owner: Wizer) that answers "where are we, what's done, what's left" mid-session without advancing or re-planning the work. The **evidence rule** is the core: an item only reaches *Done* with a commit, `file:line`, a passed command, a recorded gate, or a merged PR — intent and plans are never evidence. Done condition comes first: if it is not explicit, the skill states the assumed criterion and asks for confirmation instead of inventing a destination. After reporting, it resumes the interrupted work. Modes: default, `now`, `save` (`.wize/implementation/checks/`), `{topic}`. Registered in the orchestrator catalog, the intent routing table (Meta), all 9 harness adapters, READMEs (3 languages) and CHANGELOG. Suite green (539 tests, validate 80 files).

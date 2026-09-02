@@ -69,7 +69,7 @@ Tras instalar, abre tu IDE y di:
 
 ## Harnesses soportados
 
-Los 9 IDEs objetivo se renderizan desde la misma fuente; el formato y la mecánica varían por harness. **OpenCode** recibe la integración más profunda — la separación persona/workflow del kit se mapea sobre las primitivas propias de OpenCode (`mode: primary|subagent`, `agent:`, `subtask:`) en lugar de aplanarse en un único tipo de archivo.
+Los 10 IDEs objetivo se renderizan desde la misma fuente; el formato y la mecánica varían por harness. **OpenCode** recibe la integración más profunda — la separación persona/workflow del kit se mapea sobre las primitivas propias de OpenCode (`mode: primary|subagent`, `agent:`, `subtask:`) en lugar de aplanarse en un único tipo de archivo.
 
 | Harness | Salida | Destacado |
 |---|---|---|
@@ -77,6 +77,7 @@ Los 9 IDEs objetivo se renderizan desde la misma fuente; el formato y la mecáni
 | **Claude Code** | `.claude/skills/*/SKILL.md` | Formato Skill de Anthropic; fan-out ad-hoc vía Task/Agent tool (`wize-code-review`). [Docs →](docs/harnesses/claude-code.md) |
 | **Codex** | `.agents/skills/*/SKILL.md` | Mismo formato Skill + `AGENTS.md` en la raíz. [Docs →](docs/harnesses/codex.md) |
 | **Kimi Code** | `.kimi/skills/*/SKILL.md` | Mismo formato Skill; autodetecta árboles de skills de Claude/Codex. [Docs →](docs/harnesses/kimi-code.md) |
+| **Hermes Agent** 🆕 | `.hermes/skills/*/SKILL.md` | Mismo formato Skill, project-local; trust gate (`hermes skills trust`); las skills del proyecto sobreescriben las de perfil. [Docs →](docs/harnesses/hermes.md) |
 | **Antigravity** | `.agent/skills/*/SKILL.md` | Mismo formato Skill + `AGENTS.md` en la raíz. [Docs →](docs/harnesses/antigravity.md) |
 | **Cursor** | `.cursor/rules/*.mdc` | Reglas on-demand (`alwaysApply: false`), emparejadas por descripción. [Docs →](docs/harnesses/cursor.md) |
 | **Windsurf** | `.windsurf/rules/*.md` | Markdown plano; el modo de activación se define dentro del IDE. [Docs →](docs/harnesses/windsurf.md) |
@@ -255,7 +256,7 @@ npx wize-dev-kit version         # imprime la versión instalada del kit
 
 ## Estado
 
-**v0.12.1 — beta.** El método nunca produce estimaciones de desarrollo — ni horas, ni puntos, ni tallas de camiseta; una story se dimensiona solo por si cabe en un único PR. El ciclo completo (análisis → plan → solución → implementación) está montado con 10 agentes y una biblioteca estructurada de skills. Los releases recientes suman **contratos de misión** (`/wize-help mission`), **`wize-grill`** (entrevista-hasta-entendimiento antes de cualquier paso de autoría), **`wize-pre-pr-check`** (gate local de lint/format/build/tests unitarios antes de abrir un PR — cero costo de runner de CI) y **loop verification** en `wize-dev-story` (un loop de implementación auto-verificable con guarda de max-cycles que escala a `wize-correct-course`). El `security-overlay` (Pentester de IA) entrega un pipeline de pentest completo, un informe ejecutivo (puntuación de riesgo + briefing + plan de acción por IA) y planificación de remediación post-scan — validado de principio a fin contra una aplicación Laravel/PHP real. Los adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode y Antigravity se regeneran automáticamente — [OpenCode](docs/harnesses/opencode.md) recibe wiring nativo de `mode`/`agent`/`subtask`, la integración más profunda de las 9.
+**v0.12.1 — beta.** El método nunca produce estimaciones de desarrollo — ni horas, ni puntos, ni tallas de camiseta; una story se dimensiona solo por si cabe en un único PR. El ciclo completo (análisis → plan → solución → implementación) está montado con 10 agentes y una biblioteca estructurada de skills. Los releases recientes suman **contratos de misión** (`/wize-help mission`), **`wize-grill`** (entrevista-hasta-entendimiento antes de cualquier paso de autoría), **`wize-pre-pr-check`** (gate local de lint/format/build/tests unitarios antes de abrir un PR — cero costo de runner de CI) y **loop verification** en `wize-dev-story` (un loop de implementación auto-verificable con guarda de max-cycles que escala a `wize-correct-course`). El `security-overlay` (Pentester de IA) entrega un pipeline de pentest completo, un informe ejecutivo (puntuación de riesgo + briefing + plan de acción por IA) y planificación de remediación post-scan — validado de principio a fin contra una aplicación Laravel/PHP real. Los adapters de IDE para Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, Hermes, OpenCode y Antigravity se regeneran automáticamente — [OpenCode](docs/harnesses/opencode.md) recibe wiring nativo de `mode`/`agent`/`subtask`, la integración más profunda de las 10.
 
 ---
 
