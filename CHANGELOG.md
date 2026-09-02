@@ -3,7 +3,496 @@
 All notable changes to **wize-dev-kit** are documented here.
 Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+> **Language:** entries are written in **English from v0.10.1 onward**. Releases
+> **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
+> historical record (not back-translated).
+
 ## [Unreleased]
+
+## [0.16.0] — 2026-09-02
+
+**`/wize-eli5` — explain anything to anyone.** New core skill that detects the audience (age, grade level, job role, relationship) and calibrates vocabulary, analogies, tone, depth and framing to the listener — a concept, code, error, or decision explained for a 5-year-old, a manager, an engineer, or a client. Inspired by [ELI5](https://github.com/dreambigou/eli5) by Andrew Ou (credited in all 3 READMEs). Registered in the core module catalog; rendered by all 10 harness adapters (Claude Code, Antigravity, Codex, Kimi Code, Hermes, Cursor, Windsurf, Continue, OpenCode, Generic).
+
+### Added
+
+- **`wize-eli5` core skill** (`src/core-skills/wize-eli5/skill.md`) — audience detection → five-axis calibration (vocabulary, analogies, tone, depth, framing) → explanation → comprehension check; role-specific framing (manager, designer, engineer, client, child) and anti-patterns.
+- **READMEs (en/pt-BR/es)** — `/wize-eli5` listed in the cross-cutting commands walkthrough; ELI5 credited in the Inspiration & credits section.
+
+## [0.15.0] — 2026-09-02
+
+**Hermes Agent is now the 10th supported harness.** New `hermes` IDE target renders the kit's agents/skills/workflows as project-local skills at `.hermes/skills/wize-{code}/SKILL.md` (Anthropic-compatible format, same as Claude Code/Codex/Kimi Code). Hermes discovers project skills at the git root, loads them only when the repo is trusted (`hermes skills trust`), and lets trusted project skills override same-named profile skills — vendored repo skills win inside their repo. Hermes also reads root `AGENTS.md` as project context, and its CLI (`hermes -z "<prompt>"`) is registered in the installer's brownfield baseline for headless runs. Highlighted in all 3 READMEs + `docs/harnesses/hermes.md` (+pt-BR); registered in the installer targets, `doctor`, `.gitignore` block, and 4 test suites.
+
+### Added
+
+- **`hermes` IDE target** (`adapters/hermes/`) — renders via the shared Anthropic emitter to `.hermes/skills/`; companion files (`steps/`, `templates/`, `data/`) copied alongside `SKILL.md`. Selectable in `npx wize-dev-kit install` / `sync`; `install --yes` now enables 10 harnesses.
+- **`docs/harnesses/hermes.md` + `hermes.pt-BR.md`** — output layout, trust-gate setup (`hermes skills trust` / `skills.trusted_project_dirs`), precedence rules, and headless usage.
+
+### Changed
+
+- **Installer** — `TARGETS` gains `hermes`; `adapterTargetPath()` maps it to `.hermes/skills` (also covers `uninstall`); `.gitignore` block ignores `.hermes/skills/wize-*`; brownfield `baseline.js` detects the `hermes` CLI and runs `hermes -z` headlessly.
+- **Docs** — README (en/pt-BR/es) harness tables and summaries now list **10** IDE targets, with Hermes highlighted as new; `AGENTS.md` (repo + generated template) lists Hermes among the harnesses that read it.
+- **Tests** — adapter emit/companion coverage, structure, `install --yes` full-defaults, and `doctor` path mapping all now include `hermes`.
+
+## [0.14.0] — 2026-08-31
+
+**`wize-check` — progress checklist with evidence.** A read-only orchestrator skill (owner: Wizer) that answers "where are we, what's done, what's left" mid-session without advancing or re-planning the work. The **evidence rule** is the core: an item only reaches *Done* with a commit, `file:line`, a passed command, a recorded gate, or a merged PR — intent and plans are never evidence. Done condition comes first: if it is not explicit, the skill states the assumed criterion and asks for confirmation instead of inventing a destination. After reporting, it resumes the interrupted work. Modes: default, `now`, `save` (`.wize/implementation/checks/`), `{topic}`. Registered in the orchestrator catalog, the intent routing table (Meta), all 9 harness adapters, READMEs (3 languages) and CHANGELOG. Suite green (539 tests, validate 80 files).
+
+### Added
+
+- **`wize-check`** (orchestrator skill) — read-only progress checklist for the demand in flight: objective (done condition), where we are, done / in progress / left / blocked, and one next step. Enforces an **evidence rule** (an item only reaches *Done* with a commit, `file:line`, a command that passed, or a recorded gate) so progress is never overstated, then **resumes the interrupted work**. Modes: default, `now`, `save`, `{topic}`. Complements `wize-sprint-status` (sprint detail), `wize-checkpoint-preview` (continue/pivot decision) and `wize-correct-course` (re-plan) without replacing any of them. Intent phrases: "checklist", "o que falta", "o que já foi feito", "acompanhamento", "me atualiza", "cadê que paramos", "what's left".
+
+## [0.13.0] — 2026-08-28
+
+**`install --yes` now installs everything.** The quick install (`npx wize-dev-kit install --yes`) previously defaulted to the core profile and the Claude Code + generic harnesses only. It now enables **all 4 profiles** (core + web-overlay + app-overlay + security-overlay) and **all 9 harnesses** (claude-code, cursor, windsurf, codex, continue, kimi-code, opencode, antigravity, generic) — a true one-shot full install. Explicit `--profiles` / `--targets` flags still narrow the selection.
+
+### Changed
+
+- **`install --yes` defaults** — `defaultProfiles()` and `defaultTargets()` now return the full set instead of core-only / claude-code+generic. One command boots every harness and every overlay.
+
+## [0.12.1] — 2026-08-08
+
+**Pre-PR Check — gate local antes de abrir PR.** Nova skill core para rodar lint, format, build e testes unitários localmente antes de submeter código, evitando ciclagem cara de CI no Actions. Agnóstica de tecnologia (detecta stack via `package.json`, `composer.json`, `Cargo.toml`, etc.). Registrada em todos os 9 harness adapters.
+
+### Added
+
+- **`wize-pre-pr-check`** (core skill) — gate local que detecta a stack do projeto e roda checks rápidos (lint, format, type-check, build, unit tests) antes de `git push` ou abertura de PR. Pare no primeiro erro. Complementa o CI; não substitui testes de integração/E2E. Description: *"Quando for abrir um Pull Request ou PR leia."*
+
+## [0.12.0] — 2026-08-08
+
+**Intent-first UX overhaul (Epic 09).** The kit now routes by user intent, not just by lifecycle phase. 10 stories across 3 sprints: block-scalar parser fix, intent descriptions on all 68 skills, 56-entry intent routing table, `/wize` primary alias, onboarding one-liner, research dispatcher, `--sign-scope`, non-interactive install + honest uninstall, release/changelog skills, CI on push/PR. Suite green (532 tests, validate 78 files).
+
+### Added
+
+- **`/wize` alias** — primary entry point; `/wize-help` remains canonical. Onboarding reduced to `→ /wize`.
+- **Intent routing table** — 56 intent phrases mapped to skills in `wize-help` (e.g., "concorrência" → `wize-market-research`). Falls back to phase heuristic only when ambiguous.
+- **Intent descriptions** — all 68 skills/workflows carry a one-sentence `description:` telling the harness WHEN to invoke them. Block-scalar parser (`|`, `>`) now supported.
+- **`wize-sec-scope`** — guided scope creation for the security overlay (4 questions → `scope.md` + signed hash).
+- **`--sign-scope`** flag on `wize-sec-pentest` — recomputes SHA-256 without manual editing.
+- **Non-interactive install** — `install --profiles core,security --targets claude-code --yes` for CI/scripted installs. `--dry-run` supported.
+- **Honest uninstall** — removes rendered adapter directories (`.claude/skills/`, `.cursor/rules/`, etc.) in addition to `.wize/`. `--dry-run` supported.
+- **`wize-release`** skill — version bump + changelog + git tag from gated stories.
+- **`wize-changelog`** skill — Keep a Changelog format generated from done stories.
+- **CI workflow** — `.github/workflows/ci.yml` runs `npm test` + `npm run validate` on push/PR against Node 20.x and 22.x.
+- **Tool contract tests** — smoke tests for nmap, gitleaks, osv-scanner, grype, nuclei, nikto, sqlmap, ffuf (skip if absent, catch CLI drift).
+
+### Changed
+
+- **`wize-research`** — now a dispatcher that classifies intent and delegates to `wize-market-research`, `wize-domain-research`, or `wize-technical-research`.
+- **Phase labels** — normalized across all workflows (`2-plan-workflows` → `2-plan`, `2-to-3-boundary` → `3-solutioning`).
+- **Onboarding** — contextual one-liner (`→ /wize`) instead of multi-line menu. Detects brownfield/security-overlay.
+- **AGENTS.md template** — references `/wize` as primary, `/wize-help` as canonical.
+
+### Fixed
+
+- **Block scalar parser** — `readFrontmatter` now handles `|`, `>`, `|-`, `|+`, `|2` and chomp indicators. Fixes the `— |` bug that corrupted all 10 persona descriptions.
+
+## [0.11.0] — 2026-08-06
+
+**No-estimates policy.** The method now refuses to produce development estimates at any step — no hours, days, story points, or S/M/L/XL t-shirt sizes. Following the BMAD stance already stated in the architecture skill ("AI development speed has fundamentally changed"), estimates are treated as noise that only burns time and tokens. The only sizing signal that remains is binary: **does a story fit one PR? If not, slice it.** Suite green (417 tests, validate 74 files).
+
+### Removed
+
+- **`estimate` frontmatter field** from the story and epic templates (`wize-create-story`, `wize-create-epics-and-stories`).
+- **`estimateFor()`** helper and the `- **Estimativa:**` / `est S|M|L` output from the security remediation backlog (`security-overlay/_shared/backlog.js`) — the red-teamer's remediation epics/stories no longer carry a size estimate.
+- **"Estimation rough guide"** (S ≤ 4h, M 4h–1d, …) from `wize-create-story`.
+
+### Changed
+
+- **INVEST** — the "Estimable" letter is dropped on purpose across `wize-create-prd`, `wize-validate-prd`, `wize-create-story`, and `wize-create-epics-and-stories`. "Small (≤ 1 PR)" is now the only sizing test.
+- **`wize-sprint-planning`** — planning is by story count and priority, not velocity or person-day math; "Optimistic velocity" anti-pattern replaced with "don't estimate."
+- **`wize-retrospective`** — the dashboard reports stories committed vs shipped (a count) instead of velocity; the example retro no longer references M/L estimates.
+- **`wize-checkpoint-preview`** — the snapshot records "Commits so far" instead of "Time spent"; triggers refer to "larger stories," not "M/L stories."
+- **`wize-help`** — the Quick Dev classifier drops the "~≤1h" time threshold; it now reads "trivially scoped."
+- Each affected skill carries an explicit **"No estimates"** note so the rule holds when the skill is loaded standalone.
+
+## [0.10.1] — 2026-08-02
+
+Documentation polish + tooling fixes. The security-overlay persona gets a Marvel name; the README (3 languages) is aligned to v0.10.1; a rendering bug and the test glob are fixed; CI is added. Suite green (418 tests — the security-overlay suite now runs under `npm test`).
+
+### Added
+
+- **CI** (`.github/workflows/ci.yml`) — runs `npm test` + `npm run validate` on pushes to `main` and on pull requests, Node 20/24 matrix. Previously only `publish.yml` existed (tag-triggered), which let regressions slip through locally.
+- **`Natasha Romanoff` persona** — the 10th persona (security overlay, opt-in) gets a Marvel display name, aligned with the other 9. The `code` stays `wize-sec-red-teamer` (invocation/directory remain stable). Deadpool was evaluated and rejected: the name acts as an instruction inside the rendered SKILL.md and clashes with the overlay's consent / scope-gate design.
+
+### Fixed
+
+- **Rendered descriptions ended in `— |`** across all 9 adapters — `readYamlField` (render-shared) didn't parse block scalars (`description: |`), capturing the literal `|`. It now reads block scalars (literal and folded); a regression test was added. `AGENTS.md`, `.cursor/`, `.kimi/`, `.opencode/`, and the generic adapters were re-rendered.
+- **`npm test` skipped the security-overlay suite** — the `test/*.test.js` glob wasn't recursive, so `test/security-overlay/**` (26 files, 8 with stale assertions) never ran under `test` / `prepublishOnly` / publish. The glob is fixed; the 8 stale assertions were updated to the current contract (multi-script phases, severity-based nuclei, `env bash` shebang, the osv manifest guard).
+
+### Changed
+
+- **Generated `AGENTS.md`** — the roster is now ordered deterministically (canonical roster order) and the overlay persona is marked `(security-overlay, opt-in)`.
+- **README (en/pt-BR/es)** — status bumped to v0.10.1; documented `wize-grill`, mission contracts (`/wize-help mission`), loop verification + max-cycles guard, `wize-correct-course`, `wize-sprint-planning`, `wize-create-story`; fixed the 10th persona's Code column in the roster, the installer prompt list (7 prompts), and the `list` description; removed the pt-BR section leaked into the English README.
+- **`ROSTER.md` / `ARCH.md` / `DECISIONS.md`** — `Natasha Romanoff` persona; ARCH no longer calls itself "proposal / pre-build"; new Phase 10 in the decisions log (D10.1–D10.5).
+
+## [0.10.0] — 2026-07-31
+
+Entrada da demanda ganha entrevista estruturada (**`wize-grill`**, adaptado do princípio grill-me) e o loop de implementação ganha verificação automática com guardas de ciclo. Suite verde (246 testes, validate 74 arquivos).
+
+### Added
+
+- **`wize-grill`** (nova skill core) — entrevista exaustiva do usuário até entendimento compartilhado, antes de redigir briefs, PRDs, epics, stories ou planos. 5 regras: uma pergunta por vez · toda pergunta traz resposta recomendada · fatos são buscados no repo/`.wize/` (só decisões vão ao usuário) · árvore de decisão em ordem de dependência · nada de redigir antes da confirmação. Question ladder de 7 degraus (problema → outcome → audiência → escopo → constraints → riscos → validação) mapeada aos campos dos artefatos; profundidade calibrada por classe (Quick Dev nunca é grelhado; incremental usa passe curto; new value usa a escada inteira); atalho de momentum (3 "como você recomenda" seguidos → modo batch). Sem artefato próprio: decisões vão para os campos do artefato alvo, pendências viram Open questions com dono.
+- **`wize-dev-story`** — Step 7.5 "Loop verification": auto-check antes de declarar o loop concluído (evidência de iteração no `git log`, mapa AC→teste completo, todos os testes de AC verdes) com retorno ao passo correto em caso de falha, e **max-cycles guard** (mesmo AC falhando 3+ ciclos → escala pra Wizer). Step 11 ganha **loop-back protocol** para findings de gate (blocking → volta ao Red; non-blocking → corrige no mesmo PR) com max-retry guard.
+- **`wize-correct-course`** — auto-trigger pelo max-cycles guard e monitor de staleness, além da invocação manual.
+
+### Changed
+
+- **`wize-help`** — sugere `wize-grill` (sempre sugestivo, nunca imposto): no Step 2 quando a demanda difusa ruma a um passo de autoria, no Step 4 como oferta, e em `/wize-help mission` antes de emitir um contrato oco (Objective/Scope/ACs sem resposta no estado do projeto).
+- **`wize-product-brief` / `wize-create-prd` / `wize-create-epics-and-stories`** — ganchos de grill nos pontos de autoria: mais de uma decisão aberta → oferecer entrevista em vez de chutar; respostas caem direto nos campos do artefato.
+- **`wize-spec`** — modo guided referencia o protocolo grill (uma pergunta por turno, recomendação anexada).
+
+## [0.9.0] — 2026-07-14
+
+A cadeia do WDK passa a operar por **mission contracts** — cada etapa declara objetivo, fontes de verdade, escopo, critérios de aceite, contratos de execução/validação e persistência em `.wize/`, no formato que modelos de longo horizonte executam melhor. Suite verde (246 testes, validate 73 arquivos).
+
+### Added
+
+- **`/wize-help mission`** — novo modo do Wizer: emite um mission contract preenchido a partir do estado do projeto (classe Quick Dev/Full Lifecycle, objetivo, fontes de verdade, escopo & limites, ACs, contratos de execução e validação, persistência, tier de subagentes), pronto para entregar à persona executora. Para Quick Dev, colapsa para a forma mínima.
+- **`wize-dev-story`** — seção "Operating contract" (inspecionar antes de editar, reuse ladder, evidência real de comandos, nunca parar no planejamento) e **Final report** estruturado em 9 itens (rota, resumo, arquivos, mapa AC→teste, comandos + resultados, artefatos `.wize/`, decisões, riscos residuais, próxima ação). Pre-PR check exige mapa AC→teste completo e nomeia explicitamente qualquer check que não rodou e por quê.
+- **`wize-quick-dev`** — "Operating contract (light)" com re-roteamento obrigatório para Full Lifecycle se a mudança crescer além de ~1h ou tocar feature/arquitetura/UX/segurança, e **Done report** compacto de 4 linhas.
+- **`wize-create-epics-and-stories` / `wize-create-story`** — templates de story ganham campos de contrato: **Sources of truth**, **Restrictions** (out-of-scope + comportamentos protegidos + compatibilidade + segurança), **Validation contract** (mapa AC→teste + checks obrigatórios) e **Done means**. Story sem esses campos não está ready-for-dev.
+- **Seleção de tier de modelo em fan-out** — persona do Wizer e AGENTS.md orientam a casar o tier do modelo com a tarefa ao despachar subagentes (leve para trabalho mecânico, padrão para implementação/revisão, alto só para arquitetura/decisões críticas/revisão adversarial final), passando o tier explicitamente quando o harness permitir. Apenas tiers genéricos — sem nomes de modelos de vendor no kit.
+
+### Changed
+
+- **`wize-help` Step 2** — a triagem quick-dev deixou de ser um "atalho" e virou decisão de contrato explícita (tabela Quick Dev vs Full Lifecycle + "nunca use Quick Dev para fugir dos artefatos; em dúvida, pergunte").
+- **`renderAgentsMd` + `AGENTS.md`** — o AGENTS.md gerado ganha bloco "Operating context": tratar `.wize/` + AGENTS.md + skills como instrução operacional e memória persistente (file-first), classificar a demanda via `/wize-help` antes de editar, e a nota de tier de subagentes. `AGENTS.md` da raiz regenerado pelo emitter (roster agora inclui a persona `red-teamer`, que faltava).
+
+## [0.8.1] — 2026-07-12
+
+Release de alinhamento: documentação ↔ realidade, fecho do ciclo ágil e `/wize-help` corrigido. Sem novas features de produto; suite verde (246 testes, validate 73 arquivos).
+
+### Fixed
+
+- **`/wize-help` roteava contra o arquivo errado.** Lia `.wize/implementation/sprint-status.md`, mas o canônico é `sprint-status.yaml` — toda detecção de Fase 4 falhava e projetos em sprint eram re-roteados para o começo. Reescrito e re-renderizado para todos os adapters: agora lê o `.yaml`, conhece o atalho `wize-quick-dev`, inclui os gates `wize-validate-prd` e `wize-check-implementation-readiness`, a persona `red-teamer` e os workflows de overlay, tem branch para gate FAIL → `wize-correct-course`, e não anuncia mais o alias `/wize` inexistente. Mais conciso (heurístico em tabela única).
+- **Schemas rejeitavam os assets do security-overlay já publicados.** `agent.schema.json` passa a aceitar `code: wize-sec-*` e `module: security-overlay`; `workflow.schema.json` aceita `overlay: security`.
+
+### Docs
+
+- **Baseline `wize-document-project` atualizado** (estava congelado em v0.3.0 apesar do "refresh" de 2026-07-04): versão, contagem de agentes (10), core skills (10), testes (24 arquivos / 246), LOC, commits e subcomandos de CLI. Riscos e perguntas obsoletas removidos.
+- **README.es** trazido à paridade com en/pt-BR (estava em 0.7.0, sem a seção de harnesses). Nos três READMEs: removida a pergunta de "output folder" (o instalador não pergunta), corrigida a afirmação sobre dependências npm (`prompts`), e documentados os comandos `list` e `workflow`.
+- **ARCH.md / DECISIONS.md / ROSTER.md / AGENTS.md e os 9 READMEs de adapter** atualizados para 4 profiles, a 10ª persona (`red-teamer`) e os paths reais de cada adapter; decisão Fase 9 registrada.
+- **PRD / architecture / readiness**: contagem de ACs corrigida (30), stubs de template vazios removidos, notas de snapshot 0.6.0.
+
+### Cycle
+
+- **Registro ágil reconciliado.** `sprint-status.yaml` regenerado contra a árvore real (8 epics / 27 stories, todas `done`); epics `01`–`07` fechados; releases 0.7.x/0.8.0 registradas em `quick-dev-log.md` e `sprint-status.md`; `backlog.md` atualizado.
+- **Épico E09 aberto** ("Melhor aproveitamento de components e intenção do usuário") em `.wize/solutioning/epics/09-ux-intent.md`, com 8 stories verificadas contra o código; relatório completo em `REVIEW-2026-07-11.md`.
+
+## [0.8.0] — 2026-07-04
+
+### Added
+
+- **OpenCode: commands agora rodam sob a persona dona.** O adapter deriva `agent: <code>` do `owner:` de cada workflow/skill (código, nome de exibição ou combinações "X + Y"), então `/wize-dev-story` já ativa o system prompt da Shuri em vez de depender de qual agente estava ativo.
+- **OpenCode: fan-out isolado nativamente.** `wize-review-adversarial` e `wize-review-edge-case-hunter` — os dois workers nomeados que o `wize-code-review` dispara em paralelo — ganham `subtask: true`, isolando-os do contexto de quem invoca independentemente do chamador.
+- **Escada de reuso (YAGNI) na persona da Shuri.** Antes de escrever código novo: precisa existir? já está no repo? a stdlib resolve? é nativo da plataforma? uma dependência instalada resolve? é uma linha? Só então código novo — referenciada por `wize-dev-story` e `wize-quick-dev`.
+- **Padrão de fan-out de subagentes documentado na persona do Wizer**, generalizado a partir do `wize-code-review`: nomear cada worker, escopar contexto, despachar pela primitiva nativa do harness (Task/Agent tool no Claude Code; `mode`/`subtask` no OpenCode; geração de prompts + fallback manual nos demais), tolerar falha parcial.
+- **`docs/harnesses/`** — um doc por harness suportada (9 adapters, em inglês + pt-BR), com overview curto e tabela no README apontando pra cada um. `package.json` passa a publicar `docs/` no pacote npm.
+
+### Fixed
+
+- **Instalador não tenta mais abrir a harness detectada ao final do `install`.** Em vez do prompt "abrir agora com Wizer?", sugere o comando inicial certo pro estado do repo (greenfield/brownfield) via `composeOnboarding`.
+- Comentário desatualizado no adapter do Kimi Code, que ainda citava o path antigo do Codex (`.codex/skills/`).
+
+## [0.7.3] — 2026-06-27
+
+### Fixed
+
+- **Codex adapter alinhado com a documentação pública da OpenAI.** O target `codex` voltou a renderizar skills em `.agents/skills/`, que é o diretório documentado para skills locais de repositório no Codex. A regressão em `0.7.2` tinha movido a saída para `.codex/skills/`, o que quebrou o carregamento das skills no harness real.
+- **Doctor, smoke tests e `.gitignore` corrigidos para o path canônico do Codex.**
+
+## [0.7.2] — 2026-06-27
+
+### Fixed
+
+- **Codex adapter path corrigido.** O instalador e o `sync` agora renderizam as skills do target `codex` em `.codex/skills/`, alinhado com o harness usado no projeto. Antes, o kit escrevia em `.agents/skills/`, o que deixava o install aparentemente bem-sucedido, mas sem as skills serem carregadas no Codex.
+- **Diagnóstico e smoke alinhados ao Codex real.** `doctor`, `.gitignore`, smoke tests e testes de adapters passaram a validar `.codex/skills/`, evitando falso positivo no suporte multi-harness.
+
+## [0.7.1] — 2026-06-21
+
+### Changed
+
+- **README reescrito** com TL;DR, perfil **Wize Security** na tabela, seção dedicada do AI Pentester (como funciona + garantias de design), roster com 10 agentes (red-teamer), `.wize/security/` no layout e status atualizado para v0.7.x.
+
+### Added
+
+- **Traduções do README:** `README.pt-BR.md` (Português) e `README.es.md` (Español), com seletor de idioma cruzado. Incluídos no pacote npm.
+
+## [0.7.0] — 2026-06-21
+
+### Added
+
+- **Post-scan remediation planning (security-overlay).** Ao fim do `wize-sec-pentest`, o overlay traduz os findings em um backlog de correção pronto para `wize-create-epics-and-stories`.
+  - **`security-backlog.md`** gerado em `.wize/security/`: findings agrupados por tema (ex.: 97 secrets → 1 epic de rotação, não 97 stories), priorizados **P0/P1/P2** pela pior severidade do grupo, estimados S/M/L, com rastreabilidade aos findings de origem + `scope_sha256` e DoD ("re-rodar scan e confirmar finding ausente").
+  - Epics semeados pelo action plan do `ai-insights.json` quando presente.
+  - **Call-to-action** com o comando exato (`/wize-create-epics-and-stories --from .wize/security/security-backlog.md`) impresso no terminal, no `report.md` e como banner no `report.html`.
+  - Mantém **zero runtime próprio**: o overlay gera o backlog e imprime o comando; o usuário/agente é quem executa a skill de planejamento (o Node nunca invoca skills).
+
+## [0.6.0] — 2026-06-20
+
+### Added
+
+- **`security-overlay` — AI Pentester (novo profile opcional).** Pipeline file-first de pentest que roda no harness do usuário (zero runtime próprio, zero dependência npm nova). Selecionável no instalador como `security-overlay`.
+  - **Persona `red-teamer`** + orquestradora `wize-sec-pentest` que encadeia recon → enumerate → SAST → DAST → report.
+  - **Gate de escopo** (`.wize/security/scope.md`, allowlist assinada com SHA-256): toda ação ofensiva é verificada por fase; alvo fora do escopo é recusado e auditado em `.refusals.log`. Default passivo; exploit ativo só com `--active`.
+  - **Allowlist de flags por ferramenta** (`data/tool-allowlist.json`): `--dump`/`--os-shell` e afins nunca chegam ao `execFile`, independente do input.
+  - **SAST**: secrets via gitleaks (com redação `***REDACTED***`) + dependências vulneráveis via osv-scanner/grype (CVE + CVSS).
+  - **DAST**: nuclei, nikto (safe checks), sqlmap e ffuf (content discovery), gated por `--active` quando ofensivos.
+  - **CVSS v3.1** zero-dep + tagger **OWASP Top 10 (2021)**.
+  - **Relatório** `report.md` + `report.html` self-contained (CSS inline, offline, WCAG 2.2 AA): risk score 0–100, briefing executivo, plano de ação P0/P1/P2, cobertura honesta do teste (audit confidence), recomendação por finding.
+  - **AI insights**: o renderer consome `ai-insights.json` escrito pelo LLM do harness (briefing + recomendações), sem chamada externa — dados ficam locais.
+  - **Preflight** (Epic 08): detecta SO/arch/package-manager e gera `install-pentest-tools.sh` com a fonte correta por ferramenta (apt para nmap/nikto/sqlmap; GitHub release para gitleaks/nuclei/ffuf/osv-scanner; script oficial para grype).
+- Documentação completa do overlay em `.wize/planning` e `.wize/solutioning` (brief, PRD, tech-vision, NFR, architecture, 4 ADRs, 8 epics, 26+ stories).
+
+## [0.5.0] — 2026-06-17
+
+### Added
+
+- **Onboarding real.** `wize-onboarding` is no longer a stub; reads `.wize/config/{project,user}.toml` and detects state S0–S4, then routes to the right next workflow with explicit hand-off copy.
+- **`wize-correct-course`** (4-implementation) — react when a sprint drifts. 5 sections: detect, classify (cut / re-route / escalate), propose, confirm with human, update `sprint-status.yaml`. Logs to `course-corrections.md`.
+- **`wize-edit-prd`** (2-plan) — update `.wize/planning/prd.md` without rewriting. 4 edit types (AC, scope, non-goal, decision) with mandatory `prd-changelog.md` row per change.
+- **`wize-project-context`** (3-solutioning) — consolidates brief + PRD + UX + architecture + ADRs + risk profile into `.wize/knowledge/project-context.md`. 5 sections, one canonical source for other agents.
+- **`wize-checkpoint-preview`** (4-implementation) — pause mid-story to validate direction. Records snapshot + decision in `checkpoints/{story_id}.md`.
+- **`wize-investigate`** (4-implementation) — structured RCA: frame, reproduce, hypothesize (top 3), verify, conclude. Report in `investigations/{date}-{slug}.md`.
+- **`wize-qa-generate-e2e-tests`** (tea) — translates UX screens + ACs into concrete E2E cases with P0/P1/P2 priority. Output in `tea/e2e-cases/{screen}.md`.
+- **`wize-review-edge-case-hunter`** (core) — focused edge-case pass. 4 areas (input, state, time/race, integration) with top-5 P0 ranking.
+- **`wize-index-docs`** (core) — rebuilds `.wize/knowledge/index.md` from the actual tree, 5 sections.
+- **`wize-editorial-review-prose` + `wize-editorial-review-structure`** (core) — Peggy Carter's review skills. Voice/jargon/hedging/pronouns; missing/misordered/heading-level/empty.
+- **`wize-customize`** (core) — guided override of built-in agents/skills/workflows via `.wize/custom/{type}/{code}/customize.toml`.
+- Sprint tracking: `.wize/implementation/sprint-status.yaml` (YAML state machine) plus human-readable `.wize/implementation/sprint-status.md`. 4 sprints closed (S1–S4).
+- Backlog: `.wize/implementation/backlog.md` with prioritized list of missing agile workflows.
+- TEA risk profile: 17 risks catalogued, all HIGH-impact mitigated.
+
+### Changed
+
+- **`wize-sprint-planning` hand-off** now suggests `/loop /wize-dev-story` so the dev loop runs across the sprint's `ready-for-dev` queue without re-invoking the workflow per story.
+- IDE adapters now copy companion files (`steps/`, `templates/`, `data/`, `*.csv`, `*-template.md`, `customize.toml`, `research.template.md`) alongside the SKILL.md. Anthropic-family adapter emit count: 63 → 119 per run.
+
+### Fixed
+
+- Installer: the "How should the agents call you?" prompt is always surfaced (was being skipped when the user name was inferred from the OS). Uses `prompts` library consistently for text + confirm inputs; no more residual stdin.
+- IDE adapters: micro-file workflows like `wize-create-architecture` previously rendered only their SKILL.md, dropping the entire `steps/` folder. Now all 4 Anthropic-family adapters copy siblings.
+
+### Tests
+
+- 233 passing (was 222). New: 4 Anthropic-family companion-file tests + 1 sprint-planning hand-off regression test.
+
+## [0.4.1] — 2026-06-13
+
+### Fixed
+
+- Installer no longer skips the "How should the agents call you?" prompt due to residual input from previous `prompts`-library questions.
+
+### Added
+
+- Interactive install now detects AI harness CLIs on PATH and offers to launch `/wize-orchestrator` directly, showing the exact command (e.g. `claude -p /wize-orchestrator`).
+
+## [0.4.0] — 2026-06-13
+
+Adapts four BMAD Method step-based flows into the Wize universe: spec, architecture, code review, and research.
+
+### Added
+
+- **`wize-spec`** (core skill) — distills any intent input into a canonical five-field `SPEC.md` (Why, Capabilities, Constraints, Non-goals, Success signal) plus optional companion files. Includes template and headless response schemas.
+- **Vertical research skills** under `src/method-skills/1-analysis/`:
+  - `wize-market-research` — 6-step competition and customer research.
+  - `wize-domain-research` — 6-step industry, regulatory, and trend research.
+  - `wize-technical-research` — 6-step technology and architecture research.
+- Registered new skills in `src/core-skills/module.yaml` and `src/method-skills/module.yaml`.
+
+### Changed
+
+- **`wize-create-architecture`** rewritten as an 8-step micro-file workflow: init → context → starter → decisions → patterns → structure → validation → complete. Old monolithic body archived in `.wize/knowledge/decisions/`.
+- **`wize-code-review`** rewritten as a 4-step adversarial triage workflow: gather-context → review (Blind Hunter, Edge Case Hunter, Acceptance Auditor) → triage → present. Integrates with existing `wize-review-adversarial` and `wize-review-edge-case-hunter`.
+- `README.md`, `DECISIONS.md`, and `.wize/knowledge/decisions/ADR-001-bmad-steps-import.md` document the import rationale and scope.
+- `test/workflow-bodies.test.js` allowlists the short research dispatcher workflows.
+
+### Tests
+
+- Total: **222 passing**.
+
+## [0.3.1] — 2026-06-13
+
+Expands `wize-document-project` from a single lightweight baseline into a multi-mode documentation engine with project-type classification, resume state, and BMAD-equivalent templates.
+
+### Added — `wize-document-project` engine
+
+- **CLI modes:** `quick`, `initial_scan`, `full_rescan`, `deep_dive` via `wize-dev-kit document-project [mode]`.
+- **Project-type classification:** `documentation-requirements.csv` with 12 types + `classifyProject()` module; detects monolith, multi-part repos, and the kit itself as `cli` + `library`.
+- **JSON state file:** `project-scan-report.json` with schema, init/load/update/archive helpers, and `--resume` support.
+- **Batch scanner:** subfolder-sized scans that skip noise directories and flag files >5000 LOC.
+- **Master index renderer:** `index.md` with links + `_(To be generated)_` markers for missing conditional docs.
+- **Deep-dive mode:** folder, file, feature, `api_group`, `component_group` targets with typed resolution.
+- **11 BMAD-equivalent templates:** index, project-overview, source-tree-analysis, architecture, component-inventory, development-guide, api-contracts, data-models, deployment-guide, contribution-guide, deep-dive.
+
+### Added — integration
+
+- `doctor` now reports scan-state age, `index.md` "To be generated" marker count, and suggests `document-project` / `wize-refresh-knowledge` when stale.
+- Brownfield installer prompts for documentation mode (quick / initial_scan / full_rescan / skip) with non-TTY fallback to quick.
+- `wize-tea-risk` workflow adds documentation gaps as a risk category.
+- CI smoke E2E now runs `wize-dev-kit document-project quick` and asserts the 6 baseline files.
+- `README.md` and `ARCH.md` updated to describe the new engine and current maturity.
+
+### Tests
+
+- Total: **219 passing** (was 115).
+
+## [0.3.0] — 2026-06-12
+
+Adds a single-command diagnostic plus traceable GitHub Releases on every tag.
+
+### Added — `wize-dev-kit doctor`
+
+Single-command snapshot of kit + project + environment, plus a ranked list of suggestions. Designed to be the first command a new developer runs in an unfamiliar wize-enabled repo, and the go-to command when something looks off. Sections covered:
+
+- **Kit versions** (installed, project-pinned in `kit_version`, registry-latest) — flags drift between any of them.
+- **Project** — name, profiles, IDE targets, languages, current phase (heuristic: brief → trigger-map → PRD → UX → tech-vision → architecture → stories → risk profile → sprint planning → implementation).
+- **IDE Adapters** — file count per target (`.claude/skills/`, `.cursor/rules/`, etc.). Flags adapters that didn't render and points at `wize-dev-kit sync`.
+- **TEA gates** — counts PASS / CONCERNS / FAIL / WAIVED across `gate.md` files in `.wize/implementation/tea/`. Flags any FAIL or CONCERNS.
+- **Knowledge baseline** — `last_refreshed` age per `document-project/*.md` file, plus inline-note count in `_pending.md`. Suggests `wize-refresh-knowledge` when files go stale (> 60 days) or pending notes pile up (≥ 5).
+- **Harness CLIs on PATH** — claude / codex / opencode, with detected install paths.
+- **Git** — branch / head, repo presence.
+
+Implementation in `tools/installer/commands/doctor.js`. 11 new unit tests cover phase detection, gate counting, knowledge parsing, adapter path mapping, and end-to-end run on a minimal install.
+
+Output is plain text (no colors) so it's grep-friendly and pipe-friendly. Section headers are stable for editors / dashboards to parse.
+
+### Added — GitHub Release on every tag
+
+After a successful `npm publish` from a `v*` tag, the workflow now:
+
+1. Extracts the matching version's CHANGELOG entry (`## [VERSION]` to the next `## [`) with a small awk filter.
+2. Creates a GitHub Release at the tag using `softprops/action-gh-release@v2`, with the CHANGELOG entry as the release body.
+3. If no CHANGELOG entry is found for the version, falls back to GitHub's auto-generated notes.
+
+Pre-release tags (`-alpha`, `-beta`, `-rc`) are marked as pre-release automatically. Requires `permissions: contents: write` (added to the publish job).
+
+### Tests
+
+- Total: **115 passing** (was 104).
+
+## [0.2.5] — 2026-06-12
+
+Fixes a real install-time bug that bit non-TTY users (CI smoke + anyone piping input into `wize-dev-kit install`).
+
+### Fixed
+
+- **Non-TTY prompt stall.** The CLI's `prompt()` helper created a new `readline.createInterface` per call and used `rl.question()`. Both choices misbehave in pipe mode: per-call interfaces close stdin on the first `rl.close()`, and even with a shared interface `readline.question` stalls when it has to read an empty line in non-TTY mode (Node 24 behavior). After step 1 of `install` (project name), every subsequent prompt would hang silently. Replaced with an event-based line reader: subscribe once to `line`, push waiters in order, propagate empty lines as `""`, treat EOF as "remaining waiters resolve empty". `printf '...\n\n\n\n\nName\n\n' | wize-dev-kit install` now runs cleanly to completion.
+
+### Notes
+
+This was the actual cause behind the CI smoke E2E loop. The 0.2.4 fix to the smoke script (using `npm install <tarball>` instead of `npx <tarball>`) was correct, but the underlying CLI couldn't accept piped input either, so the smoke kept failing at the second prompt. With both fixed, the smoke runs end-to-end.
+
+## [0.2.4] — 2026-06-12
+
+CI-only hotfix to actually unblock the publish pipeline. Surface area of wize-dev-kit unchanged.
+
+### Fixed
+
+- Smoke E2E step used `npx --yes "$tarball" install`. On the GitHub Actions runner that path is interpreted as a shell command, which tries to **execute the tarball directly** before npx ever extracts it — exit code 126, `Permission denied`. Rewrote the step to: install the tarball into a throwaway project via `npm install <tarball>`, then invoke `$NODE_MODULES/.bin/wize-dev-kit` directly. `npm install` extracts the archive properly and sets the bin executable bit, so the rest of the smoke (`install` → assertions → `update` → `agent list`) runs cleanly. Same coverage, named-per-check error messages, and now also sets `WIZE_DISABLE_UPDATE_CHECK=1` so the registry isn't probed mid-smoke.
+
+## [0.2.3] — 2026-06-11
+
+Hotfix: 0.2.1 and 0.2.2 publish workflows hung because `test/version-check.test.js` had a sync/async bug in its test scaffolding. CI's smoke E2E never started for those releases. This release fixes the test and re-runs the same smoke for 0.2.2 + 0.2.3.
+
+### Fixed
+
+- `withTempCacheHome` helper in `test/version-check.test.js` was synchronous (`return fn(dir)`), so its `finally` block restored the env var before the async callback's `writeCache` resolved. The cache lookup inside the callback then landed in the real `~/.cache/wize-dev-kit/`, contaminating subsequent test runs and intermittently failing the `getLatestVersion returns the cached value when fresh` assertion. Fix: make the helper `async` and `return await fn(dir)`. Confirmed locally + ensures CI doesn't get a stuck cache file across tags.
+
+### Notes
+
+No surface area changed; behavior of `wize-dev-kit` itself is identical to 0.2.2. The bump exists only so the publish workflow re-runs cleanly.
+
+## [0.2.2] — 2026-06-11
+
+Closes the "documentation always stale" gap: inline knowledge captures per story, Hawkeye enforces, sprint-end refresh consolidates. Plus auto-update nudges on the CLI and Wizer.
+
+### Added — knowledge stays current
+
+- **`wize-dev-story` step 8 — Knowledge update (inline).** After commits and before pre-PR check, Shuri checks whether the story touched any of the 5 baseline axes (architecture / conventions / risk-spots / dependencies / overview) and, if yes, adds 1–3 dated bullets to the matching `.wize/knowledge/document-project/*.md` file — same PR. ~60 seconds when applicable; skipped otherwise.
+- **`wize-quick-dev` step 5 — Knowledge update (only if applicable).** Quick-dev rarely touches axes; when it does (dep bump that shifts API, rename that breaks a contract), one line lands in the relevant doc.
+- **`wize-tea-review` step 5 — Knowledge update check.** Hawkeye walks the diff. Touched-but-not-updated stories get a `KN-NN` finding. `tea-review` frontmatter now carries `knowledge_axes_touched` + `knowledge_axes_updated`.
+- **`wize-tea-gate` decision rule extended.** When `knowledge_axes_touched ≠ knowledge_axes_updated`, recommendation flips to `CONCERNS` (advisory) or `FAIL` (enforcing). Example `KN-NN` finding shape documented in the canonical YAML.
+- **`wize-refresh-knowledge` (new workflow).** Sprint-end consolidation: Pepper + Peggy roll the dated bullets accumulated through the sprint into the narrative prose of each axis file, demote stale claims to a `Deprecated` section, freeze a snapshot at `.wize/knowledge/document-project/_history/{YYYY-Qn}/sprint-{N}.md`, and stamp `last_refreshed` in each file. Triggered when `wize-help next` detects the sprint emptied.
+- **`wize-document-project` — Update mode section.** Documents the two-cadence loop (inline-per-story + sprint-refresh) and the file frontmatter convention (`last_refreshed`).
+
+### Added — proactive nudges
+
+- **`wize-help` skill — version-skew detection.** Wizer now reads `kit_version` from `.wize/config/project.toml`, compares with the installed package version and (via Bash tool when available) the registry, and proactively suggests `npx wize-dev-kit@latest update` when behind. Worded as a single short line, never as a banner.
+- **`wize-help` skill — sprint-end detection.** Heuristic refined: when sprint-status shows all stories gated and no `ready-for-dev` left, the next-step recommendation is `wize-retrospective` + `wize-refresh-knowledge`, not just retro.
+- **CLI version check (camera 1).** `wize-dev-kit list / sync / agent / workflow / help` now print a one-line `↑ Update available: X → Y` at the top when a newer version sits in the npm registry. Cached for 1 hour, 1.5s network timeout, silent on offline / non-TTY / `WIZE_DISABLE_UPDATE_CHECK=1`. Never blocks. New module `tools/installer/version-check.js`.
+
+### Tests
+
+- Total: **104 passing** (was 94 in 0.2.1).
+- 10 new tests in `test/version-check.test.js` covering semver compare, cache freshness, fetch fallback (offline + non-2xx), TTY guard, env disable.
+
+### Files
+
+- `src/method-skills/1-analysis/wize-refresh-knowledge/workflow.md` (new).
+- `tools/installer/version-check.js` (new).
+- Edits to `wize-dev-story`, `wize-quick-dev`, `wize-tea-review`, `wize-tea-gate`, `wize-help` skill, `wize-document-project`, `tools/installer/wize-cli.js`.
+
+## [0.2.1] — 2026-06-11
+
+Focused polish: brownfield baseline finally runs end-to-end through a detected harness CLI, CI publishes without the deprecated-config warning, and every release is now smoke-tested before going up.
+
+### Added
+
+- **Brownfield baseline runs real now.** When the installer detects existing code and you accept the `Run wize-document-project?` prompt, it now scans your PATH for an AI harness CLI (Claude Code, then Codex, then OpenCode), prioritizes whichever you selected as an IDE target, asks you to confirm the headless invocation, and spawns it with the right flags (`claude -p`, `codex exec`, `opencode run`). If no harness CLI is on PATH, the installer prints the exact command you can run later in your IDE. Set `WIZE_SKIP_BASELINE=1` to disable the headless run entirely (used by CI and unattended setups).
+- `tools/installer/baseline.js` — exports `detectHarnessCli`, `runHeadlessBaseline`, `manualInstructions`, `defaultPrompt`. Self-contained, no extra deps; uses a manual PATH walk for hermetic, cross-platform detection.
+- 7 new unit tests covering detection priority, PATH isolation, the skip-baseline env, and instruction strings.
+
+### Fixed
+
+- CI publish workflow now strips the deprecated `always-auth=false` line from the runner's `.npmrc` before installing. Removes the `npm warn Unknown user config "always-auth"` noise that appeared in every 0.2.0 publish log. See actions/setup-node#1129.
+
+### Added — CI
+
+- **Smoke E2E before publish.** The workflow now packs the tarball, installs it in a temp git repo via `npx`, and asserts that `.wize/`, the Claude adapter SKILL.md, generic AGENTS-equivalent, `kit_version` in `project.toml`, `update`, and `agent list` all work — exactly like a user would experience. Fails the release if anything is off, so we never publish a broken tarball again.
+- Sets `WIZE_SKIP_BASELINE=1` in the smoke step so the harness-run prompt doesn't try to spawn `claude` inside GitHub's runner.
+
+### Tests
+
+- Total now **94 passing** (was 87 in 0.2.0).
+
+## [0.2.0] — 2026-06-11
+
+First release that delivers the lifecycle end-to-end. Workflows have real bodies; CLI commands work for real; the team has a Walkthrough to follow.
+
+### Added — CLI
+
+- **`wize-dev-kit update`** — refreshes an installed kit to the version resolved by `node_modules/wize-dev-kit`. Re-runs every active IDE adapter, preserves `.wize/config/user.toml`, re-applies the suggested `.gitignore` block, and writes the new `kit_version` into `.wize/config/project.toml`. Prints the relevant CHANGELOG excerpt between the previous and current version.
+- **`wize-dev-kit sync`** — re-renders adapter outputs for whatever `ide_targets` the project opted into. Cheap idempotent call after editing config or running `agent create`.
+- **`wize-dev-kit agent list`** — lists every built-in agent (9) plus any custom or override agents the project added.
+- **`wize-dev-kit agent create`** — interactive scaffold of a new custom agent. Validates `code` shape, checks for collisions with built-ins, does a dry-run write+read, then persists to `.wize/custom/agents/{code}/{agent.yaml, persona.md}`. Non-TTY callers can pass a spec via API (`fromSpec`).
+- **`wize-dev-kit agent edit <code>`** — writes a `customize.toml` override for an existing built-in agent into `.wize/custom/agents/{code}/`.
+
+### Added — UX
+
+- **End-of-install message** now ends with: "Restart your IDE — many harnesses load skills only at startup." plus a quick-reference to the new CLI commands (`update`, `sync`, `agent list`).
+- **README walkthrough** — a complete end-to-end slash-command map from `/wize-orchestrator` through `/wize-tea-gate`, plus a new "CLI commands" reference section.
+
+### Changed — workflows now have real bodies
+
+22 workflows that were ≈ 30–50-line stubs in 0.1.x now ship 100–250 lines of working method, examples, anti-patterns, and YAML schemas. Tone aligned with the 0.1.5 playbooks (dense, opinionated, citable).
+
+- **Analysis (Pepper):** `wize-product-brief`, `wize-trigger-map`, `wize-research`, `wize-prfaq`, `wize-document-project`.
+- **Plan (Maria Hill + Mantis):** `wize-create-prd`, `wize-validate-prd`, `wize-ux-scenarios`, `wize-ux-design`.
+- **Strategy + Solutioning (Fury + Tony + Mantis):** `wize-tech-vision`, `wize-nfr-principles`, `wize-create-architecture`, `wize-design-system`, `wize-create-epics-and-stories`, `wize-check-implementation-readiness`.
+- **TEA gates (Hawkeye):** `wize-tea-risk`, `wize-tea-design`, `wize-tea-trace`, `wize-tea-nfr`, `wize-tea-review`, `wize-tea-gate` — each with canonical YAML frontmatter + concrete examples.
+- **Implementation (Shuri + Hill + Wizer):** `wize-create-story`, `wize-dev-story`, `wize-quick-dev`, `wize-sprint-planning`, `wize-sprint-status`, `wize-retrospective`, `wize-code-review`.
+
+### Added — engineering
+
+- `tools/installer/commands/{update,sync,agent}.js` — modular command implementations with a minimal TOML reader for the `project.toml` subset.
+- `test/cli-commands.test.js` — coverage for update / sync / agent list / agent create / agent edit (10 tests).
+- `test/workflow-bodies.test.js` — guards that every workflow.md has ≥ 1.5 KB body and ≥ 4 H2 sections, with an explicit allow-list for intentionally short workflows (overlay scaffolds, builder helpers, orchestrator helpers).
+- Test count: **87 passing** (was 33).
+
+### Notes
+
+This release closes JTBD backlog categories 3 (CLI commands real) and 2 (workflows with body) plus 4 (end-of-install UX, README walkthrough). Categories 5 (CI hygiene incl. smoke E2E) and 6 (monorepo routing, TEA enforcing helper) remain on the roadmap.
 
 ## [0.1.5] — 2026-06-01
 
@@ -139,7 +628,14 @@ Ignore (handled by the suggested block): `.wize/config/user.toml`, `.wize/scratc
 - Inspired by [BMAD Method v6.8.0](https://github.com/bmad-code-org/BMAD-METHOD).
 - WDS module inspired by [bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion).
 
-[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/qwize-br/wize-development-kit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.5...v0.3.0
+[0.2.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.4...v0.2.5
+[0.2.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/qwize-br/wize-development-kit/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.5...v0.2.0
 [0.1.5]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/qwize-br/wize-development-kit/compare/v0.1.2...v0.1.3

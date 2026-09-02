@@ -13,6 +13,12 @@ skills:
   - code: wize-advanced-elicitation
     name: "Advanced Elicitation"
     description: "Structured technique stack (laddering, 5-why, SCAMPER) callable by any agent."
+  - code: wize-grill
+    name: "Grill"
+    description: "Exhaustive one-question-at-a-time interview to reach shared understanding before drafting briefs, PRDs, epics, stories, or plans."
+  - code: wize-eli5
+    name: "ELI5"
+    description: "Explain anything to anyone — adapts vocabulary, analogies, tone, depth and framing to the audience (age, role, relationship)."
   - code: wize-brainstorming
     name: "Brainstorming"
     description: "Divergent-then-convergent ideation; produces idea-pool.md."
@@ -22,3 +28,10 @@ skills:
   - code: wize-review-adversarial
     name: "Adversarial Review"
     description: "Red-team review of artifacts — challenges assumptions, surfaces edge cases."
+  - code: wize-spec
+    name: "Spec"
+    description: "Distills any intent input into a canonical five-field spec kernel + companions."
+  - code: wize-pre-pr-check
+    name: "Pre-PR Check"
+    description: "Quando for abrir um Pull Request ou PR leia — gate local para lint, format, build e testes rápidos antes de submeter código."
+
