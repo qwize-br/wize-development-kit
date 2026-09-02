@@ -5,7 +5,7 @@
 //
 // Harness priority is:
 //   1. user's selected IDE targets (from .wize/config/project.toml), highest first
-//   2. claude > codex > opencode (universal fallback)
+//   2. claude > codex > opencode > hermes (universal fallback)
 //
 // Set WIZE_SKIP_BASELINE=1 in the environment to disable any execution (the
 // install still suggests the next step). Useful for CI and unattended setups.
@@ -35,6 +35,11 @@ const HARNESSES = [
     code: 'opencode',
     binary: 'opencode',
     buildCmd: (prompt) => ({ cmd: 'opencode', args: ['run', prompt] })
+  },
+  {
+    code: 'hermes',
+    binary: 'hermes',
+    buildCmd: (prompt) => ({ cmd: 'hermes', args: ['-z', prompt] })
   }
 ];
 
@@ -96,7 +101,7 @@ function manualInstructions(harness) {
   if (!harness) {
     return [
       '',
-      'No AI harness CLI was detected on PATH (claude / codex / opencode).',
+      'No AI harness CLI was detected on PATH (claude / codex / opencode / hermes).',
       'Open your IDE in this repo and run:',
       '  /wize-document-project',
       ''

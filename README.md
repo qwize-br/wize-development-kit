@@ -69,7 +69,7 @@ After install, open your IDE and say:
 
 ## Supported harnesses
 
-All 9 IDE targets render from the same source; format and mechanics differ per harness. **OpenCode** gets the deepest integration — the kit's persona/workflow split maps onto OpenCode's own primitives (`mode: primary|subagent`, `agent:`, `subtask:`) instead of being flattened into one file type.
+All 10 IDE targets render from the same source; format and mechanics differ per harness. **OpenCode** gets the deepest integration — the kit's persona/workflow split maps onto OpenCode's own primitives (`mode: primary|subagent`, `agent:`, `subtask:`) instead of being flattened into one file type.
 
 | Harness | Output | Notable |
 |---|---|---|
@@ -77,6 +77,7 @@ All 9 IDE targets render from the same source; format and mechanics differ per h
 | **Claude Code** | `.claude/skills/*/SKILL.md` | Anthropic Skill format; ad-hoc Task/Agent-tool fan-out (`wize-code-review`). [Docs →](docs/harnesses/claude-code.md) |
 | **Codex** | `.agents/skills/*/SKILL.md` | Same Skill format + root `AGENTS.md`. [Docs →](docs/harnesses/codex.md) |
 | **Kimi Code** | `.kimi/skills/*/SKILL.md` | Same Skill format; auto-detects Claude/Codex skill trees. [Docs →](docs/harnesses/kimi-code.md) |
+| **Hermes Agent** 🆕 | `.hermes/skills/*/SKILL.md` | Same Skill format, project-local; trust gate (`hermes skills trust`); project skills override profile ones. [Docs →](docs/harnesses/hermes.md) |
 | **Antigravity** | `.agent/skills/*/SKILL.md` | Same Skill format + root `AGENTS.md`. [Docs →](docs/harnesses/antigravity.md) |
 | **Cursor** | `.cursor/rules/*.mdc` | On-demand rules (`alwaysApply: false`), matched by description. [Docs →](docs/harnesses/cursor.md) |
 | **Windsurf** | `.windsurf/rules/*.md` | Plain markdown; activation mode set inside the IDE. [Docs →](docs/harnesses/windsurf.md) |
@@ -250,7 +251,7 @@ npx wize-dev-kit version         # print the installed kit version
 
 ## Status
 
-**v0.12.1 — beta.** The method never produces development estimates — no hours, points, or t-shirt sizes; a story is sized only by whether it fits a single PR. The full lifecycle (analysis → plan → solution → implementation) is wired with 10 agents and a structured skill library. Recent releases add **mission contracts** (`/wize-help mission`), **`wize-grill`** (interview-to-shared-understanding before any authoring step), **`wize-pre-pr-check`** (local lint/format/build/unit-test gate before opening a PR — zero CI runner cost), and **loop verification** in `wize-dev-story` (a self-checking implementation loop with a max-cycles guard that escalates to `wize-correct-course`). The `security-overlay` (AI Pentester) ships a complete pentest pipeline, a stakeholder report (risk score + briefing + AI action plan), and post-scan remediation planning — validated end-to-end against a real Laravel/PHP app. IDE adapters for Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, and Antigravity are regenerated automatically — [OpenCode](docs/harnesses/opencode.md) gets native `mode`/`agent`/`subtask` wiring, the deepest integration of the 9.
+**v0.12.1 — beta.** The method never produces development estimates — no hours, points, or t-shirt sizes; a story is sized only by whether it fits a single PR. The full lifecycle (analysis → plan → solution → implementation) is wired with 10 agents and a structured skill library. Recent releases add **mission contracts** (`/wize-help mission`), **`wize-grill`** (interview-to-shared-understanding before any authoring step), **`wize-pre-pr-check`** (local lint/format/build/unit-test gate before opening a PR — zero CI runner cost), and **loop verification** in `wize-dev-story` (a self-checking implementation loop with a max-cycles guard that escalates to `wize-correct-course`). The `security-overlay` (AI Pentester) ships a complete pentest pipeline, a stakeholder report (risk score + briefing + AI action plan), and post-scan remediation planning — validated end-to-end against a real Laravel/PHP app. IDE adapters for Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, Hermes, OpenCode, and Antigravity are regenerated automatically — [OpenCode](docs/harnesses/opencode.md) gets native `mode`/`agent`/`subtask` wiring, the deepest integration of the 10.
 
 ---
 

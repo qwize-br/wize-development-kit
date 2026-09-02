@@ -27,7 +27,7 @@ const EXPECTED_TEA_GATES = ['risk', 'design', 'trace', 'nfr', 'review', 'gate'];
 
 const EXPECTED_ADAPTERS = [
   'claude-code', 'cursor', 'windsurf', 'codex',
-  'continue', 'kimi-code', 'opencode', 'antigravity', 'generic'
+  'continue', 'kimi-code', 'hermes', 'opencode', 'antigravity', 'generic'
 ];
 
 test('all 9 agents exist with agent.yaml + persona.md', () => {
@@ -47,7 +47,7 @@ test('all 6 TEA gates have workflow folders', () => {
   }
 });
 
-test('all 9 IDE adapters present', () => {
+test('all 10 IDE adapters present', () => {
   for (const code of EXPECTED_ADAPTERS) {
     const dir = path.join(KIT, 'adapters', code);
     assert.ok(fs.existsSync(path.join(dir, 'adapter.yaml')), `missing adapter.yaml: ${code}`);

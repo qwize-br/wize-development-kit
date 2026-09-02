@@ -60,6 +60,7 @@ function adapterTargetPath(targetCode, projectRoot) {
     case 'antigravity':  return path.join(projectRoot, '.agent/skills');
     case 'codex':        return path.join(projectRoot, '.agents/skills');
     case 'kimi-code':    return path.join(projectRoot, '.kimi/skills');
+    case 'hermes':       return path.join(projectRoot, '.hermes/skills');
     case 'cursor':       return path.join(projectRoot, '.cursor/rules');
     case 'windsurf':     return path.join(projectRoot, '.windsurf/rules');
     case 'continue':     return path.join(projectRoot, '.continue/prompts');
