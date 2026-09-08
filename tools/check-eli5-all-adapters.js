@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Verifica que o wize-eli5 é renderizado por TODOS os 10 adapters de harness.
+// Verifica que o wize-eli5 é renderizado por TODOS os 11 adapters de harness.
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
@@ -12,6 +12,7 @@ const EXPECT = [
   { code: 'codex',       file: '.agents/skills/wize-eli5/SKILL.md' },
   { code: 'kimi-code',   file: '.kimi/skills/wize-eli5/SKILL.md' },
   { code: 'hermes',      file: '.hermes/skills/wize-eli5/SKILL.md' },
+  { code: 'kiro',        file: '.kiro/skills/wize-eli5/SKILL.md' },
   { code: 'cursor',      file: '.cursor/rules/wize-eli5.mdc' },
   { code: 'windsurf',    file: '.windsurf/rules/wize-eli5.md' },
   { code: 'continue',   file: '.continue/prompts/wize-eli5.prompt' },
@@ -46,5 +47,5 @@ for (const a of EXPECT) {
     fs.rmSync(root, { recursive: true, force: true });
   }
 }
-console.log(`\n${ok}/10 harnesses com wize-eli5.`);
+console.log(`\n${ok}/11 harnesses com wize-eli5.`);
 process.exit(fail ? 1 : 0);

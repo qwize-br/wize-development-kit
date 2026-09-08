@@ -25,6 +25,7 @@ const GITIGNORE_BODY = [
   '.agents/skills/wize-*',
   '.kimi/skills/wize-*',
   '.hermes/skills/wize-*',
+  '.kiro/skills/wize-*',
   '.cursor/rules/wize-*.mdc',
   '.windsurf/rules/wize-*.md',
   '.continue/prompts/wize-*.prompt',

@@ -5,7 +5,7 @@
  *
  * v0.15.0 — Full-lifecycle CLI with install, update, uninstall, list, sync,
  * agent, workflow, validate, doctor, and document-project commands. Adapters
- * render for 10 IDE targets. Security overlay ships with 8 tools.
+ * render for 11 IDE targets. Security overlay ships with 8 tools.
  * `install --yes` now enables all harnesses + all overlays by default.
  */
 'use strict';
@@ -38,6 +38,7 @@ const TARGETS = [
   { code: 'continue', label: 'Continue', default: false },
   { code: 'kimi-code', label: 'Kimi Code', default: false },
   { code: 'hermes', label: 'Hermes Agent (.hermes/skills/)', default: false },
+  { code: 'kiro', label: 'Kiro — AWS (.kiro/skills/)', default: false },
   { code: 'opencode', label: 'OpenCode', default: false },
   { code: 'antigravity', label: 'Antigravity (CLI + IDE)', default: false },
   { code: 'generic', label: 'Generic fallback (.wize/agents/)', default: true }
