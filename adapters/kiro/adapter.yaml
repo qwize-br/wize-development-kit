@@ -1,0 +1,8 @@
+code: kiro
+description: "Kiro (AWS) workspace skills (.kiro/skills/, Agent Skills standard, project-local)."
+target_path: ".kiro/skills/"
+file_pattern: "wize-*/SKILL.md"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []

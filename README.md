@@ -56,7 +56,7 @@ The installer asks:
 
 1. **Project name** — written into `.wize/config/project.toml`.
 2. **Profile(s)** — Core / +Web / +App / +Security (multi-select).
-3. **IDE target(s)** — Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, OpenCode, Antigravity, or generic fallback (multi-select).
+3. **IDE target(s)** — Claude Code, Cursor, Windsurf, Codex, Continue, Kimi Code, Hermes, Kiro, OpenCode, Antigravity, or generic fallback (multi-select).
 4. **Languages** — communication + document output.
 5. **Your name** — how the agents should address you (saved to `user.toml`).
 6. **Brownfield** — offers to run `wize-document-project` to baseline the existing codebase.
@@ -69,7 +69,7 @@ After install, open your IDE and say:
 
 ## Supported harnesses
 
-All 10 IDE targets render from the same source; format and mechanics differ per harness. **OpenCode** gets the deepest integration — the kit's persona/workflow split maps onto OpenCode's own primitives (`mode: primary|subagent`, `agent:`, `subtask:`) instead of being flattened into one file type.
+All 11 IDE targets render from the same source; format and mechanics differ per harness. **OpenCode** gets the deepest integration — the kit's persona/workflow split maps onto OpenCode's own primitives (`mode: primary|subagent`, `agent:`, `subtask:`) instead of being flattened into one file type.
 
 | Harness | Output | Notable |
 |---|---|---|
@@ -78,6 +78,7 @@ All 10 IDE targets render from the same source; format and mechanics differ per 
 | **Codex** | `.agents/skills/*/SKILL.md` | Same Skill format + root `AGENTS.md`. [Docs →](docs/harnesses/codex.md) |
 | **Kimi Code** | `.kimi/skills/*/SKILL.md` | Same Skill format; auto-detects Claude/Codex skill trees. [Docs →](docs/harnesses/kimi-code.md) |
 | **Hermes Agent** 🆕 | `.hermes/skills/*/SKILL.md` | Same Skill format, project-local; trust gate (`hermes skills trust`); project skills override profile ones. [Docs →](docs/harnesses/hermes.md) |
+| **Kiro — AWS** 🆕 | `.kiro/skills/*/SKILL.md` | Agent Skills standard (agentskills.io); workspace skills override global ones; auto-activates by description, or `/wize-{code}`. [Docs →](docs/harnesses/kiro.md) |
 | **Antigravity** | `.agent/skills/*/SKILL.md` | Same Skill format + root `AGENTS.md`. [Docs →](docs/harnesses/antigravity.md) |
 | **Cursor** | `.cursor/rules/*.mdc` | On-demand rules (`alwaysApply: false`), matched by description. [Docs →](docs/harnesses/cursor.md) |
 | **Windsurf** | `.windsurf/rules/*.md` | Plain markdown; activation mode set inside the IDE. [Docs →](docs/harnesses/windsurf.md) |

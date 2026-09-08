@@ -9,6 +9,16 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.17.0] — 2026-09-08
+
+**Kiro (AWS) is now the 11th supported harness.** New `kiro` IDE target renders the kit's agents/skills/workflows as Kiro workspace skills at `.kiro/skills/wize-{code}/SKILL.md`, following the open [Agent Skills standard](https://agentskills.io) — the same folder + `SKILL.md` (frontmatter `name`/`description`) shape as Claude Code/Codex/Kimi Code/Hermes. Kiro's default agent auto-loads workspace skills (workspace wins over `~/.kiro/skills/` globals), uses progressive disclosure (name + description at startup, full body on description match or `/wize-{code}`), and reads `.kiro/steering/` separately for always-on context. The Kiro CLI (`kiro-cli chat --no-interactive --trust-all-tools "<prompt>"`) is registered in the installer's brownfield baseline for headless runs. Highlighted in all 3 READMEs + `docs/harnesses/kiro.md` (+pt-BR); registered in the installer targets, `doctor`, `.gitignore` block, and test suites.
+
+### Added
+
+- **`kiro` IDE target** (`adapters/kiro/`) — renders via the shared Anthropic emitter to `.kiro/skills/`; companion files (`steps/`, `templates/`, `data/`) copied alongside `SKILL.md`. Selectable in `npx wize-dev-kit install` / `sync`; `install --yes` enables it along with the other 10 harnesses.
+- **`kiro-cli` harness** in the brownfield baseline — headless one-shot runs via `kiro-cli chat --no-interactive --trust-all-tools` (requires `KIRO_API_KEY`).
+- **`docs/harnesses/kiro.md` + `kiro.pt-BR.md`** — workspace vs global scope, progressive-disclosure activation, steering caveat, custom-agents `skill://` resources caveat, and headless usage.
+
 ## [0.16.1] — 2026-09-02
 
 **Publish fix.** The `0.16.0` release was published from a stale commit (missing the Hermes adapter and `wize-check`). `0.16.1` republishes the full `main` history plus `/wize-eli5`; `0.16.0` is deprecated on npm.

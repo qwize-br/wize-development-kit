@@ -151,6 +151,7 @@ test('adapterTargetPath returns expected paths for all known targets', () => {
     'codex':       '.agents/skills',
     'kimi-code':   '.kimi/skills',
     'hermes':      '.hermes/skills',
+    'kiro':        '.kiro/skills',
     'cursor':      '.cursor/rules',
     'windsurf':    '.windsurf/rules',
     'continue':    '.continue/prompts',
