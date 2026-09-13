@@ -10,11 +10,12 @@
 1. **Normalize** findings into a common format. Expected input formats:
    - Blind Hunter: Markdown list of descriptions.
    - Edge Case Hunter: JSON array with `location`, `trigger_condition`, `guard_snippet`, `potential_consequence`.
+   - Subtraction Hunter: Markdown list of `path:L<line>: <tag> <what to cut>. <what replaces it>.` plus a closing `net: -<N> lines possible.` Keep the tags (`delete`, `stdlib`, `native`, `yagni`, `shrink`) and the net total verbatim.
    - Acceptance Auditor: Markdown list with title, AC/constraint reference, and evidence.
 
    Convert all to a unified list with:
    - `id` — sequential integer
-   - `source` — `blind`, `edge`, `auditor`, or merged (`blind+edge`, etc.)
+   - `source` — `blind`, `edge`, `subtract`, `auditor`, or merged (`blind+edge`, etc.)
    - `title` — one-line summary
    - `detail` — full description
    - `location` — file and line reference if available
@@ -29,6 +30,11 @@
    - **patch** — code issue fixable without human input.
    - **defer** — pre-existing issue not caused by this change.
    - **dismiss** — noise, false positive, or handled elsewhere.
+
+   Classification of Subtraction Hunter findings:
+   - Cutting code **this diff introduced** → `patch`.
+   - Cutting pre-existing code the diff didn't touch → `defer` (record it; the change is out of scope for this PR).
+   - A cut that contradicts an explicit requirement or the safety floor (validation at trust boundaries, data-loss handling, security, accessibility, tests on non-trivial logic) → `dismiss`, and say which requirement protected it.
 
    If `{review_mode}` = `"no-spec"` and a finding would be `decision_needed`, reclassify as `patch` or `defer`.
 

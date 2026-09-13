@@ -172,7 +172,14 @@ Transversais:
     /wize-correct-course        Re-planeja quando um gate falha ou o loop trava
                                 (auto-disparado pela guarda de max-cycles; também
                                 manual).
-    /wize-code-review           Revisão adversarial antes do gate TEA do Hawkeye.
+    /wize-code-review           Revisão adversarial antes do gate TEA do Hawkeye
+                                (4 camadas: cega, casos-limite, subtração, auditoria de AC).
+    /wize-subtract              Revisão de diff focada só em over-engineering: lista
+                                de cortes (delete / stdlib / native / yagni / shrink)
+                                + o total de linhas economizáveis. Também é uma camada.
+    /wize-debt                  Colhe todo atalho deliberado marcado com `wize-debt:`
+                                (teto + caminho de upgrade) num ledger único, para que
+                                "depois" não vire "nunca".
     /wize-party-mode            Wizer reúne multi-persona para decisões difíceis.
 ```
 
@@ -274,6 +281,8 @@ npx wize-dev-kit version-check [--json]  # instalada vs. mais recente (com cache
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — metodologia UX-first, panteão nórdico (Saga, Freya), estrutura de fases.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) por Peter Yang — higiene de escrita que elimina padrões de AI slop sem achatar a voz do autor; a inspiração para `/wize-no-ai-slop`.
 - [apple-appstore-reviewer (awesome-copilot)](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — auditoria com mentalidade de reviewer para submissão na App Store; a inspiração para `wize-app-store-review` (gate de publicação do overlay de app).
+- [ELI5](https://github.com/dreambigou/eli5) por Andrew Ou — explicações calibradas ao ouvinte; inspiração do `/wize-eli5`.
+- [Ponytail](https://github.com/DietrichGebert/ponytail) por Dietrich Gebert — revisão orientada a deleção (`/wize-subtract`), o marcador de atalho `wize-debt:` com seu ledger, e o enquadramento medido de "menos código" por trás da contabilidade de código da retrospectiva. A reuse ladder do kit compartilha os mesmos degraus.
 
 O Wize Development Kit é uma **adaptação independente** — não afiliada nem endossada pelos autores do BMAD ou do WDS. Os nomes de personas Marvel são referências criativas sob uso nominativo justo.
 

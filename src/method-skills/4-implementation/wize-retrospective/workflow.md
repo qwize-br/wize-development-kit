@@ -26,6 +26,7 @@ Wizer facilitates. Hill enforces output discipline. Everyone (including Pepper, 
 - All `gate.md` files from current sprint
 - `tea/nfr/{epic}.md` if an epic closed this sprint
 - Quick-dev log
+- Git history for the sprint window (tag range, or first → last commit)
 
 ## Output
 
@@ -56,6 +57,21 @@ Wizer reads the sprint dashboard from `sprint-status.md`:
 - Carry-over count.
 
 Stats anchor the retro in observations, not feelings.
+
+#### Code accounting (numbers, not adjectives)
+
+Measured from git over the sprint window. Report the numbers even when they look bad — especially then:
+
+| Metric | How to get it |
+|---|---|
+| Lines added / removed / net | `git diff --shortstat <base>..<head>` (base = last sprint's tag or first commit) |
+| Files touched | count of distinct files in the range: `git diff --name-only <base>..<head> \| wc -l` |
+| Dependencies | entries added/removed in the manifest diff (`package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`) |
+| New abstractions | modules, classes, or interfaces introduced by the sprint (count from the diff) |
+| Debt markers | `wize-debt:` added vs retired this sprint (run `/wize-debt`) |
+| Complexity | cyclomatic-complexity delta from `tea/nfr/{epic}.md` when an epic closed |
+
+Why this exists: the kit's discipline (reuse ladder, `/wize-subtract`, debt markers) is only verifiable with numbers. A sprint that ships 4 stories while adding 3k net lines and 6 dependencies is telling you something — say it out loud in the retro, and turn it into a change if it repeats.
 
 ### 2. Worked / didn't / surprised
 
@@ -97,6 +113,13 @@ attendees: [Hill, Tony, Mantis, Pepper, Fury, Hawkeye, Shuri]
 - Gates: 4 PASS, 1 CONCERNS, 0 FAIL
 - Blockers: 1 (vendor sandbox, resolved Day 5)
 - Carry-over to S8: 0
+
+## Code accounting
+- Lines: +1.842 / −2.310 (net −468) across 71 files
+- Dependencies: +1 (`zod`), −0
+- New abstractions: 2 (one repository interface, one mapper — both with a single implementation; flagged by `/wize-subtract`)
+- Debt markers: +3 added, −1 retired (2 with a trigger, 1 `no-trigger`)
+- Complexity: no NFR delta this sprint (no epic closed)
 
 ## Worked
 - Pairing on E03-S02 (auth refresh) — issue caught at integration test instead of in prod.
