@@ -164,7 +164,14 @@ Transversais:
     /wize-correct-course        Re-planeja quando um gate falha ou o loop trava
                                 (auto-disparado pela guarda de max-cycles; também
                                 manual).
-    /wize-code-review           Revisão adversarial antes do gate TEA do Hawkeye.
+    /wize-code-review           Revisão adversarial antes do gate TEA do Hawkeye
+                                (4 camadas: cega, casos-limite, subtração, auditoria de AC).
+    /wize-subtract              Revisão de diff focada só em over-engineering: lista
+                                de cortes (delete / stdlib / native / yagni / shrink)
+                                + o total de linhas economizáveis. Também é uma camada.
+    /wize-debt                  Colhe todo atalho deliberado marcado com `wize-debt:`
+                                (teto + caminho de upgrade) num ledger único, para que
+                                "depois" não vire "nunca".
     /wize-party-mode            Wizer reúne multi-persona para decisões difíceis.
 ```
 
@@ -263,6 +270,8 @@ npx wize-dev-kit version         # imprime a versão instalada do kit
 
 - [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) por Brian (BMad) Madison — ciclo ágil de IA, personas de agentes, padrão de instalador, sistema de módulos.
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — metodologia UX-first, panteão nórdico (Saga, Freya), estrutura de fases.
+- [ELI5](https://github.com/dreambigou/eli5) por Andrew Ou — explicações calibradas ao ouvinte; inspiração do `/wize-eli5`.
+- [Ponytail](https://github.com/DietrichGebert/ponytail) por Dietrich Gebert — revisão orientada a deleção (`/wize-subtract`), o marcador de atalho `wize-debt:` com seu ledger, e o enquadramento medido de "menos código" por trás da contabilidade de código da retrospectiva. A reuse ladder do kit compartilha os mesmos degraus.
 
 O Wize Development Kit é uma **adaptação independente** — não afiliada nem endossada pelos autores do BMAD ou do WDS. Os nomes de personas Marvel são referências criativas sob uso nominativo justo.
 

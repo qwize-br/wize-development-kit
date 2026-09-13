@@ -165,7 +165,14 @@ Transversales:
     /wize-correct-course        Re-planifica cuando un gate falla o el loop se
                                 estanca (auto-disparado por la guarda de max-cycles;
                                 también manual).
-    /wize-code-review           Revisión adversarial antes del gate TEA de Hawkeye.
+    /wize-code-review           Revisión adversarial antes del gate TEA de Hawkeye
+                                (4 capas: ciega, casos-límite, sustracción, auditoría de AC).
+    /wize-subtract              Revisión de diff enfocada solo en over-engineering:
+                                lista de cortes (delete / stdlib / native / yagni /
+                                shrink) + el total de líneas ahorrables. También es capa.
+    /wize-debt                  Cosecha cada atajo deliberado marcado con `wize-debt:`
+                                (techo + ruta de upgrade) en un ledger único, para que
+                                "después" no se vuelva "nunca".
     /wize-party-mode            Wizer reúne multi-persona para decisiones difíciles.
 ```
 
@@ -265,6 +272,8 @@ npx wize-dev-kit version         # imprime la versión instalada del kit
 
 - [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) por Brian (BMad) Madison — ciclo ágil de IA, personas de agentes, patrón de instalador, sistema de módulos.
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — metodología UX-first, panteón nórdico (Saga, Freya), estructura de fases.
+- [ELI5](https://github.com/dreambigou/eli5) por Andrew Ou — explicaciones calibradas al oyente; inspiración de `/wize-eli5`.
+- [Ponytail](https://github.com/DietrichGebert/ponytail) por Dietrich Gebert — revisión orientada a la eliminación (`/wize-subtract`), el marcador de atajo `wize-debt:` con su ledger, y el encuadre medido de "menos código" detrás de la contabilidad de código de la retrospectiva. La reuse ladder del kit comparte los mismos peldaños.
 
 Wize Development Kit es una **adaptación independiente** — no afiliada ni respaldada por los autores de BMAD o WDS. Los nombres de personas Marvel se usan como referencias creativas bajo uso nominativo justo.
 

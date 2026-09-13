@@ -28,6 +28,14 @@ function checkWorkflow(file) {
   if (!/^name:/m.test(content))      errs.push('missing "name:"');
   if (!/^owner:/m.test(content) && !/^module:/m.test(content)) errs.push('missing "owner:" or "module:"');
   if (!/^description:/m.test(content)) errs.push('missing "description:"');
+  // The kit's parser (readFrontmatter) reads a double-quoted scalar with
+  // /^"([^"]*)"$/, so an escaped quote inside the value (\" or \') breaks it:
+  // the value is parsed with its wrapping quotes and re-escaped on render.
+  // Write descriptions without inner quotes instead.
+  const dm = content.match(/^description:\s*"(.*)"\s*$/m);
+  if (dm && /\\["']/.test(dm[1])) {
+    errs.push('description contains escaped quotes (\\" or \\\') — the kit parser does not support them; rewrite without quotes');
+  }
   return errs;
 }
 

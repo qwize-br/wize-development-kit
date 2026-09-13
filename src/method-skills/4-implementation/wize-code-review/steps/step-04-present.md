@@ -45,6 +45,8 @@ Code review complete.
 - dismissed: {R}
 ```
 
+When the Subtraction Hunter ran, add its metric on the following line: `Subtraction: {C} cut(s) proposed, net: -{N} lines possible.` Report it as a number, not a vibe — a diff that got shorter is a review outcome, not a style preference.
+
 If `{spec_file}` is set, add: "Findings written to `{spec_file}`."
 
 ### 4. Resolve decision_needed findings

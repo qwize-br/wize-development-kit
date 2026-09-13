@@ -9,6 +9,7 @@ failed_layers: ''
 - Speak in `{communication_language}`.
 - The Blind Hunter subagent receives **only** the diff — no project context.
 - The Edge Case Hunter subagent receives the diff and project read access.
+- The Subtraction Hunter subagent receives the diff and project read access.
 - The Acceptance Auditor subagent receives the diff, spec, and context docs.
 - All review subagents run at the same model capability as the current session.
 
@@ -25,6 +26,9 @@ This step is an instance of Wizer's subagent fan-out pattern (see `wize-orchestr
 
    - **Edge Case Hunter** — receives `{diff_output}` and read access to the project. Invoke via `wize-review-edge-case-hunter`.
      Prompt: "Walk every branching path and boundary condition in this diff. Report only unhandled edge cases as a JSON array."
+
+   - **Subtraction Hunter** — receives `{diff_output}` and read access to the project. Invoke via `wize-subtract`.
+     Prompt: "Review this diff for over-engineering only. One line per finding: `path:L<line>: <tag> <what to cut>. <what replaces it>.` Tags: delete | stdlib | native | yagni | shrink. Rank by lines saved. End with `net: -<N> lines possible.` Never flag tests, validation, security, or accessibility."
 
    - **Acceptance Auditor** (only if `{review_mode}` = `"full"`) — receives `{diff_output}`, `{spec_file}` content, and context docs.
      Prompt: "Review this diff against the spec. Check for violations of acceptance criteria, deviations from spec intent, and missing behavior. Output findings as a Markdown list with AC/constraint reference and evidence."
