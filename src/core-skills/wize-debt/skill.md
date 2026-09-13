@@ -1,7 +1,7 @@
 ---
 
 code: wize-debt
-description: "Use quando precisar colher os atalhos deliberados espalhados no código (marcadores wize-debt:) num ledger único, para que \"depois\" não vire \"nunca\"."
+description: "Use quando precisar colher os atalhos deliberados espalhados no código (marcadores wize-debt:) num ledger único, para que o adiamento não vire esquecimento permanente."
 name: Debt Ledger
 module: core
 status: ready
