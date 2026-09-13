@@ -28,10 +28,16 @@ skills:
   - code: wize-review-adversarial
     name: "Adversarial Review"
     description: "Red-team review of artifacts — challenges assumptions, surfaces edge cases."
+  - code: wize-subtract
+    name: "Subtract"
+    description: "Over-engineering-only review of a diff: what to delete, simplify, or replace with stdlib/native — ranked delete-list plus the net lines saved."
   - code: wize-spec
     name: "Spec"
     description: "Distills any intent input into a canonical five-field spec kernel + companions."
   - code: wize-pre-pr-check
     name: "Pre-PR Check"
     description: "Quando for abrir um Pull Request ou PR leia — gate local para lint, format, build e testes rápidos antes de submeter código."
+  - code: wize-debt
+    name: "Debt Ledger"
+    description: "Harvests every deliberate `wize-debt:` shortcut (ceiling + upgrade path) into one ledger so deferrals don't rot into \"never\"."
 
