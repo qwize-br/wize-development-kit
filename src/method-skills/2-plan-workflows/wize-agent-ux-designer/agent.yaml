@@ -23,6 +23,7 @@ skills:
   - wize-ux-scenarios
   - wize-ux-design
   - wize-design-system
+  - wize-no-ai-slop             # UX copy and scenario prose that end users read
 
 inputs:
   - ".wize/planning/prd.md"

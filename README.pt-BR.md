@@ -160,6 +160,12 @@ Transversais:
                                 changelog, confirma e aplica o update.
     /wize-grill                 Entrevista-até-entendimento antes de qualquer passo
                                 de autoria.
+    /wize-eli5                  Explique qualquer coisa a qualquer um — vocabulário,
+                                analogias, tom, profundidade e framing calibrados
+                                para o ouvinte (idade, papel, relação).
+    /wize-no-ai-slop            Higiene de escrita para texto de usuário final:
+                                remove padrões de "AI slop" e palavras de enchimento
+                                preservando a voz do autor. Também detecta slop.
     /wize-quick-dev             Shuri pega uma correção pequena sem o ciclo completo.
     /wize-pre-pr-check          Roda lint/format/build/testes unitários localmente
                                 antes de abrir um PR — falha cedo, zero custo de runner.
@@ -266,6 +272,7 @@ npx wize-dev-kit version-check [--json]  # instalada vs. mais recente (com cache
 
 - [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) por Brian (BMad) Madison — ciclo ágil de IA, personas de agentes, padrão de instalador, sistema de módulos.
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — metodologia UX-first, panteão nórdico (Saga, Freya), estrutura de fases.
+- [No AI Slop](https://github.com/petergyang/no-ai-slop) por Peter Yang — higiene de escrita que elimina padrões de AI slop sem achatar a voz do autor; a inspiração para `/wize-no-ai-slop`.
 
 O Wize Development Kit é uma **adaptação independente** — não afiliada nem endossada pelos autores do BMAD ou do WDS. Os nomes de personas Marvel são referências criativas sob uso nominativo justo.
 
