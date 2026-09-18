@@ -380,6 +380,7 @@ test('all installed skills have intent table coverage', () => {
     'wize-app-scaffold',
     'wize-app-release-channels',
     'wize-app-store-listing',
+    'wize-app-store-review',       // publication gate — phase heuristic, not user intent
     'wize-sec-scope',    // security overlay — triggered by phase heuristic, not user intent
   ]);
 
