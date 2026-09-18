@@ -155,6 +155,8 @@ Cross-cutting:
     /wize-check                 Progress checklist for the demand in flight:
                                 done (with evidence), in progress, what's left —
                                 then resumes the interrupted work.
+    /wize-update                Checks kit version skew, shows the changelog
+                                jump, confirms, then applies the update.
     /wize-grill                 Interview-to-understanding before any authoring step.
     /wize-eli5                  Explain anything to anyone — vocabulary, analogies,
                                 tone, depth and framing calibrated to the audience

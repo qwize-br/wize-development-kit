@@ -99,15 +99,15 @@ See the full intent routing table in `wize-help/skill.md` (Step 2a). The same ta
 
 ## Step 2.5 — version skew (proactive)
 
-Compare `kit_version` (project.toml) vs the installed kit vs (if you have a terminal, 2s timeout) `npm view wize-dev-kit version`:
+If you have Bash, run `npx wize-dev-kit version-check --json` once — it reads a local 1h cache before touching the network, caps any registry call at ~1.5s, and degrades to `{"latest":null}` silently if offline, so this never blocks the response. Compare its `installed` field against `kit_version` (project.toml):
 
 | Condition | Suggest |
 |---|---|
-| installed > project.toml | `npx wize-dev-kit update` |
-| registry > installed | `npx wize-dev-kit@latest update` |
-| all match | nothing |
+| `installed` > `kit_version` (project.toml) | `/wize-update` |
+| `latest` > `installed` | `/wize-update` |
+| everything matches, or `latest` is `null` | nothing |
 
-Phrase as one short line, not a banner. If the user agrees and you have Bash, run it in the project root.
+Phrase as one short line, not a banner — and only the **first time in this conversation**. If you already mentioned it earlier in this session, don't repeat it.
 
 ## Step 3 — respond
 

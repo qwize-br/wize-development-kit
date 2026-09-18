@@ -19,6 +19,7 @@ const prompts = require('prompts');
 const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
 const { cmdUpdate, loadProjectConfig } = require('./commands/update.js');
 const { printUpdateHintIfAny } = require('./version-check.js');
+const { cmdVersionCheck } = require('./commands/version-check.js');
 const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 const { cmdDoctor, adapterTargetPath } = require('./commands/doctor.js');
@@ -73,6 +74,7 @@ Usage:
 Commands:
   install                 Install the kit into the current repo (interactive).
   update                  Apply upstream diff while preserving customizations.
+  version-check [--json]  Check installed vs. latest version (scriptable; never blocks).
   uninstall               Remove the kit from the current repo (preserves code).
   list                    List installed agents, skills and workflows.
   sync                    Regenerate IDE adapters for active targets.
@@ -891,6 +893,8 @@ async function main() {
   switch (cmd) {
     case 'install':   return cmdInstall(rest);
     case 'update':    return cmdUpdate({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
+    case 'version-check':
+      return cmdVersionCheck({ currentVersion: KIT_VERSION, json: rest.includes('--json') });
     case 'uninstall': return cmdUninstall(rest);
     case 'list':      return cmdList();
     case 'sync':      return cmdSync();

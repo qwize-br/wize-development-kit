@@ -157,6 +157,8 @@ Transversales:
     /wize-check                 Checklist de avance de la demanda en vuelo: hecho
                                 (con evidencia), en curso, lo que falta — luego
                                 retoma el trabajo interrumpido.
+    /wize-update                Revisa si el kit está desactualizado, muestra el
+                                changelog, confirma y aplica la actualización.
     /wize-grill                 Entrevista-hasta-entendimiento antes de cualquier
                                 paso de autoría.
     /wize-quick-dev             Shuri toma un arreglo pequeño sin el ciclo completo.

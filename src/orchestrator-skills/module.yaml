@@ -22,6 +22,9 @@ skills:
   - code: wize-check
     name: "Check (Wizer)"
     description: "Progress checklist for the demand in flight: done (with evidence), in progress, left, blocked. Read-only — reports, then resumes the interrupted work."
+  - code: wize-update
+    name: "Update (Wizer)"
+    description: "Checks kit version skew, shows the changelog jump, confirms, then applies `wize-dev-kit update` and reports the result."
   - code: wize-onboarding
     name: "Onboarding"
     description: "Post-install triage: greenfield vs brownfield, profile, objective. Delegates to specialists."

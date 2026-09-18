@@ -322,6 +322,14 @@ test('"party mode" routes to wize-party-mode', () => {
   assert.ok(assertRoute(tableText, 'party mode', 'wize-party-mode'));
 });
 
+test('"atualizar o kit" routes to wize-update', () => {
+  assert.ok(assertRoute(tableText, 'atualizar o kit', 'wize-update'));
+});
+
+test('"tem atualização" routes to wize-update', () => {
+  assert.ok(assertRoute(tableText, 'tem atualização', 'wize-update'));
+});
+
 test('"spec" routes to wize-spec', () => {
   assert.ok(assertRoute(tableText, 'spec', 'wize-spec'));
 });
