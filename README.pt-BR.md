@@ -156,6 +156,8 @@ Transversais:
     /wize-check                 Checklist de acompanhamento da demanda em voo:
                                 feito (com evidência), em andamento, o que falta —
                                 depois retoma o trabalho interrompido.
+    /wize-update                Verifica se o kit está desatualizado, mostra o
+                                changelog, confirma e aplica o update.
     /wize-grill                 Entrevista-até-entendimento antes de qualquer passo
                                 de autoria.
     /wize-quick-dev             Shuri pega uma correção pequena sem o ciclo completo.
@@ -238,6 +240,7 @@ npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--
 npx wize-dev-kit uninstall       # remove .wize/ (seu código permanece intacto)
 npx wize-dev-kit help            # referência de comandos
 npx wize-dev-kit version         # imprime a versão instalada do kit
+npx wize-dev-kit version-check [--json]  # instalada vs. mais recente (com cache; scriptável; nunca bloqueia)
 ```
 
 ---

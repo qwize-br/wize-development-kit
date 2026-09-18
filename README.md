@@ -155,6 +155,8 @@ Cross-cutting:
     /wize-check                 Progress checklist for the demand in flight:
                                 done (with evidence), in progress, what's left —
                                 then resumes the interrupted work.
+    /wize-update                Checks kit version skew, shows the changelog
+                                jump, confirms, then applies the update.
     /wize-grill                 Interview-to-understanding before any authoring step.
     /wize-eli5                  Explain anything to anyone — vocabulary, analogies,
                                 tone, depth and framing calibrated to the audience
@@ -238,6 +240,7 @@ npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--
 npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 npx wize-dev-kit help            # command reference
 npx wize-dev-kit version         # print the installed kit version
+npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptable; never blocks)
 ```
 
 ---

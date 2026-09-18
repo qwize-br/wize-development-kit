@@ -157,3 +157,76 @@ test('printUpdateHintIfAny respects WIZE_DISABLE_UPDATE_CHECK=1', async () => {
     }
   });
 });
+
+// ── getVersionCheckResult ──
+//
+// Unlike printUpdateHintIfAny (opportunistic, TTY-gated hint for other
+// commands), this is the explicit, always-answers data function behind the
+// `version-check` CLI command — the thing an AI agent shells out to from a
+// skill instruction, where stdout is never a TTY. It must never gate on
+// isTTY and must always resolve to a plain object, never throw.
+
+test('getVersionCheckResult reports updateAvailable when the registry is ahead', async () => {
+  await withTempCacheHome(async () => {
+    const m = freshModule();
+    m.writeCache({ version: '0.9.0', fetched_at: Date.now() });
+    const r = await m.getVersionCheckResult('0.5.0');
+    assert.deepStrictEqual(r, { installed: '0.5.0', latest: '0.9.0', updateAvailable: true });
+  });
+});
+
+test('getVersionCheckResult reports no update when versions match', async () => {
+  await withTempCacheHome(async () => {
+    const m = freshModule();
+    m.writeCache({ version: '0.5.0', fetched_at: Date.now() });
+    const r = await m.getVersionCheckResult('0.5.0');
+    assert.deepStrictEqual(r, { installed: '0.5.0', latest: '0.5.0', updateAvailable: false });
+  });
+});
+
+test('getVersionCheckResult degrades to latest:null when offline, never throws', async () => {
+  await withTempCacheHome(async () => {
+    const m = freshModule();
+    const orig = global.fetch;
+    global.fetch = async () => { throw new Error('offline'); };
+    try {
+      const r = await m.getVersionCheckResult('0.5.0');
+      assert.deepStrictEqual(r, { installed: '0.5.0', latest: null, updateAvailable: false });
+    } finally {
+      global.fetch = orig;
+    }
+  });
+});
+
+test('getVersionCheckResult respects WIZE_DISABLE_UPDATE_CHECK=1 and never touches the network', async () => {
+  await withTempCacheHome(async () => {
+    const m = freshModule();
+    const origEnv = process.env.WIZE_DISABLE_UPDATE_CHECK;
+    const origFetch = global.fetch;
+    process.env.WIZE_DISABLE_UPDATE_CHECK = '1';
+    global.fetch = async () => { throw new Error('should not be called'); };
+    try {
+      const r = await m.getVersionCheckResult('0.5.0');
+      assert.deepStrictEqual(r, { installed: '0.5.0', latest: null, updateAvailable: false, disabled: true });
+    } finally {
+      process.env.WIZE_DISABLE_UPDATE_CHECK = origEnv;
+      global.fetch = origFetch;
+    }
+  });
+});
+
+test('getVersionCheckResult uses the cache and never calls fetch when the cache is fresh', async () => {
+  await withTempCacheHome(async () => {
+    const m = freshModule();
+    m.writeCache({ version: '1.2.3', fetched_at: Date.now() });
+    const orig = global.fetch;
+    global.fetch = async () => { throw new Error('should not be called'); };
+    try {
+      const r = await m.getVersionCheckResult('1.0.0');
+      assert.strictEqual(r.latest, '1.2.3');
+      assert.strictEqual(r.updateAvailable, true);
+    } finally {
+      global.fetch = orig;
+    }
+  });
+});

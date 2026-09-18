@@ -9,6 +9,10 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`wize-update`** (orchestrator skill) + **`wize-dev-kit version-check`** (CLI) — an agent-facing way to ask "is there a newer kit?" without hitting the network on every invocation. `version-check --json` reads a local 1h cache first, caps any registry call at ~1.5s, and degrades to `{"latest":null}` silently when offline; it honors `WIZE_DISABLE_UPDATE_CHECK=1` like the existing opportunistic hint. `wize-help`/`wize`'s proactive version-skew check (Step 2.5) now calls it instead of a live `npm view` on every invocation, says the hint at most once per conversation, and points to `/wize-update` — which shows the version jump + changelog excerpt, asks for a one-line confirmation, then runs `npx wize-dev-kit@latest update` and relays the result. Intent phrases: "atualizar o kit", "tem atualização", "nova versão do kit".
+
 ## [0.17.0] — 2026-09-08
 
 **Kiro (AWS) is now the 11th supported harness.** New `kiro` IDE target renders the kit's agents/skills/workflows as Kiro workspace skills at `.kiro/skills/wize-{code}/SKILL.md`, following the open [Agent Skills standard](https://agentskills.io) — the same folder + `SKILL.md` (frontmatter `name`/`description`) shape as Claude Code/Codex/Kimi Code/Hermes. Kiro's default agent auto-loads workspace skills (workspace wins over `~/.kiro/skills/` globals), uses progressive disclosure (name + description at startup, full body on description match or `/wize-{code}`), and reads `.kiro/steering/` separately for always-on context. The Kiro CLI (`kiro-cli chat --no-interactive --trust-all-tools "<prompt>"`) is registered in the installer's brownfield baseline for headless runs. Highlighted in all 3 READMEs + `docs/harnesses/kiro.md` (+pt-BR); registered in the installer targets, `doctor`, `.gitignore` block, and test suites.

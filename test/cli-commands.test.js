@@ -160,3 +160,51 @@ test('cmdAgentEdit writes a customize.toml stub for a built-in', async () => {
   assert.match(content, /\[persona\]/);
   fs.rmSync(root, { recursive: true, force: true });
 });
+
+// ---------- version-check ----------
+
+const { cmdVersionCheck } = require(path.join(KIT, 'tools/installer/commands/version-check.js'));
+const { writeCache } = require(path.join(KIT, 'tools/installer/version-check.js'));
+
+async function withTempCacheHomeSync(fn) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-vc-cli-'));
+  const hadOrig = Object.hasOwn(process.env, 'XDG_CACHE_HOME');
+  const orig = process.env.XDG_CACHE_HOME;
+  process.env.XDG_CACHE_HOME = dir;
+  try {
+    await fn(dir);
+  } finally {
+    if (hadOrig) process.env.XDG_CACHE_HOME = orig;
+    else delete process.env.XDG_CACHE_HOME;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test('cmdVersionCheck --json reports the update and never throws', async () => {
+  await withTempCacheHomeSync(async () => {
+    writeCache({ version: '9.9.9', fetched_at: Date.now() });
+    let out = '';
+    const r = await cmdVersionCheck({ currentVersion: '1.0.0', json: true, log: (s) => { out += s + '\n'; } });
+    assert.strictEqual(r.updateAvailable, true);
+    assert.match(out, /"latest":"9\.9\.9"/);
+  });
+});
+
+test('cmdVersionCheck (human) prints an up-to-date message when versions match', async () => {
+  await withTempCacheHomeSync(async () => {
+    writeCache({ version: '1.0.0', fetched_at: Date.now() });
+    let out = '';
+    await cmdVersionCheck({ currentVersion: '1.0.0', log: (s) => { out += s + '\n'; } });
+    assert.match(out, /up to date/);
+  });
+});
+
+test('cmdVersionCheck (human) points at npx wize-dev-kit@latest update when behind', async () => {
+  await withTempCacheHomeSync(async () => {
+    writeCache({ version: '2.0.0', fetched_at: Date.now() });
+    let out = '';
+    await cmdVersionCheck({ currentVersion: '1.0.0', log: (s) => { out += s + '\n'; } });
+    assert.match(out, /Update available/);
+    assert.match(out, /npx wize-dev-kit@latest update/);
+  });
+});

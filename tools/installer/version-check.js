@@ -104,6 +104,25 @@ async function printUpdateHintIfAny(currentVersion, { log = console.log, isTTY =
   }
 }
 
+// Pure, TTY-agnostic version check. printUpdateHintIfAny above is an
+// opportunistic hint meant for a human's terminal (gated on isTTY so it
+// never spams a pipe or a script); this is the explicit-invocation
+// counterpart behind the `version-check` CLI command, which an AI agent
+// shells out to non-interactively — stdout there is never a TTY, so a
+// TTY-gated check would go silent exactly when it's needed. Always resolves
+// to a plain object, never throws, and shares the same 1h cache.
+async function getVersionCheckResult(currentVersion, { skipCache = false } = {}) {
+  if (process.env.WIZE_DISABLE_UPDATE_CHECK === '1') {
+    return { installed: currentVersion, latest: null, updateAvailable: false, disabled: true };
+  }
+  const latest = await getLatestVersion({ skipCache });
+  return {
+    installed: currentVersion,
+    latest: latest || null,
+    updateAvailable: latest ? semverGreater(latest, currentVersion) : false
+  };
+}
+
 module.exports = {
   CACHE_TTL_MS,
   NETWORK_TIMEOUT_MS,
@@ -113,5 +132,6 @@ module.exports = {
   fetchLatestFromRegistry,
   getLatestVersion,
   semverGreater,
-  printUpdateHintIfAny
+  printUpdateHintIfAny,
+  getVersionCheckResult
 };
