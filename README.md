@@ -240,6 +240,7 @@ npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--
 npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 npx wize-dev-kit help            # command reference
 npx wize-dev-kit version         # print the installed kit version
+npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptable; never blocks)
 ```
 
 ---
