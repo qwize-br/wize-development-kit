@@ -7,7 +7,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
-## [Unreleased]
+## [0.20.0] — 2026-09-18
 
 ### Added
 
