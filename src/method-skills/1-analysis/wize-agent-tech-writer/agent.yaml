@@ -17,6 +17,7 @@ style:
   approach: "structure > prose; audience-first"
 
 skills:
+  - wize-no-ai-slop             # hygiene pass on every end-user-facing draft
   - wize-editorial-review-prose
   - wize-editorial-review-structure
   - wize-document-project   # paired with Pepper in brownfield

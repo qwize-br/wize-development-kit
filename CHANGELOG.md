@@ -7,6 +7,12 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+### Added
+
+- **`wize-no-ai-slop`** (core skill) — writing hygiene for end-user-facing prose, adapted from [no-ai-slop](https://github.com/petergyang/no-ai-slop) by Peter Yang (MIT, credited in the READMEs). Two jobs: apply while writing (17 AI-slop patterns to cut — binary contrasts, throat-clearing, faux-insight setups, importance puffery, weasel attribution, fake-profound kickers, formatting slop, etc. — plus banned filler words, voice preservation, portability test) and detect on request (name each pattern with a quoted line; no rewriting, no guessing AI authorship). Wired into Peggy Carter (`wize-agent-tech-writer`) and Mantis (`wize-agent-ux-designer`) agent skills + persona styles; registered in the core module catalog; rendered by all 11 harness adapters.
+
 ## [0.18.0] — 2026-09-18
 
 ### Added
