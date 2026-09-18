@@ -33,7 +33,7 @@ It is **file-first and zero-runtime**: the agents are Markdown skills your IDE r
 |---|---|
 | **Wize Dev Core** | Full lifecycle (analysis → plan → solution → implementation) + Test Architect + Whiteport UX + Agent Builder. Always installed. |
 | **Wize Web Dev** *(overlay)* | Web scaffolds, SEO, analytics, WCAG playbook for Mantis, Playwright/Vitest for Hawkeye. |
-| **Wize App Development** *(overlay)* | Mobile scaffolds, store listing, platform guidelines (HIG / Material 3), Detox/Maestro for Hawkeye. |
+| **Wize App Development** *(overlay)* | Mobile scaffolds, store listing, App Store review gate (rejection-risk audit at publication), platform guidelines (HIG / Material 3), Detox/Maestro for Hawkeye. |
 | **Wize Security** *(overlay)* | **AI Pentester.** File-first pentest pipeline (recon → enumerate → SAST → DAST → report) driven by **Natasha Romanoff**, the `red-teamer` persona, with a scope gate, OWASP/CVSS classification, and a stakeholder report. |
 
 ---
@@ -271,6 +271,7 @@ npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptab
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — UX-first methodology, Norse pantheon (Saga, Freya), phase structure.
 - [ELI5](https://github.com/dreambigou/eli5) by Andrew Ou — audience-calibrated explanations; the inspiration for `/wize-eli5`.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) by Peter Yang — writing hygiene that removes AI-slop patterns without flattening the writer's voice; the inspiration for `/wize-no-ai-slop` (Peggy Carter & Mantis apply it to end-user-facing prose).
+- [awesome-copilot's apple-appstore-reviewer](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — reviewer-mindset audit for App Store submission; the inspiration for `wize-app-store-review` (the app-overlay publication gate).
 
 Wize Development Kit is an **independent adaptation** — not affiliated with or endorsed by BMAD or WDS authors. Marvel persona names are used as creative references under nominative fair use.
 

@@ -33,7 +33,7 @@ O Wize Development Kit (WDK) é uma **stack de agentes de IA** instalável que r
 |---|---|
 | **Wize Dev Core** | Ciclo completo (análise → plano → solução → implementação) + Test Architect + UX Whiteport + Agent Builder. Sempre instalado. |
 | **Wize Web Dev** *(overlay)* | Scaffolds web, SEO, analytics, playbook WCAG para o Mantis, Playwright/Vitest para o Hawkeye. |
-| **Wize App Development** *(overlay)* | Scaffolds mobile, listagem em loja, diretrizes de plataforma (HIG / Material 3), Detox/Maestro para o Hawkeye. |
+| **Wize App Development** *(overlay)* | Scaffolds mobile, listagem em loja, gate de revisão da App Store (auditoria de rejeição no momento da publicação), diretrizes de plataforma (HIG / Material 3), Detox/Maestro para o Hawkeye. |
 | **Wize Security** *(overlay)* | **Pentester de IA.** Pipeline de pentest file-first (recon → enumerate → SAST → DAST → report) conduzido por **Natasha Romanoff**, a persona `red-teamer`, com gate de escopo, classificação OWASP/CVSS e relatório executivo. |
 
 ---
@@ -273,6 +273,7 @@ npx wize-dev-kit version-check [--json]  # instalada vs. mais recente (com cache
 - [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) por Brian (BMad) Madison — ciclo ágil de IA, personas de agentes, padrão de instalador, sistema de módulos.
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — metodologia UX-first, panteão nórdico (Saga, Freya), estrutura de fases.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) por Peter Yang — higiene de escrita que elimina padrões de AI slop sem achatar a voz do autor; a inspiração para `/wize-no-ai-slop`.
+- [apple-appstore-reviewer (awesome-copilot)](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — auditoria com mentalidade de reviewer para submissão na App Store; a inspiração para `wize-app-store-review` (gate de publicação do overlay de app).
 
 O Wize Development Kit é uma **adaptação independente** — não afiliada nem endossada pelos autores do BMAD ou do WDS. Os nomes de personas Marvel são referências criativas sob uso nominativo justo.
 

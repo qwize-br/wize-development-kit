@@ -7,6 +7,12 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+### Added
+
+- **`wize-app-store-review`** (app overlay workflow) — the publication gate the app-overlay was missing. Hawkeye audits the app's code and metadata as an App Store reviewer **after** `wize-app-store-listing` and **before** prod go-live via `wize-app-release-channels`: top rejection risks first (permissions, privacy manifest, IAP/restore, sign-in compliance, metadata mismatch, minimum functionality), compliance checklist by area with conditional Guideline checks (1.2 UGC, 4.3(b) spam, 4.5.3 Apple services), fixed report structure (executive summary, risk register P0–P3, detailed findings, reviewer-experience checklist, suggested "App Review Notes" for App Store Connect), then a fix pass handed to Shuri. Gate rule: no prod submission while any P0/P1 is open (or the user documents a `WAIVED`). Adapted from [awesome-copilot's apple-appstore-reviewer](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) (MIT, credited in the READMEs). New artifact: `.wize/planning/app/app-store-review-report.md` (also registered in `wize-help`/`wize` ship stages and `ARCH.md`).
+
 ## [0.19.0] — 2026-09-18
 
 ### Added

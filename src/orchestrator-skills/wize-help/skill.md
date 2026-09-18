@@ -104,7 +104,7 @@ When intent is ambiguous or no intent phrase matches, apply this heuristic top-d
 | 21 | Release tagged, retrospective not done | **Wizer / `wize-retrospective`** + **Pepper+Peggy / `wize-refresh-knowledge`** |
 | 22 | All gated, no new epic pulled | Plan next epic (Tony + Maria Hill), or a roadmap session |
 
-**Overlay ship stages** (when the profile is active): web-overlay adds `wize-web-deploy` / `wize-web-seo-audit`; app-overlay adds `wize-app-release-channels` / `wize-app-store-listing`; security-overlay adds `wize-sec-pentest` (recon → enumerate → SAST → DAST → report, gated by `.wize/security/scope.md`).
+**Overlay ship stages** (when the profile is active): web-overlay adds `wize-web-deploy` / `wize-web-seo-audit`; app-overlay adds `wize-app-release-channels` / `wize-app-store-listing` / `wize-app-store-review` (publication gate, after listing, before prod go-live); security-overlay adds `wize-sec-pentest` (recon → enumerate → SAST → DAST → report, gated by `.wize/security/scope.md`).
 
 ### Intent routing table
 

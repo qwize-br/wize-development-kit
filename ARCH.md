@@ -261,8 +261,8 @@ wize-dev-kit sync     # regera adapters IDE
 
 ### Wize App Development (overlay)
 
-- Workflows extras: `wize-app-scaffold` (RN/Expo/Flutter/native), `wize-app-release-channels`, `wize-app-store-listing`.
-- Artefatos extras: `mobile-store-listing.md`, `app-perms-and-privacy.md`, `release-channels.md`.
+- Workflows extras: `wize-app-scaffold` (RN/Expo/Flutter/native), `wize-app-release-channels`, `wize-app-store-listing`, `wize-app-store-review` (publication gate).
+- Artefatos extras: `mobile-store-listing.md`, `app-store-review-report.md`, `app-perms-and-privacy.md`, `release-channels.md`.
 - Hawkeye playbook: Detox/Maestro patterns.
 - Mantis playbook: HIG/Material 3, touch targets, gestures, permissions UX.
 
