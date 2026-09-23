@@ -142,6 +142,14 @@ test('"code review" routes to wize-code-review', () => {
   assert.ok(assertRoute(tableText, 'code review', 'wize-code-review'));
 });
 
+test('"pr audit" routes to wize-pr-audit', () => {
+  assert.ok(assertRoute(tableText, 'pr audit', 'wize-pr-audit'));
+});
+
+test('"auditar pr" routes to wize-pr-audit', () => {
+  assert.ok(assertRoute(tableText, 'auditar pr', 'wize-pr-audit'));
+});
+
 test('"investigar" routes to wize-investigate', () => {
   assert.ok(assertRoute(tableText, 'investigar', 'wize-investigate'));
 });

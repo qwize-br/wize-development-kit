@@ -21,6 +21,7 @@ skills:
   - wize-dev-story
   - wize-quick-dev
   - wize-code-review
+  - wize-pr-audit
   - wize-retrospective
 
 inputs:

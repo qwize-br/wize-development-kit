@@ -171,6 +171,9 @@ Transversales:
                                 estanca (auto-disparado por la guarda de max-cycles;
                                 también manual).
     /wize-code-review           Revisión adversarial antes del gate TEA de Hawkeye.
+    /wize-pr-audit              Auditoría de confianza de un PR que no escribiste: modelo
+                                de amenaza de entrada no confiable, ledger de claims,
+                                gate de cambio hostil antes de ejecutar, supply-chain/CI.
     /wize-party-mode            Wizer reúne multi-persona para decisiones difíciles.
 ```
 
@@ -273,6 +276,7 @@ npx wize-dev-kit version-check [--json]  # instalada vs. más reciente (con cach
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — metodología UX-first, panteón nórdico (Saga, Freya), estructura de fases.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) por Peter Yang — higiene de escrita que elimina patrones de AI slop sin aplanar la voz del autor; la inspiración para `/wize-no-ai-slop`.
 - [apple-appstore-reviewer (awesome-copilot)](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — auditoría con mentalidad de reviewer para la submisión a App Store; la inspiración para `wize-app-store-review` (gate de publicación del overlay).
+- [my-skills — pr-audit](https://github.com/akitaonrails/my-skills/tree/master/pr-audit) por Fabio Akita — modelo de amenaza de entrada no confiable para PR, ledger de claims y gate de cambio hostil antes de la ejecución; la referencia detrás de `wize-pr-audit`.
 
 Wize Development Kit es una **adaptación independiente** — no afiliada ni respaldada por los autores de BMAD o WDS. Los nombres de personas Marvel se usan como referencias creativas bajo uso nominativo justo.
 
