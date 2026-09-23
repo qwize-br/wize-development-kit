@@ -170,6 +170,9 @@ Cross-cutting:
     /wize-correct-course        Re-plan when a gate fails or a loop stalls (auto-
                                 triggered by the max-cycles guard; also manual).
     /wize-code-review           Adversarial peer review before Hawkeye's TEA gate.
+    /wize-pr-audit              Trust audit of a PR you did not write: untrusted-input
+                                threat model, claim ledger, hostile-change gate before
+                                executing, supply-chain/CI checks. Reports; never merges.
     /wize-party-mode            Wizer convenes multi-persona for hard calls.
 ```
 
@@ -272,6 +275,7 @@ npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptab
 - [ELI5](https://github.com/dreambigou/eli5) by Andrew Ou — audience-calibrated explanations; the inspiration for `/wize-eli5`.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) by Peter Yang — writing hygiene that removes AI-slop patterns without flattening the writer's voice; the inspiration for `/wize-no-ai-slop` (Peggy Carter & Mantis apply it to end-user-facing prose).
 - [awesome-copilot's apple-appstore-reviewer](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — reviewer-mindset audit for App Store submission; the inspiration for `wize-app-store-review` (the app-overlay publication gate).
+- [akitaonrails's my-skills — pr-audit](https://github.com/akitaonrails/my-skills/tree/master/pr-audit) by Fabio Akita — untrusted-input PR threat model, claim ledger, and hostile-change gate before execution; the reference behind `wize-pr-audit`.
 
 Wize Development Kit is an **independent adaptation** — not affiliated with or endorsed by BMAD or WDS authors. Marvel persona names are used as creative references under nominative fair use.
 

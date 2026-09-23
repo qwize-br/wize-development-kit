@@ -149,6 +149,7 @@ Match is case-insensitive, substring-based. Longest match wins. When no intent m
 | "corrigir bug", "bug fix", "consertar", "hotfix", "arrumar", "corrigir erro" | `wize-quick-dev` |
 | "implementar story", "dev story", "codar", "desenvolver", "implementar", "fazer story" | `wize-dev-story` |
 | "code review", "revisar código", "revisão de código", "peer review" | `wize-code-review` |
+| "pr audit", "auditar pr", "auditoria de pr", "auditor de pr", "auditar pull request", "auditar um pr", "pr de terceiro", "revisar pr de terceiro", "pr é seguro", "esse pr é seguro", "pode mergear esse pr", "esse pr pode mergear", "pr externo" | `wize-pr-audit` |
 | "investigar", "debug", "problema", "root cause", "causa raiz", "regressão" | `wize-investigate` |
 | "checkpoint", "validar direção", "mid-story check" | `wize-checkpoint-preview` |
 | "criar story", "nova story", "author story", "escrever story" | `wize-create-story` |

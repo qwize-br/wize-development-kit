@@ -7,6 +7,12 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+### Added
+
+- **`wize-pr-audit`** (method workflow, phase 4) — audits a PR you did **not** write (external contributor, fork, bot) as **evidence, not narrative**, closing the gap where `wize-code-review` only covers your own trusted diff. Untrusted-input threat model, six phases: trusted-state pin (`BASE_SHA`/`HEAD_SHA`, no checkout), a claim ledger (fixes X / compatible / follows spec / tests pass / no security impact → confirmed/partial/unsupported), a **hostile-change gate** before any execution (executable bits, symlinks, Unicode bidi controls, homoglyphs, encoded blobs, CI `pull_request_target`/unpinned actions/workflow-secret exposure, dependency typosquat/git-path sources/lockfile drift, credential access), safe execution in an isolated disposable sandbox with an evidence-reuse rule, functional/compatibility/docs audit with severities (`[CRITICAL]`/`[BLOCKING]`/`[SHOULD-FIX]`/`[NIT]`/`[UNCERTAIN]`), and a fixed report format. Report-only by default; Phase 6 lands on the right base branch (with maintainer commits preserving attribution) only on explicit approval. Adapted from [akitaonrails/my-skills · pr-audit](https://github.com/akitaonrails/my-skills/tree/master/pr-audit) (credited in the READMEs). Registered in the method module catalog, Shuri's `wize-agent-dev` skills, and the `wize-help`/`wize` intent routing table ("pr audit", "auditar pr", "pr é seguro", …).
+
 ## [0.20.0] — 2026-09-18
 
 ### Added
