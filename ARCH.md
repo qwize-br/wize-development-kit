@@ -332,7 +332,8 @@ wize-dev-kit/
 │   │       ├── wize-sprint-planning/
 │   │       ├── wize-sprint-status/
 │   │       ├── wize-retrospective/
-│   │       └── wize-code-review/
+│   │       ├── wize-code-review/
+│   │       └── wize-pr-audit/
 │   ├── tea-skills/             # Test Architect (Hawkeye)
 │   │   ├── wize-agent-test-architect/
 │   │   ├── wize-tea-risk/

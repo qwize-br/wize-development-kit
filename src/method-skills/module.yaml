@@ -117,6 +117,9 @@ skills:
   - code: wize-code-review
     name: "Code Review"
     description: "Adversarial code review with parallel layers and structured triage."
+  - code: wize-pr-audit
+    name: "PR Audit"
+    description: "Trust audit of a PR you did not write — untrusted-input threat model, claim ledger, hostile-change gate before execution, supply-chain/CI checks."
   - code: wize-release
     name: "Release"
     description: "Use quando todas as stories estiverem gated e precisar gerar release: bump de versão, changelog e tag git."
