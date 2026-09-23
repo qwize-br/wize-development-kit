@@ -181,6 +181,9 @@ Transversais:
     /wize-debt                  Colhe todo atalho deliberado marcado com `wize-debt:`
                                 (teto + caminho de upgrade) num ledger único, para que
                                 "depois" não vire "nunca".
+    /wize-pr-audit              Auditoria de confiança de PR que não é seu: modelo de
+                                ameaça de entrada não-confiável, ledger de claims,
+                                gate de mudança hostil antes de executar, supply-chain/CI.
     /wize-party-mode            Wizer reúne multi-persona para decisões difíceis.
 ```
 
@@ -284,6 +287,7 @@ npx wize-dev-kit version-check [--json]  # instalada vs. mais recente (com cache
 - [apple-appstore-reviewer (awesome-copilot)](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — auditoria com mentalidade de reviewer para submissão na App Store; a inspiração para `wize-app-store-review` (gate de publicação do overlay de app).
 - [ELI5](https://github.com/dreambigou/eli5) por Andrew Ou — explicações calibradas ao ouvinte; inspiração do `/wize-eli5`.
 - [Ponytail](https://github.com/DietrichGebert/ponytail) por Dietrich Gebert — revisão orientada a deleção (`/wize-subtract`), o marcador de atalho `wize-debt:` com seu ledger, e o enquadramento medido de "menos código" por trás da contabilidade de código da retrospectiva. A reuse ladder do kit compartilha os mesmos degraus.
+- [my-skills — pr-audit](https://github.com/akitaonrails/my-skills/tree/master/pr-audit) por Fabio Akita — modelo de ameaça de entrada não-confiável para PR, ledger de claims e gate de mudança hostil antes da execução; a referência por trás do `wize-pr-audit`.
 
 O Wize Development Kit é uma **adaptação independente** — não afiliada nem endossada pelos autores do BMAD ou do WDS. Os nomes de personas Marvel são referências criativas sob uso nominativo justo.
 
