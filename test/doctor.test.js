@@ -147,6 +147,7 @@ test('adapterTargetPath returns expected paths for all known targets', () => {
   const root = '/tmp/x';
   const paths = {
     'claude-code': '.claude/skills',
+    'copilot':     '.github/skills',
     'antigravity': '.agent/skills',
     'codex':       '.agents/skills',
     'kimi-code':   '.kimi/skills',

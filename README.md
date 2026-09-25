@@ -69,12 +69,13 @@ After install, open your IDE and say:
 
 ## Supported harnesses
 
-All 11 IDE targets render from the same source; format and mechanics differ per harness. **OpenCode** gets the deepest integration — the kit's persona/workflow split maps onto OpenCode's own primitives (`mode: primary|subagent`, `agent:`, `subtask:`) instead of being flattened into one file type.
+All 12 IDE targets render from the same source; format and mechanics differ per harness. **OpenCode** gets the deepest integration — the kit's persona/workflow split maps onto OpenCode's own primitives (`mode: primary|subagent`, `agent:`, `subtask:`) instead of being flattened into one file type.
 
 | Harness | Output | Notable |
 |---|---|---|
 | **OpenCode** 🆕 | `.opencode/agents/` + `.opencode/commands/` | Native `mode: primary\|subagent`; commands auto-bind to their owning persona (`agent:`); fan-out workers run isolated (`subtask: true`). [Docs →](docs/harnesses/opencode.md) |
 | **Claude Code** | `.claude/skills/*/SKILL.md` | Anthropic Skill format; ad-hoc Task/Agent-tool fan-out (`wize-code-review`). [Docs →](docs/harnesses/claude-code.md) |
+| **GitHub Copilot** 🆕 | `.github/skills/*/SKILL.md` + `.github/agents/*.agent.md` | Agent Skills standard for workflows/skills, **custom agents** for the 10 personas (pickable in the chat dropdown); always-on context via `AGENTS.md`; works in the cloud agent, code review, CLI, app and VS Code/JetBrains agent mode. [Docs →](docs/harnesses/copilot.md) |
 | **Codex** | `.agents/skills/*/SKILL.md` | Same Skill format + root `AGENTS.md`. [Docs →](docs/harnesses/codex.md) |
 | **Kimi Code** | `.kimi/skills/*/SKILL.md` | Same Skill format; auto-detects Claude/Codex skill trees. [Docs →](docs/harnesses/kimi-code.md) |
 | **Hermes Agent** 🆕 | `.hermes/skills/*/SKILL.md` | Same Skill format, project-local; trust gate (`hermes skills trust`); project skills override profile ones. [Docs →](docs/harnesses/hermes.md) |

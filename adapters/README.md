@@ -7,6 +7,7 @@ Each adapter renders the kit's agents/skills/workflows into the file layout that
 | Code | Target path in repo | File format | Notes |
 |---|---|---|---|
 | `claude-code` | `.claude/skills/wize-*/` | `SKILL.md` per agent/workflow | Default. Uses Claude Code skill folder pattern. |
+| `copilot` | `.github/skills/wize-*/` + `.github/agents/wize-*.agent.md` | `SKILL.md` per workflow/skill + `.agent.md` per persona | GitHub Copilot — Agent Skills standard for skills, custom agents for personas. |
 | `cursor` | `.cursor/rules/wize-*.mdc` | MDC | Each agent/skill becomes a rule file. |
 | `windsurf` | `.windsurf/rules/wize-*.md` | Markdown | Cascade-friendly. |
 | `codex` | `.agents/skills/wize-*/` | `SKILL.md` per agent/workflow | OpenAI Codex. |

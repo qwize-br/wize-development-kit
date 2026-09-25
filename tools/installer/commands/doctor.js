@@ -57,6 +57,7 @@ function adapterTargetPath(targetCode, projectRoot) {
   // Mirror of the adapter render conventions documented in adapters/README.md.
   switch (targetCode) {
     case 'claude-code':  return path.join(projectRoot, '.claude/skills');
+    case 'copilot':      return path.join(projectRoot, '.github/skills');
     case 'antigravity':  return path.join(projectRoot, '.agent/skills');
     case 'codex':        return path.join(projectRoot, '.agents/skills');
     case 'kimi-code':    return path.join(projectRoot, '.kimi/skills');

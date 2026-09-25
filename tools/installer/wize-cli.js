@@ -33,6 +33,7 @@ const KIT_VERSION = require(path.join(KIT_ROOT, 'package.json')).version;
 
 const TARGETS = [
   { code: 'claude-code', label: 'Claude Code (.claude/skills/)', default: true },
+  { code: 'copilot', label: 'GitHub Copilot (.github/skills/ + .github/agents/)', default: false },
   { code: 'cursor', label: 'Cursor (.cursor/rules/)', default: false },
   { code: 'windsurf', label: 'Windsurf', default: false },
   { code: 'codex', label: 'Codex', default: false },

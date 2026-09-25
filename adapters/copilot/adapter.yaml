@@ -1,0 +1,8 @@
+code: copilot
+description: "GitHub Copilot — agent skills (.github/skills/, Agent Skills standard) + custom agents (.github/agents/*.agent.md)."
+target_path: ".github/"
+file_pattern: "skills/wize-*/SKILL.md + agents/wize-*.agent.md"
+file_format: markdown
+hooks:
+  pre_render: []
+  post_render: []

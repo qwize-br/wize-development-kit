@@ -26,7 +26,7 @@ const EXPECTED_AGENTS = [
 const EXPECTED_TEA_GATES = ['risk', 'design', 'trace', 'nfr', 'review', 'gate'];
 
 const EXPECTED_ADAPTERS = [
-  'claude-code', 'cursor', 'windsurf', 'codex',
+  'claude-code', 'copilot', 'cursor', 'windsurf', 'codex',
   'continue', 'kimi-code', 'hermes', 'kiro', 'opencode', 'antigravity', 'generic'
 ];
 
@@ -47,7 +47,7 @@ test('all 6 TEA gates have workflow folders', () => {
   }
 });
 
-test('all 11 IDE adapters present', () => {
+test('all 12 IDE adapters present', () => {
   for (const code of EXPECTED_ADAPTERS) {
     const dir = path.join(KIT, 'adapters', code);
     assert.ok(fs.existsSync(path.join(dir, 'adapter.yaml')), `missing adapter.yaml: ${code}`);

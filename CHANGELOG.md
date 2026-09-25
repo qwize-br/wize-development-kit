@@ -7,6 +7,17 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [0.22.0] — 2026-09-25
+
+**GitHub Copilot is now the 12th supported harness.** The new `copilot` IDE target renders the kit into the two trees Copilot actually reads: `.github/skills/wize-{code}/SKILL.md` for workflows + skills (Agent Skills standard) and `.github/agents/wize-{code}.agent.md` for the 10 personas (custom agents, pickable in the chat dropdown). Works across the Copilot cloud agent, Copilot code review, the GitHub Copilot CLI, the Copilot app, and agent mode in VS Code, JetBrains IDEs, Eclipse and Xcode. Highlighted in all 3 READMEs + `docs/harnesses/copilot.md` (+pt-BR); registered in the installer targets, `doctor`, the `.gitignore` block, the brownfield baseline and the test suites.
+
+### Added
+
+- **`copilot` IDE target** (`adapters/copilot/`) — personas → `.github/agents/*.agent.md` (frontmatter `name` + `description`, persona body as the prompt, `tools` omitted so each persona keeps every available tool); workflows + skills → `.github/skills/*/SKILL.md` via the shared Anthropic emitter, including companion files (`steps/`, `templates/`, `data/`, `*.csv`) so micro-file workflows resolve their relative paths.
+- **`copilot` harness in the brownfield baseline** — headless one-shot via `copilot -p "<prompt>"` (grant the minimum permissions you need for unattended runs, e.g. `--allow-tool=write`, instead of `--allow-all`).
+- **`docs/harnesses/copilot.md` + `copilot.pt-BR.md`** — the skill vs custom-agent split, progressive disclosure, `AGENTS.md` as the always-on instructions source (no `.github/copilot-instructions.md` duplicate is written), why prompt files are deliberately not shipped (VS Code deprecated `.github/prompts/*.prompt.md` in favor of agent skills), and the headless invocation.
+- **`renderAnthropicSkills` accepts an optional `opts.kinds` filter** — one emitter now serves harnesses that split assets across trees (Copilot sends workflows/skills to `.github/skills/` and personas to `.github/agents/`) without duplicating the rendering logic.
+
 ## [0.21.0] — 2026-09-25
 
 **Less code, and a way to verify it.** Four changes put the kit's reuse discipline to work *after* the code is written, not only while it is being written: a deletion-first review (`/wize-subtract`) wired as a fourth layer of `wize-code-review`, a ledger for deliberate shortcuts (`/wize-debt` + the `wize-debt:` marker), the code ladder promoted into the generated `AGENTS.md` (always-on in every harness), and code accounting in the retrospective. Inspired by [Ponytail](https://github.com/DietrichGebert/ponytail) by Dietrich Gebert (credited in all 3 READMEs).

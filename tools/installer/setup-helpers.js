@@ -21,6 +21,8 @@ const GITIGNORE_BODY = [
   '',
   '# Generated IDE adapter outputs (regenerate with `npx wize-dev-kit install`)',
   '.claude/skills/wize-*',
+  '.github/skills/wize-*',
+  '.github/agents/wize-*.agent.md',
   '.agent/skills/wize-*',
   '.agents/skills/wize-*',
   '.kimi/skills/wize-*',

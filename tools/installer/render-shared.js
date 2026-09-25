@@ -211,8 +211,12 @@ function collectAssets(kitRoot, { profiles = ['core'] } = {}) {
 
 // Anthropic-style SKILL.md renderer used by Claude Code, Antigravity, Codex, Kimi.
 // Each asset becomes <targetDir>/<code>/SKILL.md with YAML frontmatter (name, description).
+// `opts.kinds` (optional) restricts the emitter to some asset kinds — GitHub
+// Copilot uses it to send workflows/skills to .github/skills/ while its personas
+// go out as .agent.md custom agents instead.
 function renderAnthropicSkills(kitRoot, targetDir, opts = {}) {
-  const assets = collectAssets(kitRoot, opts);
+  const kinds = opts.kinds ? new Set(opts.kinds) : null;
+  const assets = collectAssets(kitRoot, opts).filter(a => !kinds || kinds.has(a.kind));
   const written = [];
   if (!opts.dryRun) ensureDir(targetDir);
 
