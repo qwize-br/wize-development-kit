@@ -69,12 +69,13 @@ Tras instalar, abre tu IDE y di:
 
 ## Harnesses soportados
 
-Los 11 IDEs objetivo se renderizan desde la misma fuente; el formato y la mecánica varían por harness. **OpenCode** recibe la integración más profunda — la separación persona/workflow del kit se mapea sobre las primitivas propias de OpenCode (`mode: primary|subagent`, `agent:`, `subtask:`) en lugar de aplanarse en un único tipo de archivo.
+Los 12 IDEs objetivo se renderizan desde la misma fuente; el formato y la mecánica varían por harness. **OpenCode** recibe la integración más profunda — la separación persona/workflow del kit se mapea sobre las primitivas propias de OpenCode (`mode: primary|subagent`, `agent:`, `subtask:`) en lugar de aplanarse en un único tipo de archivo.
 
 | Harness | Salida | Destacado |
 |---|---|---|
 | **OpenCode** 🆕 | `.opencode/agents/` + `.opencode/commands/` | `mode: primary\|subagent` nativo; los comandos se vinculan automáticamente a su persona propietaria (`agent:`); los workers de fan-out corren aislados (`subtask: true`). [Docs →](docs/harnesses/opencode.md) |
 | **Claude Code** | `.claude/skills/*/SKILL.md` | Formato Skill de Anthropic; fan-out ad-hoc vía Task/Agent tool (`wize-code-review`). [Docs →](docs/harnesses/claude-code.md) |
+| **GitHub Copilot** 🆕 | `.github/skills/*/SKILL.md` + `.github/agents/*.agent.md` | Agent Skills standard para workflows/skills, **custom agents** para las 10 personas (seleccionables en el desplegable del chat); contexto always-on vía `AGENTS.md`; funciona en el cloud agent, code review, CLI, app y agent mode de VS Code/JetBrains. [Docs →](docs/harnesses/copilot.md) |
 | **Codex** | `.agents/skills/*/SKILL.md` | Mismo formato Skill + `AGENTS.md` en la raíz. [Docs →](docs/harnesses/codex.md) |
 | **Kimi Code** | `.kimi/skills/*/SKILL.md` | Mismo formato Skill; autodetecta árboles de skills de Claude/Codex. [Docs →](docs/harnesses/kimi-code.md) |
 | **Hermes Agent** 🆕 | `.hermes/skills/*/SKILL.md` | Mismo formato Skill, project-local; trust gate (`hermes skills trust`); las skills del proyecto sobreescriben las de perfil. [Docs →](docs/harnesses/hermes.md) |

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Verifica que as skills core novas (wize-subtract, wize-debt) — e a wize-eli5 —
-// são renderizadas por TODOS os 11 adapters de harness.
+// Verifica que as skills core (wize-subtract, wize-debt, wize-eli5) são
+// renderizadas por TODOS os 12 adapters de harness.
 //
 // Uso:
 //   node tools/check-skills-all-adapters.js            # valida a lista padrão
@@ -23,6 +23,7 @@ const SKILLS = {
 // Onde cada harness deposita uma skill `wize-{code}`.
 const ADAPTERS = [
   { code: 'claude-code', path: (c) => `.claude/skills/${c}/SKILL.md` },
+  { code: 'copilot',     path: (c) => `.github/skills/${c}/SKILL.md` },
   { code: 'antigravity', path: (c) => `.agent/skills/${c}/SKILL.md` },
   { code: 'codex',       path: (c) => `.agents/skills/${c}/SKILL.md` },
   { code: 'kimi-code',   path: (c) => `.kimi/skills/${c}/SKILL.md` },

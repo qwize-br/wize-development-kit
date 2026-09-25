@@ -1,4 +1,4 @@
-// Sanity coverage across all 11 IDE adapters: each one must export a
+// Sanity coverage across all 12 IDE adapters: each one must export a
 // render(kitRoot, projectRoot, opts) function and must actually emit files
 // at the path documented in its adapter.yaml (no more "stub printing").
 
@@ -13,6 +13,7 @@ const os = require('node:os');
 const KIT = path.resolve(__dirname, '..');
 const ADAPTERS = [
   { code: 'claude-code',  expectFile: (root) => path.join(root, '.claude/skills/wize-orchestrator/SKILL.md') },
+  { code: 'copilot',      expectFile: (root) => path.join(root, '.github/agents/wize-orchestrator.agent.md') },
   { code: 'antigravity',  expectFile: (root) => path.join(root, '.agent/skills/wize-orchestrator/SKILL.md') },
   { code: 'codex',        expectFile: (root) => path.join(root, '.agents/skills/wize-orchestrator/SKILL.md') },
   { code: 'kimi-code',    expectFile: (root) => path.join(root, '.kimi/skills/wize-orchestrator/SKILL.md') },
@@ -57,6 +58,7 @@ test('generic adapter emits a root AGENTS.md', () => {
 // paths from inside the SKILL body.
 const ANTHROPIC = [
   { code: 'claude-code',  base: '.claude' },
+  { code: 'copilot',      base: '.github' },
   { code: 'antigravity',  base: '.agent' },
   { code: 'codex',        base: '.agents' },
   { code: 'kimi-code',    base: '.kimi' },

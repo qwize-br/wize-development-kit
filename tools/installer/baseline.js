@@ -5,7 +5,7 @@
 //
 // Harness priority is:
 //   1. user's selected IDE targets (from .wize/config/project.toml), highest first
-//   2. claude > codex > opencode > hermes > kiro-cli (universal fallback)
+//   2. claude > copilot > codex > opencode > hermes > kiro-cli (universal fallback)
 //
 // Set WIZE_SKIP_BASELINE=1 in the environment to disable any execution (the
 // install still suggests the next step). Useful for CI and unattended setups.
@@ -25,6 +25,11 @@ const HARNESSES = [
     code: 'claude-code',
     binary: 'claude',
     buildCmd: (prompt) => ({ cmd: 'claude', args: ['-p', prompt] })
+  },
+  {
+    code: 'copilot',
+    binary: 'copilot',
+    buildCmd: (prompt) => ({ cmd: 'copilot', args: ['-p', prompt] })
   },
   {
     code: 'codex',
@@ -106,7 +111,7 @@ function manualInstructions(harness) {
   if (!harness) {
     return [
       '',
-      'No AI harness CLI was detected on PATH (claude / codex / opencode / hermes / kiro-cli).',
+      'No AI harness CLI was detected on PATH (claude / copilot / codex / opencode / hermes / kiro-cli).',
       'Open your IDE in this repo and run:',
       '  /wize-document-project',
       ''
