@@ -169,7 +169,14 @@ Cross-cutting:
                                 opening a PR — fail fast, zero CI runner cost.
     /wize-correct-course        Re-plan when a gate fails or a loop stalls (auto-
                                 triggered by the max-cycles guard; also manual).
-    /wize-code-review           Adversarial peer review before Hawkeye's TEA gate.
+    /wize-code-review           Adversarial peer review before Hawkeye's TEA gate
+                                (4 layers: blind, edge case, subtraction, AC audit).
+    /wize-subtract              Over-engineering-only review of a diff: ranked
+                                delete-list (delete / stdlib / native / yagni /
+                                shrink) + the net lines saved. Also a review layer.
+    /wize-debt                  Harvest every deliberate `wize-debt:` shortcut
+                                (ceiling + upgrade path) into one ledger, so a
+                                deferral can't quietly become permanent.
     /wize-party-mode            Wizer convenes multi-persona for hard calls.
 ```
 
@@ -272,6 +279,7 @@ npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptab
 - [ELI5](https://github.com/dreambigou/eli5) by Andrew Ou — audience-calibrated explanations; the inspiration for `/wize-eli5`.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) by Peter Yang — writing hygiene that removes AI-slop patterns without flattening the writer's voice; the inspiration for `/wize-no-ai-slop` (Peggy Carter & Mantis apply it to end-user-facing prose).
 - [awesome-copilot's apple-appstore-reviewer](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — reviewer-mindset audit for App Store submission; the inspiration for `wize-app-store-review` (the app-overlay publication gate).
+- [Ponytail](https://github.com/DietrichGebert/ponytail) by Dietrich Gebert — deletion-first review (`/wize-subtract`), the `wize-debt:` shortcut marker and its ledger, and the measured "less code" framing behind the retrospective's code accounting. The kit's reuse ladder shares its rungs.
 
 Wize Development Kit is an **independent adaptation** — not affiliated with or endorsed by BMAD or WDS authors. Marvel persona names are used as creative references under nominative fair use.
 

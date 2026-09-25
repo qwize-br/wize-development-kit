@@ -7,6 +7,26 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [0.21.0] — 2026-09-25
+
+**Less code, and a way to verify it.** Four changes put the kit's reuse discipline to work *after* the code is written, not only while it is being written: a deletion-first review (`/wize-subtract`) wired as a fourth layer of `wize-code-review`, a ledger for deliberate shortcuts (`/wize-debt` + the `wize-debt:` marker), the code ladder promoted into the generated `AGENTS.md` (always-on in every harness), and code accounting in the retrospective. Inspired by [Ponytail](https://github.com/DietrichGebert/ponytail) by Dietrich Gebert (credited in all 3 READMEs).
+
+### Added
+
+- **`/wize-subtract`** (core skill) — over-engineering-only review of a diff: one line per finding (`delete:`, `stdlib:`, `native:`, `yagni:`, `shrink:`), ranked by lines saved, closing with `net: -<N> lines possible.` Names the replacement for every cut, verifies reuse claims against the codebase, and never flags tests, trust-boundary validation, security or accessibility. Lists findings; does not apply them.
+- **`/wize-debt`** (core skill) — harvests every `wize-debt:` marker (ceiling + upgrade path) into one ledger, so a deferral can't quietly become permanent. Flags markers that name no trigger as `no-trigger` rot risk. Read-only.
+- **`wize-code-review` runs a fourth layer: the Subtraction Hunter** — alongside the Blind Hunter, Edge Case Hunter and Acceptance Auditor on every code PR. Triage classifies its findings (`patch` for code this diff introduced, `defer` for pre-existing code, `dismiss` when a requirement or a safety floor protects it) and the summary reports the cuts and `net: -N lines possible`.
+- **Code accounting in `wize-retrospective`** — lines added/removed/net, files touched, dependencies added, new abstractions, `wize-debt:` markers added vs retired, and the complexity delta, all measured from git over the sprint window and reported as numbers in the retro doc.
+
+### Changed
+
+- **The generated `AGENTS.md` now carries the code ladder** — YAGNI → already-here → stdlib → native → installed dependency → one-liner → minimum, plus the anti-over-engineering rules (no unrequested abstractions or dependencies, deletion over addition, boring over clever, fewest files, bug fix = root cause) and the safety floor (trust-boundary validation, data-loss handling, security, accessibility, tests on non-trivial logic). The ladder is now **always-on** in every harness that reads `AGENTS.md`, instead of living only inside the implementation skills. Existing installs: delete the kit-generated `AGENTS.md` and re-run `npx wize-dev-kit sync` to regenerate it.
+- **Shuri's persona** — the blanket "no TODO" rule becomes "no *vague* TODO": a deliberate shortcut with a known ceiling ships with a `wize-debt:` marker naming ceiling and upgrade trigger, or it doesn't ship. Shuri also runs `/wize-subtract` on her own diff before opening the PR.
+
+### Fixed
+
+- **Validator: descriptions with escaped quotes** — the kit's frontmatter parser reads double-quoted scalars with `/^"([^"]*)"$/`, so a `description` containing `\"` was parsed with its wrapping quotes and re-escaped on render (visible in every harness). `npm run validate` now fails that pattern, with the fix spelled out.
+
 ## [0.20.0] — 2026-09-18
 
 ### Added
