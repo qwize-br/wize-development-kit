@@ -7,11 +7,17 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+### Fixed
+
+- **Publish smoke test** cleared the job-level `WIZE_SKIP_BASELINE` for its explicit `document-project quick` step, which honors that variable since 0.27.0. Neither 0.27.0 nor 0.27.1 reached npm; 0.27.2 is the first published release with the worktree-safe hydrate and automatic updates.
+
 ## [0.27.1] — 2026-10-19
 
 ### Fixed
 
-- **`update` in a repo with no commits yet** (`git init`, nothing committed) failed with "cannot determine default branch". With no history there is no base to branch from and nothing committed to protect, so it now updates in place, like a non-git project. `--pr` still refuses. This failure blocked the 0.27.0 publish, so 0.27.0 never reached npm; 0.27.1 is the first published release with the worktree-safe hydrate and automatic updates.
+- **`update` in a repo with no commits yet** (`git init`, nothing committed) failed with "cannot determine default branch". With no history there is no base to branch from and nothing committed to protect, so it now updates in place, like a non-git project. `--pr` still refuses. This failure blocked the 0.27.0 publish.
 
 ## [0.27.0] — 2026-10-19
 
