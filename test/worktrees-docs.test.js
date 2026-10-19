@@ -124,19 +124,18 @@ test('ARCH and the dependencies note describe the 0.27.0 behavior', () => {
   assert.ok(!/cached 1 hour/.test(deps));
 });
 
-test('CHANGELOG top entry is the 0.27.0 release with its migration notes', () => {
+test('CHANGELOG 0.27.0 entry carries its migration notes', () => {
   const text = read('CHANGELOG.md');
-  const top = text.match(/^## \[([^\]]+)\][^\n]*\n([\s\S]*?)(?=^## \[)/m);
-  assert.ok(top, 'no release heading found');
-  assert.ok(['Unreleased', '0.27.0'].includes(top[1]), `top entry is ${top[1]}`);
+  const top = text.match(/^## \[(0\.27\.0)\][^\n]*\n([\s\S]*?)(?=^## \[)/m);
+  assert.ok(top, 'no 0.27.0 release heading found');
   const body = top[2];
   assert.match(body, /0\.27\.0/);
   for (const h of ['### Added', '### Changed', '### Fixed', '### Migration', '### Breaking notes']) {
-    assert.ok(body.includes(h), `top entry is missing ${h}`);
+    assert.ok(body.includes(h), `0.27.0 entry is missing ${h}`);
   }
   for (const needle of ['`hydrate`', '`--exit-code`', '`--pr`', '`--in-place`', '`--check`', '`--allow-downgrade`',
     '`hooks install|print`', '`doctor --json`', 'bootstrap block', 'isolated branch', 'idempotent',
     'non-destructive', '.claude/worktrees/', 'update --pr` once']) {
-    assert.ok(body.includes(needle), `top entry is missing ${needle}`);
+    assert.ok(body.includes(needle), `0.27.0 entry is missing ${needle}`);
   }
 });
