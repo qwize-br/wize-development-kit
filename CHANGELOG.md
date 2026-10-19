@@ -7,6 +7,24 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+**Ship discipline.** The kit already demanded proof and a clean gate; this release defines what proof is, where it lives and which commit it belongs to, and makes the implementation flows start on a branch instead of assuming one. Ideas from [michaelshimeles/skills](https://github.com/michaelshimeles/skills), rewritten in kit voice.
+
+### Added
+
+- **Branch guard** in `wize-dev-story` (step 0) and `wize-quick-dev` (step 1.5) — read the current branch and status, resolve the default branch with `git symbolic-ref refs/remotes/origin/HEAD` (no hardcoded `main`), keep any other branch or assigned worktree, and on the default branch create `feat/<story-id>` / `fix/<slug>` (or the repo's own convention). No remote: branch locally.
+- **Proof per change type in `wize-dev-story` step 10** — UI screenshots/recording, CLI/API/perf command output with measured numbers, bug-fix red run plus a captured before-state, docs content and link check. Each proof is labeled with its AC and `passed`/`failed`/`untested` (`untested` needs a reason); UI before/after comes from a pre-change baseline, never a branch switch or stash. Step 9 self-check points at it; `wize-quick-dev` asks for before/after on an observable bug fix.
+- **Hosting and privacy rule for captures** — attach through the PR host's own channel or a CI artifact, never anonymous or public third-party hosts or env-supplied upload endpoints; capture with seeded or fake data and check for PII, tokens, internal URLs and admin screens first. Mirrored as a `wize-pre-pr-check` anti-pattern.
+- **Success-path capture in the Playwright playbook** — a `review` project/tag with always-on screenshot and video, and a `try/finally` context close so the video finalizes even when an assertion fails.
+- **Two lines in the generated `AGENTS.md` Operating context** — a request for a plan, review or investigation never implies editing, pushing or publishing; and the shared-repo rules (one branch or worktree per agent, never touch another agent's uncommitted work, no force-push of the default branch, `--force-with-lease` only on your own branch, regenerate lockfiles instead of hand-merging, stop and report on an unresolvable conflict). Existing installs: delete the kit-generated `AGENTS.md` and re-run `npx wize-dev-kit sync` to regenerate it (the file is skip-if-exists).
+- `test/ship-discipline.test.js` guards the core rules.
+
+### Changed
+
+- **TEA evidence is pinned to a commit.** `wize-tea-review` records `evidence` as the artifact or test id plus the commit SHA it was observed on, points at the dev-story proof-per-type block as the single definition of observed evidence, and rejects evidence from a commit other than HEAD. `wize-tea-gate` adds a row — all ACs `met` but evidence unpinned or stale → `CONCERNS` (advisory) / `FAIL` (enforcing) — and counts an `untested` AC as `not-met` unless `WAIVED` with a reason. `wize-check` names the commit in its evidence rule. Gate frontmatter status values are unchanged.
+- **`wize-pre-pr-check` rebases before the push** onto the latest `origin` default branch and re-runs the fast checks; a force push is `--force-with-lease` on your own task branch only, never plain `--force`, never on the default branch or a shared branch.
+
 ## [0.23.0] — 2026-10-19
 
 ### Added

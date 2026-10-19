@@ -38,6 +38,7 @@ An item only reaches **Done** with verifiable proof: a file and line, a commit, 
 
 - No proof → **In progress** or **Unverified**, said out loud.
 - Intent, a plan, or "I implemented it" are not evidence.
+- Evidence names the commit it was observed on; a result from an older commit is stale, so the item stays `[~]`.
 - If something was written but not validated, the item is `[~]` with the missing validation named next to it.
 
 Overstating progress is the one serious failure mode of this skill.

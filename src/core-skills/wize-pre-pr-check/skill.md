@@ -95,6 +95,8 @@ Comandos típicos por stack (detectados em tempo real, não hardcoded):
 
 Se um check falhar, pare e reporte. Não prossiga para o próximo.
 
+Antes do push: faça rebase na última branch default do `origin` e rode de novo os checks rápidos. Se precisar de force push, use `--force-with-lease` só na sua própria branch de tarefa — nunca `--force` puro, nunca na branch default ou em branch compartilhada.
+
 ### 4. Reportar
 
 Formato compacto, uma linha por check:
@@ -125,6 +127,7 @@ Gate limpo. Pode abrir o PR.
 - **Ignorar falhas de lint.** Lint fail = PR fail. Corrija antes.
 - **Executar E2E localmente toda vez.** E2E é caro; deixe para o CI ou rode antes de merge.
 - **Substituir o CI.** Este gate é complementar, não substituto.
+- **Mudança de UI com capturas não revisadas.** Prints e gravações podem vazar PII, tokens ou URLs internas; confira antes de anexar.
 
 ## Hand-off
 
