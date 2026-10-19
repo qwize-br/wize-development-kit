@@ -164,7 +164,8 @@ Cross-cutting:
                                 (age, role, relationship).
     /wize-no-ai-slop            Writing hygiene for end-user-facing prose: removes
                                 AI-slop patterns and filler while preserving the
-                                writer's voice. Detects slop on request.
+                                writer's voice, and agent-written commit/PR text.
+                                Detects slop on request.
     /wize-quick-dev             Shuri takes a small fix without the full ride.
     /wize-pre-pr-check          Run lint/format/build/unit tests locally before
                                 opening a PR — fail fast, zero CI runner cost.
@@ -282,6 +283,7 @@ npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptab
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — UX-first methodology, Norse pantheon (Saga, Freya), phase structure.
 - [ELI5](https://github.com/dreambigou/eli5) by Andrew Ou — audience-calibrated explanations; the inspiration for `/wize-eli5`.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) by Peter Yang — writing hygiene that removes AI-slop patterns without flattening the writer's voice; the inspiration for `/wize-no-ai-slop` (Peggy Carter & Mantis apply it to end-user-facing prose).
+- [unslop](https://github.com/michaelshimeles/skills/tree/main/unslop) by Lauren Tan (MIT) — chatbot-artifact, actor-hiding and inline-header-list checks in `/wize-no-ai-slop`; ideas adapted, no text copied.
 - [awesome-copilot's apple-appstore-reviewer](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — reviewer-mindset audit for App Store submission; the inspiration for `wize-app-store-review` (the app-overlay publication gate).
 - [Ponytail](https://github.com/DietrichGebert/ponytail) by Dietrich Gebert — deletion-first review (`/wize-subtract`), the `wize-debt:` shortcut marker and its ledger, and the measured "less code" framing behind the retrospective's code accounting. The kit's reuse ladder shares its rungs.
 - [akitaonrails's my-skills — pr-audit](https://github.com/akitaonrails/my-skills/tree/master/pr-audit) by Fabio Akita — untrusted-input PR threat model, claim ledger, and hostile-change gate before execution; the reference behind `wize-pr-audit`.

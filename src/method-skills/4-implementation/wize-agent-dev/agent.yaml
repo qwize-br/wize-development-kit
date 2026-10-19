@@ -22,6 +22,7 @@ skills:
   - wize-quick-dev
   - wize-code-review
   - wize-pr-audit
+  - wize-no-ai-slop           # commit and PR text hygiene
   - wize-retrospective
 
 inputs:

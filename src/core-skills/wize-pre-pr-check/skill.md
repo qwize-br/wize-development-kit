@@ -95,6 +95,8 @@ Comandos típicos por stack (detectados em tempo real, não hardcoded):
 
 Se um check falhar, pare e reporte. Não prossiga para o próximo.
 
+Consultivo, nunca bloqueia: se já existir intervalo de commits ou rascunho de PR, rode o modo detect de `wize-no-ai-slop` nos assuntos dos commits e no título/corpo do PR e reporte os padrões achados.
+
 Antes do push: faça rebase na última branch default do `origin` e rode de novo os checks rápidos. Se precisar de force push, use `--force-with-lease` só na sua própria branch de tarefa — nunca `--force` puro, nunca na branch default ou em branch compartilhada.
 
 ### 4. Reportar

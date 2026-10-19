@@ -21,7 +21,7 @@ skills:
     description: "Explain anything to anyone — adapts vocabulary, analogies, tone, depth and framing to the audience (age, role, relationship)."
   - code: wize-no-ai-slop
     name: "No AI Slop"
-    description: "Writing hygiene for end-user-facing prose — removes 17 AI-generated patterns and banned words while preserving the writer's voice; also detects slop without rewriting."
+    description: "Writing hygiene for end-user prose and agent-written commits and PRs — removes 18 AI-generated patterns and banned words while preserving the writer's voice; also detects slop without rewriting."
   - code: wize-brainstorming
     name: "Brainstorming"
     description: "Divergent-then-convergent ideation; produces idea-pool.md."

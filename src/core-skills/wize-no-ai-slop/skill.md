@@ -1,6 +1,6 @@
 ---
 code: wize-no-ai-slop
-description: "Use quando qualquer agente for escrever ou editar texto para usuário final — READMEs, runbooks, microcopy, release notes, UX copy — para remover padrões de 'AI slop' sem achatar a voz do autor. Também detecta slop em rascunhos sem reescrever."
+description: "Use quando qualquer agente for escrever ou editar texto para usuário final — READMEs, runbooks, microcopy, release notes, UX copy — ou texto de dev (commits, PRs) para remover padrões de 'AI slop' sem achatar a voz do autor. Também detecta slop em rascunhos sem reescrever."
 name: No AI Slop
 module: core
 status: ready
@@ -8,9 +8,9 @@ status: ready
 
 # No AI Slop — human writing hygiene
 
-**Goal.** End-user-facing prose (READMEs, runbooks, release notes, UX microcopy, docs, announcements) that reads like a sharp human wrote it — not like a model's default register. Remove AI-generated patterns without flattening the writer's personal voice. This is a hygiene pass every Wize agent applies when the reader is outside the team; internal artifacts (PRD, ADR, gate) keep their own conventions.
+**Goal.** End-user-facing prose (READMEs, runbooks, release notes, UX microcopy, docs, announcements) that reads like a sharp human wrote it — not like a model's default register. Remove AI-generated patterns without flattening the writer's personal voice. This is a hygiene pass every Wize agent applies when the reader is outside the team, and to the dev text an agent writes itself: commit messages, PR titles and bodies, code comments, review replies. PRD, ADR, story and gate keep their own conventions.
 
-Adapted to the Wize method from [no-ai-slop](https://github.com/petergyang/no-ai-slop) by Peter Yang (MIT) — credited in the README.
+Adapted to the Wize method from [no-ai-slop](https://github.com/petergyang/no-ai-slop) by Peter Yang (MIT) and, for the chatbot-artifact, actor and inline-header-list checks, [unslop](https://github.com/michaelshimeles/skills/tree/main/unslop) by Lauren Tan (MIT) — credited in the README.
 
 ## Two jobs
 
@@ -32,6 +32,7 @@ Adapted to the Wize method from [no-ai-slop](https://github.com/petergyang/no-ai
 - **Every sentence earns its place.** Cut empty qualifiers and throat-clearing.
 - **Active voice, human subjects.** "The team shipped it Tuesday" beats "the decision emerged". Never let inanimate things do human verbs.
 - **Verbs do the work.** "Made a decision" → "decided". "Has the ability to" → "can". Prefer plain `is`/`has` over fake-strong verbs ("serves as a hub").
+- **Name the actor.** `is`/`are`/`was` + participle hides who did it ("the config was updated" → "Maria updated the config"). An adverb propping a weak verb ("greatly improved") means the measured delta is missing; use it.
 - **Concrete beats abstract.** "Improved efficiency" → "cut deploy time from 40 min to 4". Names, numbers, dates, mechanisms, examples.
 - **Portability test.** A sentence that could move unchanged to another company or product is filler — cut it or replace it with something specific to this subject.
 - **Show, don't label.** Make facts carry the emphasis; delete commentary that tells the reader a point is important, surprising, or obvious.
@@ -61,8 +62,13 @@ Adapted to the Wize method from [no-ai-slop](https://github.com/petergyang/no-ai
 13. **Rhetorical setups** — "What if I told you…", "Think about it:", self-answered "Question? Answer."
 14. **Fake-profound kickers** — delete the cute final line; end on the clearest concrete sentence, takeaway, or next action.
 15. **Summary-recap endings** — "In conclusion", "Ultimately", restating the piece.
-16. **Formatting slop** — emoji in headings, bold sprinkled mid-sentence, bullets where two sentences of prose read better, headers over two-sentence sections.
+16. **Formatting slop** — emoji in headings, bold sprinkled mid-sentence, bullets where two sentences of prose read better, headers over two-sentence sections. In inline-header lists, a bold label plus colon that restates the line ("**Speed:** it is faster") is a tell; a bold lead-in ending in a period that opens new detail is fine.
 17. **Em dashes as a rhythm crutch** — none in short copy; 1–2 in long drafts only when they clearly beat commas or parentheses.
+18. **Chatbot artifacts and sycophancy** — "I hope this helps", "Certainly!", "Great question", "Let me know if…". Delete. Stacked hedges ("could potentially possibly") collapse to one: "may".
+
+## Dev text
+
+Commit messages, PR titles and bodies, code comments and review replies the agent wrote are in scope. The subject says what changed in plain words; the body gives the why, with a mechanism or number. No chatbot closers, no "This PR enhances…" puffery. Conventional Commits format and the dev-story PR template stay as they are. Never touch prose the agent did not write.
 
 ## Self-check (eval)
 
@@ -71,7 +77,7 @@ Before handing off end-user prose, answer:
 - Does it preserve the writer's point, voice, and useful edge — without invented claims? (pass/fail)
 - Is cutting proportional, leaving strong human sentences alone? (pass/fail)
 - Does every generic sentence survive the portability test? (pass/fail)
-- Are banned words, filler phrases, and the 17 patterns absent? (pass/fail)
+- Are banned words, filler phrases, and the patterns above absent? (pass/fail)
 - Would the writer recognize it as their own voice when read to a sharp colleague? (pass/fail)
 
 If any check fails, fix and re-check before returning the draft.
