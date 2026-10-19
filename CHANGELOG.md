@@ -7,6 +7,12 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+### Fixed
+
+- **`update` in a repo with no commits yet** (`git init`, nothing committed) failed with "cannot determine default branch". With no history there is no base to branch from and nothing committed to protect, so it now updates in place, like a non-git project. `--pr` still refuses. This failure blocked the 0.27.0 publish, so 0.27.0 never reached npm; 0.27.1 is the first published release with the worktree-safe hydrate and automatic updates.
+
 ## [0.27.0] — 2026-10-19
 
 **0.27.0: worktree-safe hydrate and automatic updates.** A new `git worktree` used to start without `/wize` because the generated skills are gitignored, and `update` edited whatever checkout you ran it from. Now `hydrate` renders any checkout from the `kit_version` pin, agents and hooks run it on their own, and `update` prepares the bump on an isolated branch. Guide: [`docs/WORKTREES.md`](docs/WORKTREES.md).

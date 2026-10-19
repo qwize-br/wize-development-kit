@@ -99,6 +99,22 @@ test('in-place keeps the pin comment and reports the verified write', () => {
   assert.match(r.out, new RegExp(`✓ project\\.toml kit_version → ${KIT_VERSION.replace(/\./g, '\\.')}`));
 });
 
+test('an unborn HEAD (git init, no commits) updates in place instead of failing', () => {
+  const dir = plainProject(`[project]\nname = "x"\nkit_version = "${OLD}"\n\n[install]\nide_targets = ["generic"]\nprofiles = ["core"]\n`);
+  git(dir, 'init', '-q');
+  const r = runCli(dir, ['update', '--no-render']);
+  assert.strictEqual(r.code, 0, r.err);
+  assert.match(r.out, /\(in-place\)/);
+  assert.match(fs.readFileSync(path.join(dir, '.wize/config/project.toml'), 'utf-8'), new RegExp(`kit_version = "${KIT_VERSION.replace(/\./g, '\\.')}"`));
+});
+
+test('an unborn HEAD with --pr still fails (nothing to branch from)', () => {
+  const dir = plainProject(`[project]\nname = "x"\nkit_version = "${OLD}"\n`);
+  git(dir, 'init', '-q');
+  const r = runCli(dir, ['update', '--pr', '--no-render']);
+  assert.strictEqual(r.code, 1);
+});
+
 test('in-place inserts a missing kit_version', () => {
   const dir = plainProject('[project]\nname = "x"\n\n[install]\nide_targets = ["generic"]\nprofiles = ["core"]\n');
   const r = runCli(dir, ['update', '--in-place', '--no-render']);

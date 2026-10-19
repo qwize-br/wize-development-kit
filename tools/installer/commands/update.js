@@ -293,7 +293,10 @@ async function cmdUpdate({ kitRoot, projectRoot: rawRoot, opts = {} } = {}) {
   if (o.pr && o.inPlace) return fail('--pr and --in-place cannot be combined');
 
   const ctx = gitContext(projectRoot);
-  mode = !ctx.isRepo || o.inPlace ? 'in-place' : 'isolated';
+  // An unborn HEAD (git init, nothing committed) has no base to branch from;
+  // there is no history to protect, so update edits the checkout directly.
+  const unborn = ctx.isRepo && !!ctx.branch && !ctx.head;
+  mode = !ctx.isRepo || o.inPlace || (unborn && !o.pr) ? 'in-place' : 'isolated';
   if (o.pr && !ctx.isRepo) return fail('--pr needs a git repository');
   const planOpts = { refreshGitignore: o.refreshGitignore };
   const readOnly = o.check || o.dryRun;
@@ -488,7 +491,11 @@ function reportCheck({ o, plan, mode, base, branch, branchExists, pinAhead, chan
 function applyInPlace({ kitRoot, projectRoot, ctx, cfg, plan, o, to, from, changelog, log, fail, emit, result }) {
   const gitFailed = (what, bypass = false) => fail(`git could not report the status of ${what} (git failed, timed out or reports a dubious ownership); cannot verify that nothing uncommitted would be overwritten. Fix git (for example safe.directory) and retry${bypass ? ', or rerun with --no-render' : ''}`);
 
-  if (ctx.isRepo && plan.files.length) {
+  // Unborn HEAD: nothing is tracked yet, so there is no committed state to
+  // protect and every file shows as untracked; edit like a non-git project.
+  const guarded = ctx.isRepo && !(ctx.branch && !ctx.head);
+
+  if (guarded && plan.files.length) {
     const dirty = statusPorcelain(projectRoot, plan.files.map(f => f.path));
     if (dirty === null) return gitFailed('the files update must edit');
     if (dirty.length) {
@@ -496,7 +503,7 @@ function applyInPlace({ kitRoot, projectRoot, ctx, cfg, plan, o, to, from, chang
     }
   }
 
-  if (ctx.isRepo && !o.noRender) {
+  if (guarded && !o.noRender) {
     const targets = ((cfg.install && cfg.install.ide_targets) || ['claude-code', 'generic']).map(t => (typeof t === 'string' ? t : t && t.code)).filter(Boolean);
     const specs = [...new Set(targets.flatMap(outputSpecs))];
     const dirtyOut = specs.length ? statusPorcelain(projectRoot, specs) : [];
