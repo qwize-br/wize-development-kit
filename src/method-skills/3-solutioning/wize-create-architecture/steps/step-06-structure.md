@@ -53,6 +53,7 @@ Create a complete, technology-specific tree:
 - Component boundaries
 - Service boundaries
 - Data boundaries
+- Ownership of policy, persistence and transactions. Brownfield: name the existing owner and follow its convention. Greenfield: add a separate layer only for a concrete boundary benefit (testability, provider isolation, transactions).
 
 ### 4. Map requirements to structure
 

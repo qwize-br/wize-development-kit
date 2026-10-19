@@ -72,6 +72,15 @@ test('Shuri reconciles the debt marker instead of banning every TODO', () => {
   assert.match(persona, /wize-subtract/);
 });
 
+test('Shuri defers an inline duplicate instead of extracting it in-story', () => {
+  const persona = read('src/method-skills/4-implementation/wize-agent-dev/persona.md');
+  const rung2 = persona.split('\n').find((l) => l.startsWith('2. **Already in this codebase?**'));
+  assert.ok(rung2, 'rung 2 must exist');
+  assert.match(rung2, /second or third caller/);
+  assert.match(rung2, /wize-debt:/);
+  assert.match(rung2, /separate refactor story/);
+});
+
 test('generated AGENTS.md carries the code ladder (always-on)', () => {
   const { renderAgentsMd } = require('../tools/installer/render-shared.js');
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'wdk-agents-'));
