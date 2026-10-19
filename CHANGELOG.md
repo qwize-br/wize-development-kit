@@ -7,6 +7,23 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+**Writing hygiene.** `wize-no-ai-slop` stops at the README: the commit messages, PR bodies, code comments and review replies an agent writes get the same pass, and the pattern list gains the one tell it was missing. Ideas from [unslop](https://github.com/michaelshimeles/skills/tree/main/unslop) by Lauren Tan (MIT), rewritten in kit voice; none of its rule text is copied.
+
+### Added
+
+- **Dev text scope in `wize-no-ai-slop`** — a short "Dev text" section: the subject says what changed in plain words, the body gives the why with a mechanism or number, no chatbot closers, no "This PR enhances" puffery, and prose the agent did not write is never touched. Conventional Commits and the dev-story PR template stay as they are. Shuri (`wize-agent-dev`) now carries the skill.
+- **Pattern 18, chatbot artifacts and sycophancy** — "I hope this helps", "Certainly!", "Great question", "Let me know if"; stacked hedges collapse to one.
+- **Advisory line in `wize-pre-pr-check`** — when a commit range or PR draft exists, run detect mode on commit subjects and the PR title/body. Reports only; never fails the gate.
+- Credit for unslop in the skill header and in the 3 READMEs, next to the No AI Slop entry.
+- `test/writing-hygiene.test.js` guards the rules.
+
+### Changed
+
+- **`wize-no-ai-slop` Goal** — only PRD, ADR, story and gate keep their own conventions; agent-written dev text is in scope. The self-check says "the patterns above" instead of a hard-coded count (module catalog now says 18). The module catalog entry and the README command line mention commit and PR text.
+- **Principles** — new "Name the actor" line (`is`/`are`/`was` + participle hides who did it; an adverb propping a weak verb means the measured delta is missing). **Pattern 16** — a bold label plus colon that restates the line is a tell; a bold lead-in ending in a period with new detail is fine.
+
 ## [0.24.0] — 2026-10-19
 
 **Ship discipline.** The kit already demanded proof and a clean gate; this release defines what proof is, where it lives and which commit it belongs to, and makes the implementation flows start on a branch instead of assuming one. Ideas from [michaelshimeles/skills](https://github.com/michaelshimeles/skills), rewritten in kit voice.

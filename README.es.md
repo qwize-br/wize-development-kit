@@ -164,7 +164,8 @@ Transversales:
                                 paso de autoría.
     /wize-no-ai-slop            Higiene de escrita para texto de usuario final:
                                 elimina patrones de "AI slop" y palabras de relleno
-                                preservando la voz del autor. También detecta slop.
+                                preservando la voz del autor; cubre también commits y PRs.
+                                También detecta slop.
     /wize-quick-dev             Shuri toma un arreglo pequeño sin el ciclo completo.
     /wize-pre-pr-check          Corre lint/format/build/tests unitarios localmente
                                 antes de abrir un PR — falla rápido, cero costo de runner.
@@ -283,6 +284,7 @@ npx wize-dev-kit version-check [--json]  # instalada vs. más reciente (con cach
 - [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) por Brian (BMad) Madison — ciclo ágil de IA, personas de agentes, patrón de instalador, sistema de módulos.
 - [Whiteport Design Studio expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion) — metodología UX-first, panteón nórdico (Saga, Freya), estructura de fases.
 - [No AI Slop](https://github.com/petergyang/no-ai-slop) por Peter Yang — higiene de escrita que elimina patrones de AI slop sin aplanar la voz del autor; la inspiración para `/wize-no-ai-slop`.
+- [unslop](https://github.com/michaelshimeles/skills/tree/main/unslop) por Lauren Tan (MIT) — chequeos de artefactos de chatbot, de actor oculto y de listas con etiqueta en negrita en `/wize-no-ai-slop`; ideas adaptadas, sin texto copiado.
 - [apple-appstore-reviewer (awesome-copilot)](https://github.com/github/awesome-copilot/blob/main/skills/apple-appstore-reviewer/SKILL.md) — auditoría con mentalidad de reviewer para la submisión a App Store; la inspiración para `wize-app-store-review` (gate de publicación del overlay).
 - [ELI5](https://github.com/dreambigou/eli5) por Andrew Ou — explicaciones calibradas al oyente; inspiración de `/wize-eli5`.
 - [Ponytail](https://github.com/DietrichGebert/ponytail) por Dietrich Gebert — revisión orientada a la eliminación (`/wize-subtract`), el marcador de atajo `wize-debt:` con su ledger, y el encuadre medido de "menos código" detrás de la contabilidad de código de la retrospectiva. La reuse ladder del kit comparte los mismos peldaños.
