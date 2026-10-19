@@ -7,7 +7,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
-## [Unreleased]
+## [0.24.0] — 2026-10-19
 
 **Ship discipline.** The kit already demanded proof and a clean gate; this release defines what proof is, where it lives and which commit it belongs to, and makes the implementation flows start on a branch instead of assuming one. Ideas from [michaelshimeles/skills](https://github.com/michaelshimeles/skills), rewritten in kit voice.
 
