@@ -1,10 +1,10 @@
 'use strict';
 
 // run-recon.js — the nmap portion of the wize-sec-recon skill.
-// SAST (gitleaks, osv/grype) is implemented in E05 and lives in
-// scripts/run-sast.js (sibling). The orchestrator (wize-sec-pentest) and
-// any caller can invoke either script directly; this file only handles
-// recon.
+// SAST is implemented in E05 and lives in the sibling scripts
+// run-gitleaks.js (secrets) and run-osv.js (dependencies). The orchestrator
+// (wize-sec-pentest) and any caller can invoke them directly; this file only
+// handles recon.
 
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
