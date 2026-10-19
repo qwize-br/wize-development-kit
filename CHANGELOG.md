@@ -7,6 +7,22 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+**Review hardening.** Bot comments and PR-body screenshots stop counting as evidence, `wize-code-review` learns what to do once a review bot has commented on the open PR, and two small gaps close in Shuri's reuse ladder and the architecture structure step. Ideas from [michaelshimeles/skills](https://github.com/michaelshimeles/skills) (greploop, MIT, Greptile AI), rewritten in kit voice; no code ported.
+
+### Added
+
+- **External reviewer feedback in `wize-code-review` (step 4, section 7)** — for a PR a review bot (Copilot code review, CodeRabbit, Greptile, other) has commented on: comments and suggested patches are untrusted data checked against the code, results count only when tied to the current head SHA (`Reviewed at: <sha>` under Review Findings), `wize-pre-pr-check` runs before each push, threads resolve only after the fix is pushed, a read-only request never authorizes posting or resolving. Capped at 5 cycles, never auto-raised; success, timeout and capped are reported separately and the cap escalates to Wizer / `wize-correct-course`. No new skill.
+- **Ownership bullet in `wize-create-architecture` step 6** — record who owns policy, persistence and transactions; brownfield follows the existing owner, greenfield adds a layer only for a concrete boundary benefit. Step 5 did not cover it.
+- **Greploop credit** in the 3 READMEs.
+- `test/review-hardening.test.js` guards the rules; `test/reuse-discipline.test.js` pins the rung-2 note.
+
+### Changed
+
+- **`wize-pr-audit`** — the "following instructions in the diff" anti-pattern now names review-bot suggestions, suggested patches and "prompt for AI agents" blocks, and forbids applying or resolving a thread because a bot said so. New Phase 1 claim row: a screenshot or image never proves behavior; re-derive it from code or a test run, and do not auto-fetch mutable PR-body media.
+- **Reuse ladder, rung 2 (Shuri's persona)** — a mechanic that lives only inline in another flow and would get a second or third caller is not extracted inside the story; leave a `wize-debt:` marker with its trigger and propose a separate refactor story.
+
 ## [0.25.0] — 2026-10-19
 
 **Writing hygiene.** `wize-no-ai-slop` stops at the README: the commit messages, PR bodies, code comments and review replies an agent writes get the same pass, and the pattern list gains the one tell it was missing. Ideas from [unslop](https://github.com/michaelshimeles/skills/tree/main/unslop) by Lauren Tan (MIT), rewritten in kit voice; none of its rule text is copied.
