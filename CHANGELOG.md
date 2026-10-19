@@ -7,7 +7,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
-## [Unreleased]
+## [0.25.0] — 2026-10-19
 
 **Writing hygiene.** `wize-no-ai-slop` stops at the README: the commit messages, PR bodies, code comments and review replies an agent writes get the same pass, and the pattern list gains the one tell it was missing. Ideas from [unslop](https://github.com/michaelshimeles/skills/tree/main/unslop) by Lauren Tan (MIT), rewritten in kit voice; none of its rule text is copied.
 
