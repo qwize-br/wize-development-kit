@@ -7,6 +7,12 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+### Fixed
+
+- **`wize-sec-recon` pointed at a script that does not exist.** `skill.md` and `scripts/run-recon.js` referenced `scripts/run-sast.js`; the SAST checks actually live in `scripts/run-gitleaks.js` (secrets) and `scripts/run-osv.js` (dependencies). Both references now name the real scripts, and a test keeps every `scripts/*.js` reference in the security overlay resolvable.
+
 ## [0.26.0] — 2026-10-19
 
 **Review hardening.** Bot comments and PR-body screenshots stop counting as evidence, `wize-code-review` learns what to do once a review bot has commented on the open PR, and two small gaps close in Shuri's reuse ladder and the architecture structure step. Ideas from [michaelshimeles/skills](https://github.com/michaelshimeles/skills) (greploop, MIT, Greptile AI), rewritten in kit voice; no code ported.

@@ -27,7 +27,7 @@ Runs nmap against the targets in the `scope.md` allowlist and writes `recon.md`.
 - Detects nmap via `command -v`. If absent, writes a `partial_status: incomplete` recon.md with a `degraded_checks` section and exits 0 — the pipeline continues.
 - Calls `assertTargetInScope` for the target. Out-of-scope targets produce an `incomplete` partial and a refusal entry in `.refusals.log`; nmap is **not** invoked.
 - Active vs passive flag set is recorded in the partial's `mode:` frontmatter.
-- The SAST portion of recon (gitleaks, osv/grype) is implemented in a sibling script `scripts/run-sast.js` and is invoked separately or by the orchestrator — see E05.
+- The SAST portion of recon lives in two sibling scripts: `scripts/run-gitleaks.js` (secrets) and `scripts/run-osv.js` (dependencies via osv-scanner, grype fallback). Both write `.wize/security/sast.md` and are invoked separately or by the orchestrator — see E05.
 
 ## Output
 
