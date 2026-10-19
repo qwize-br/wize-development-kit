@@ -1,6 +1,6 @@
 ---
 name: wize-product-brief
-description: "1-analysis: Product Brief"
+description: "Use quando uma demanda bruta chegar e precisar ser convertida em um product brief de uma página."
 ---
 
 # Product Brief

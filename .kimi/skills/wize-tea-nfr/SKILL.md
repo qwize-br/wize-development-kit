@@ -1,6 +1,6 @@
 ---
 name: wize-tea-nfr
-description: "nfr: TEA NFR Assessment"
+description: "Use quando um epic estiver próximo do merge e precisar verificar se atende aos princípios de NFR definidos pelo Fury."
 ---
 
 # TEA NFR Assessment

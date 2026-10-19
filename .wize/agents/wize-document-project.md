@@ -1,6 +1,6 @@
 # Document Project (brownfield baseline)
 
-> 1-analysis: Document Project (brownfield baseline)
+> Use quando o kit for instalado em um repositório existente (brownfield) e precisar documentar o estado atual do projeto.
 
 # Document Project — Brownfield Baseline
 

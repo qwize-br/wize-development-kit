@@ -20,14 +20,14 @@
 
 'use strict';
 
-const fs = require('node:fs');
 const path = require('node:path');
 const {
   collectAssets,
   renderAnthropicSkills,
   escapeYamlDouble,
   clipOneLine,
-  ensureDir
+  ensureDir,
+  writeFileIfChanged
 } = require('../../tools/installer/render-shared.js');
 
 function render(kitRoot, projectRoot, opts = {}) {
@@ -67,7 +67,7 @@ function render(kitRoot, projectRoot, opts = {}) {
       written.push(`[dry-run] ${a.code}.agent.md`);
       continue;
     }
-    fs.writeFileSync(path.join(agentsDir, `${a.code}.agent.md`), content, 'utf-8');
+    writeFileIfChanged(path.join(agentsDir, `${a.code}.agent.md`), content);
     written.push(`${a.code}.agent.md`);
   }
 

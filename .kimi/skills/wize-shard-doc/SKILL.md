@@ -1,6 +1,6 @@
 ---
 name: wize-shard-doc
-description: "core skill: Shard Doc"
+description: "Use quando um documento markdown grande (PRD, arquitetura) precisar ser dividido em shards endereçáveis por ID."
 ---
 
 # Shard Doc

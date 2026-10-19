@@ -205,7 +205,8 @@ wize-dev-kit install
   ├─ Se brownfield: oferece `wize-document-project`
   └─ Se ok: dispara onboarding (Wizer → Pepper/Mantis/Tony)
 
-wize-dev-kit update   # diff + preserva customizações
+wize-dev-kit update   # converge: pin + .gitignore + bloco AGENTS, via branch isolada/PR
+wize-dev-kit hydrate  # renderiza um checkout/worktree a partir do pin, sem tocar arquivos rastreados
 wize-dev-kit uninstall # remove kit, preserva código
 wize-dev-kit agent create | edit | list
 wize-dev-kit workflow create

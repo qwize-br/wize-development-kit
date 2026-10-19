@@ -1,6 +1,6 @@
 ---
 name: wize-ux-scenarios
-description: "2-plan: UX Scenarios"
+description: "Use quando o PRD estiver validado e precisar produzir o mapa de cenários UX que ancora todo o design."
 ---
 
 # UX Scenarios

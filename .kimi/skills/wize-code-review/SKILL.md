@@ -1,6 +1,6 @@
 ---
 name: wize-code-review
-description: "4-implementation: Code Review"
+description: "Use quando um PR estiver aberto e precisar de revisão de código por pares focada em saúde do código."
 ---
 
 # Code Review
@@ -54,7 +54,7 @@ This skill uses **step-file architecture**:
 ## Steps
 
 1. `step-01-gather-context.md` — identify the diff source, construct `{diff_output}`, set `{review_mode}` and `{spec_file}`.
-2. `step-02-review.md` — launch parallel review layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor).
+2. `step-02-review.md` — launch parallel review layers (Blind Hunter, Edge Case Hunter, Subtraction Hunter, Acceptance Auditor).
 3. `step-03-triage.md` — normalize, deduplicate, and classify findings into `decision_needed`, `patch`, `defer`, `dismiss`.
 4. `step-04-present.md` — present findings, resolve decisions, apply patches, update story status.
 

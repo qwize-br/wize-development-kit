@@ -2,7 +2,7 @@
 status: baseline
 owner: Pepper Potts
 created: 2026-06-13
-last_refreshed: 2026-06-13
+last_refreshed: 2026-10-19
 ---
 
 # Dependencies
@@ -28,4 +28,4 @@ No other runtime dependencies.
 
 - The dependency surface is intentionally tiny; the kit is mostly static markdown/yaml assets rendered by the installer.
 - No duplicate libraries, no unmaintained runtime deps.
-- The only external network call is a version check to the npm registry (1.5 s timeout, cached 1 hour, disabled by `WIZE_DISABLE_UPDATE_CHECK=1`).
+- The only external network call is a version check to the npm registry (1.5 s timeout, disabled by `WIZE_DISABLE_UPDATE_CHECK=1`). It is stale-while-revalidate: the cache (`{version, fetched_at, attempted_at}`) is returned at any age, the 1 h TTL runs from `fetched_at`, and a stale entry starts one detached refresh at most every 10 minutes (`attempted_at` throttle). CI, `WIZE_DISABLE_UPDATE_CHECK=1` and `WIZE_NO_BG_REFRESH=1` never spawn a refresh, and the hint line stays silent without a TTY, so command hints and `hydrate` never wait on the network (an explicit `version-check` waits at most about 1.5 s when the cache is stale).

@@ -21,11 +21,16 @@ function parseMode(args) {
   let resume = false;
   let scanLevel = 'quick';
   let target = null;
+  let overwrite = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '--resume') {
       resume = true;
+      continue;
+    }
+    if (arg === '--force') {
+      overwrite = true;
       continue;
     }
     if (arg === '--target') {
@@ -53,7 +58,7 @@ function parseMode(args) {
     return { mode: null, error: `unknown mode: ${mode}. Valid modes: ${[...VALID_MODES].join(', ')}` };
   }
 
-  return { mode, resume, scanLevel, target };
+  return { mode, resume, scanLevel, target, overwrite };
 }
 
 function cmdDocumentProject({ kitRoot, projectRoot, args = [], opts = {} }) {
@@ -66,12 +71,17 @@ function cmdDocumentProject({ kitRoot, projectRoot, args = [], opts = {} }) {
   }
 
   if (parsed.mode === 'quick') {
-    const r = runQuick(projectRoot, { log });
+    const env = opts.env || process.env;
+    if (env.WIZE_SKIP_BASELINE === '1') {
+      log('WIZE_SKIP_BASELINE=1: skipped');
+      return { ok: true, mode: 'quick', changed: false, skipped: true, written: [] };
+    }
+    const r = runQuick(projectRoot, { log, overwrite: parsed.overwrite });
     return { ok: true, mode: 'quick', ...r };
   }
 
   if (parsed.mode === 'initial_scan') {
-    const r = runInitialScan(projectRoot, { scanLevel: parsed.scanLevel, log });
+    const r = runInitialScan(projectRoot, { scanLevel: parsed.scanLevel, log, overwrite: parsed.overwrite });
     return { ok: true, mode: 'initial_scan', ...r };
   }
 

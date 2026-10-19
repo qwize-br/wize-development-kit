@@ -1,6 +1,6 @@
 ---
 name: wize-retrospective
-description: "4-implementation: Retrospective"
+description: "Use quando o sprint terminar e precisar de retrospectiva facilitada com todo o time."
 ---
 
 # Retrospective
@@ -23,6 +23,7 @@ Wizer facilitates. Hill enforces output discipline. Everyone (including Pepper, 
 - All `gate.md` files from current sprint
 - `tea/nfr/{epic}.md` if an epic closed this sprint
 - Quick-dev log
+- Git history for the sprint window (tag range, or first → last commit)
 
 ## Output
 
@@ -47,12 +48,27 @@ Going over 60 minutes is a sign the retro became therapy. Time-box.
 ### 1. Open with stats
 
 Wizer reads the sprint dashboard from `sprint-status.md`:
-- Velocity vs commitment.
+- Stories committed vs shipped (a count, not a velocity metric — we don't estimate).
 - Number of gates: PASS / CONCERNS / FAIL / WAIVED.
 - Blockers and their resolution times.
 - Carry-over count.
 
 Stats anchor the retro in observations, not feelings.
+
+#### Code accounting (numbers, not adjectives)
+
+Measured from git over the sprint window. Report the numbers even when they look bad — especially then:
+
+| Metric | How to get it |
+|---|---|
+| Lines added / removed / net | `git diff --shortstat <base>..<head>` (base = last sprint's tag or first commit) |
+| Files touched | count of distinct files in the range: `git diff --name-only <base>..<head> \| wc -l` |
+| Dependencies | entries added/removed in the manifest diff (`package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`) |
+| New abstractions | modules, classes, or interfaces introduced by the sprint (count from the diff) |
+| Debt markers | `wize-debt:` added vs retired this sprint (run `/wize-debt`) |
+| Complexity | cyclomatic-complexity delta from `tea/nfr/{epic}.md` when an epic closed |
+
+Why this exists: the kit's discipline (reuse ladder, `/wize-subtract`, debt markers) is only verifiable with numbers. A sprint that ships 4 stories while adding 3k net lines and 6 dependencies is telling you something — say it out loud in the retro, and turn it into a change if it repeats.
 
 ### 2. Worked / didn't / surprised
 
@@ -95,15 +111,22 @@ attendees: [Hill, Tony, Mantis, Pepper, Fury, Hawkeye, Shuri]
 - Blockers: 1 (vendor sandbox, resolved Day 5)
 - Carry-over to S8: 0
 
+## Code accounting
+- Lines: +1.842 / −2.310 (net −468) across 71 files
+- Dependencies: +1 (`zod`), −0
+- New abstractions: 2 (one repository interface, one mapper — both with a single implementation; flagged by `/wize-subtract`)
+- Debt markers: +3 added, −1 retired (2 with a trigger, 1 `no-trigger`)
+- Complexity: no NFR delta this sprint (no epic closed)
+
 ## Worked
 - Pairing on E03-S02 (auth refresh) — issue caught at integration test instead of in prod.
 - TEA design done at planning for R-3 stories paid off.
 - Mantis' "before/after" recordings in PRs accelerated review.
 
 ## Didn't work
-- Sprint-status entries went stale on Days 7–8 (Hill on vacation).
-- E02-S02 estimated M, actually L; we over-committed.
-- Vendor outage with no fallback caught us cold for 4h.
+- Sprint-status entries went stale mid-sprint (Hill on vacation).
+- E02-S02 was too big for one PR and should have been sliced; it stalled the sprint.
+- Vendor outage with no fallback caught us cold.
 
 ## Surprised us
 - A11y audit caught 3 issues on a screen Mantis had already signed off on (axe found dynamic-content edge cases).
@@ -112,7 +135,7 @@ attendees: [Hill, Tony, Mantis, Pepper, Fury, Hawkeye, Shuri]
 ## Changes for Sprint 8
 
 1. **Sprint-status delegation rotation** — when Hill is OOO, Wizer takes over. *Owner: Wizer. By: Sprint 8 Day 1.*
-2. **L estimates require justification** — any L gets one paragraph "why L not M" in the story file. *Owner: Tony. By: Sprint 8 planning.*
+2. **Slice-check every story at planning** — any story that can't be described as a single PR gets split before it's pulled. *Owner: Tony. By: Sprint 8 planning.*
 3. **Vendor fallback drill** — quarterly, simulate top-3 vendor outages. *Owner: Hawkeye + Tony. By: end of Q3.*
 
 ## Decisions made

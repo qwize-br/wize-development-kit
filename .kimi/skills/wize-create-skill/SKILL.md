@@ -1,6 +1,6 @@
 ---
 name: wize-create-skill
-description: "workflow: Create Skill"
+description: "Use quando precisar criar uma nova skill single-step sob .wize/custom/skills/."
 ---
 
 # Create Skill

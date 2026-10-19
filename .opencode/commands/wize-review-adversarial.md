@@ -1,5 +1,5 @@
 ---
-description: "core skill: Adversarial Review"
+description: "Use quando um artefato (story, arquitetura, PRD) precisar de revisão adversarial — testar a ideia sob quatro personas hostis."
 subtask: true
 ---
 

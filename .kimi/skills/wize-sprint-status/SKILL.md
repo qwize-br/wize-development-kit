@@ -1,6 +1,6 @@
 ---
 name: wize-sprint-status
-description: "4-implementation: Sprint Status"
+description: "Use quando precisar verificar o status atual do sprint — stories concluídas, em progresso e bloqueios."
 ---
 
 # Sprint Status

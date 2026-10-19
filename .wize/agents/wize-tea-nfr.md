@@ -1,6 +1,6 @@
 # TEA NFR Assessment
 
-> nfr: TEA NFR Assessment
+> Use quando um epic estiver próximo do merge e precisar verificar se atende aos princípios de NFR definidos pelo Fury.
 
 # TEA — NFR Assessment
 

@@ -9,7 +9,7 @@ coverage/
 .tmp/
 
 # >>> wize-dev-kit (managed) >>>
-# Managed by `npx wize-dev-kit install`. Re-running install will update
+# Managed by wize-dev-kit (install/update). Re-running either updates
 # the lines between the markers below; lines outside are untouched.
 
 # Personal / per-developer (do NOT commit)
@@ -18,18 +18,36 @@ coverage/
 .wize/.local/
 .wize/implementation/quick-dev-log.md
 
-# Generated IDE adapter outputs (regenerate with `npx wize-dev-kit install`)
+# Generated IDE adapter outputs (regenerate with `npx wize-dev-kit hydrate`)
 .claude/skills/wize-*
+.claude/skills/wize/
+.github/skills/wize-*
+.github/skills/wize/
+.github/agents/wize-*.agent.md
 .agent/skills/wize-*
+.agent/skills/wize/
 .agents/skills/wize-*
+.agents/skills/wize/
 .kimi/skills/wize-*
+.kimi/skills/wize/
 .hermes/skills/wize-*
+.hermes/skills/wize/
+.kiro/skills/wize-*
+.kiro/skills/wize/
 .cursor/rules/wize-*.mdc
+.cursor/rules/wize.mdc
 .windsurf/rules/wize-*.md
+.windsurf/rules/wize.md
 .continue/prompts/wize-*.prompt
+.continue/prompts/wize.prompt
 .opencode/agents/wize-*.md
 .opencode/commands/wize-*.md
+.opencode/commands/wize.md
 .wize/agents/wize-*.md
+.wize/agents/wize.md
+
+# Worktrees created inside the repo (Claude Code)
+.claude/worktrees/
 # <<< wize-dev-kit (managed) <<<
 
 # security-overlay scan outputs (local, per-project)

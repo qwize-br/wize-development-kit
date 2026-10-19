@@ -1,6 +1,6 @@
 ---
 name: wize-check-implementation-readiness
-description: "3-solutioning: Check Implementation Readiness"
+description: "Use quando a arquitetura e as stories estiverem prontas e precisar verificar se o projeto está pronto para entrar em implementação."
 ---
 
 # Check Implementation Readiness

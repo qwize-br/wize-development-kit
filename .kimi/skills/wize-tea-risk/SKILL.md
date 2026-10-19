@@ -1,6 +1,6 @@
 ---
 name: wize-tea-risk
-description: "risk: TEA Risk Profile"
+description: "Use quando a arquitetura for assinada e precisar construir a matriz probabilidade × impacto que prioriza todo o trabalho de TEA."
 ---
 
 # TEA Risk Profile

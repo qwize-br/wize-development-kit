@@ -1,6 +1,6 @@
 # NFR Principles
 
-> 2-to-3-boundary: NFR Principles
+> Use quando o PRD estiver validado e precisar definir os princípios de NFR (perf, segurança, confiabilidade, acessibilidade, custo) que guiarão a arquitetura.
 
 # NFR Principles
 

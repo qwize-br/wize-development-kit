@@ -1,6 +1,6 @@
 # Adversarial Review
 
-> core skill: Adversarial Review
+> Use quando um artefato (story, arquitetura, PRD) precisar de revisão adversarial — testar a ideia sob quatro personas hostis.
 
 # Adversarial Review
 

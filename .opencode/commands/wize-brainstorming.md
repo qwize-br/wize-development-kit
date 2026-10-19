@@ -1,5 +1,5 @@
 ---
-description: "core skill: Brainstorming"
+description: "Use quando precisar gerar ideias divergentes e convergir para as melhores opções em qualquer fase de decisão."
 ---
 
 # Brainstorming

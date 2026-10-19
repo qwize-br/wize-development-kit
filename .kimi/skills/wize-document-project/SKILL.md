@@ -1,6 +1,6 @@
 ---
 name: wize-document-project
-description: "1-analysis: Document Project (brownfield baseline)"
+description: "Use quando o kit for instalado em um repositório existente (brownfield) e precisar documentar o estado atual do projeto."
 ---
 
 # Document Project (brownfield baseline)

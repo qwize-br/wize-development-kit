@@ -1,6 +1,6 @@
 ---
 name: wize-create-architecture
-description: "3-solutioning: Create Architecture"
+description: "Use quando o PRD e UX design estiverem prontos e precisar projetar a arquitetura do sistema com componentes, sequências e ADRs."
 ---
 
 # Create Architecture

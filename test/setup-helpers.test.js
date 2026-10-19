@@ -14,7 +14,9 @@ const {
   applyGitignore,
   generateUserToml,
   GITIGNORE_BEGIN,
-  GITIGNORE_END
+  GITIGNORE_END,
+  ALIAS_PATHS,
+  buildGitignoreBlock
 } = require(path.join(KIT, 'tools/installer/setup-helpers.js'));
 
 function tmpRoot(prefix) {
@@ -115,4 +117,91 @@ test('generateUserToml renders role when explicitly provided', () => {
   const content = generateUserToml({ name: 'André', role: 'developer' });
   assert.match(content, /^role = "developer"$/m);
   assert.doesNotMatch(content, /^# role = /m);
+});
+
+test('ALIAS_PATHS holds exactly the 12 alias entrypoints', () => {
+  assert.strictEqual(ALIAS_PATHS.length, 12);
+  assert.strictEqual(new Set(ALIAS_PATHS).size, 12);
+});
+
+test('gitignore block lists every alias entry and .claude/worktrees/, with no brace patterns', () => {
+  const block = buildGitignoreBlock();
+  const lines = block.split('\n');
+  for (const a of ALIAS_PATHS) assert.ok(lines.includes(a), `missing alias line ${a}`);
+  assert.ok(lines.includes('.claude/worktrees/'));
+  assert.ok(lines.includes('# Worktrees created inside the repo (Claude Code)'));
+  assert.ok(lines.includes('.github/agents/wize-*.agent.md'));
+  assert.ok(!block.includes('{'), 'gitignore has no brace expansion');
+  assert.ok(!lines.some(l => /wize\*/.test(l) && !/wize-\*/.test(l)), 'no bare wize* glob');
+  assert.ok(!lines.includes('.wize/security/'), 'security policy is not decided here');
+  assert.match(block, /regenerate with `npx wize-dev-kit hydrate`/);
+  assert.match(block, /Managed by wize-dev-kit \(install\/update\)/);
+  // Each alias line follows its wize-* sibling.
+  assert.ok(lines.indexOf('.claude/skills/wize/') === lines.indexOf('.claude/skills/wize-*') + 1);
+});
+
+test('replacing an old 0.26.1 block adds the alias lines and is then idempotent', () => {
+  const root = tmpRoot('wize-gi-0261-');
+  const old = [
+    'node_modules/',
+    '',
+    GITIGNORE_BEGIN,
+    '# Managed by `npx wize-dev-kit install`. Re-running install will update',
+    '# the lines between the markers below; lines outside are untouched.',
+    '',
+    '# Personal / per-developer (do NOT commit)',
+    '.wize/config/user.toml',
+    '',
+    '# Generated IDE adapter outputs (regenerate with `npx wize-dev-kit install`)',
+    '.claude/skills/wize-*',
+    '.cursor/rules/wize-*.mdc',
+    GITIGNORE_END,
+    '',
+    '.wize/security/'
+  ].join('\n') + '\n';
+  fs.writeFileSync(path.join(root, '.gitignore'), old, 'utf-8');
+
+  const r1 = applyGitignore(root);
+  assert.strictEqual(r1.mode, 'replaced');
+  const after1 = fs.readFileSync(path.join(root, '.gitignore'), 'utf-8');
+  for (const a of ALIAS_PATHS) assert.ok(after1.split('\n').includes(a), `missing ${a}`);
+  assert.match(after1, /^node_modules\/$/m);
+  assert.match(after1, /^\.wize\/security\/$/m, 'user line outside the block stays');
+
+  const r2 = applyGitignore(root);
+  assert.strictEqual(r2.mode, 'unchanged');
+  assert.strictEqual(fs.readFileSync(path.join(root, '.gitignore'), 'utf-8'), after1);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('computeGitignore is pure and agrees with applyGitignore on every mode', () => {
+  const { computeGitignore, applyGitignore } = require(path.join(KIT, 'tools/installer/setup-helpers.js'));
+  const created = computeGitignore(null);
+  assert.strictEqual(created.mode, 'created');
+  assert.ok(created.changed);
+  const appended = computeGitignore('node_modules/\n');
+  assert.strictEqual(appended.mode, 'appended');
+  assert.ok(appended.next.startsWith('node_modules/\n\n'));
+  assert.strictEqual(computeGitignore(appended.next).mode, 'unchanged');
+  assert.strictEqual(computeGitignore(appended.next).changed, false);
+  const stale = appended.next.replace('.claude/skills/wize/\n', '');
+  assert.strictEqual(computeGitignore(stale).mode, 'replaced');
+
+  const root = tmpRoot('wize-gi-pure-');
+  fs.writeFileSync(path.join(root, '.gitignore'), 'node_modules/\n');
+  applyGitignore(root);
+  assert.strictEqual(fs.readFileSync(path.join(root, '.gitignore'), 'utf-8'), appended.next);
+});
+
+// ---------- gitignoreBlockStatus (0.27.0) ----------
+
+test('gitignoreBlockStatus: ok, drift, missing', () => {
+  const { gitignoreBlockStatus, buildGitignoreBlock, GITIGNORE_BEGIN } = require(path.join(KIT, 'tools/installer/setup-helpers.js'));
+  const block = buildGitignoreBlock();
+  assert.strictEqual(gitignoreBlockStatus(null), 'missing');
+  assert.strictEqual(gitignoreBlockStatus('node_modules/\n'), 'missing');
+  assert.strictEqual(gitignoreBlockStatus(`node_modules/\n\n${block}\n\ndist/\n`), 'ok');
+  assert.strictEqual(gitignoreBlockStatus(`${block}\n`.replace(/\n/g, '\r\n')), 'ok', 'CRLF is tolerated');
+  assert.strictEqual(gitignoreBlockStatus(block.replace('.wize/.local/\n', '')), 'drift');
+  assert.strictEqual(gitignoreBlockStatus(`${GITIGNORE_BEGIN}\nold\n# <<< wize-dev-kit (managed) <<<\n`), 'drift');
 });

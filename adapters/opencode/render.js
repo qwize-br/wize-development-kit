@@ -10,9 +10,8 @@
 
 'use strict';
 
-const fs = require('node:fs');
 const path = require('node:path');
-const { collectAssets, escapeYamlDouble, clipOneLine, ensureDir } = require('../../tools/installer/render-shared.js');
+const { collectAssets, escapeYamlDouble, clipOneLine, ensureDir, writeFileIfChanged } = require('../../tools/installer/render-shared.js');
 
 // `owner:` in workflow/skill frontmatter is written for humans (agent code,
 // display name, "X + Y" pairings, trailing "# comment"). Resolve it to a
@@ -63,7 +62,7 @@ function render(kitRoot, projectRoot, opts = {}) {
       if (opts.dryRun) {
         written.push(`[dry-run] agents/${a.code}.md`);
       } else {
-        fs.writeFileSync(path.join(agentsDir, `${a.code}.md`), content, 'utf-8');
+        writeFileIfChanged(path.join(agentsDir, `${a.code}.md`), content);
         written.push(`agents/${a.code}.md`);
       }
     } else {
@@ -85,7 +84,7 @@ function render(kitRoot, projectRoot, opts = {}) {
       if (opts.dryRun) {
         written.push(`[dry-run] commands/${a.code}.md`);
       } else {
-        fs.writeFileSync(path.join(commandsDir, `${a.code}.md`), content, 'utf-8');
+        writeFileIfChanged(path.join(commandsDir, `${a.code}.md`), content);
         written.push(`commands/${a.code}.md`);
       }
     }

@@ -1,5 +1,5 @@
 ---
-description: "4-implementation: Sprint Status"
+description: "Use quando precisar verificar o status atual do sprint — stories concluídas, em progresso e bloqueios."
 globs:
 alwaysApply: false
 ---

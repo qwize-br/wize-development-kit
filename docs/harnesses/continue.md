@@ -16,6 +16,8 @@
 
 Pick **Continue** as an IDE target during `npx wize-dev-kit install` (or add it and re-run `npx wize-dev-kit sync`). Reload the Continue extension, then run `/wize-orchestrator` from the prompt palette.
 
+Fresh clone or new worktree: generated files are gitignored, so run `npx wize-dev-kit hydrate` there (no prompts, touches no tracked file). See [Worktrees and automatic updates](../WORKTREES.md).
+
 ## Reference
 
 - [docs.continue.dev — Prompts](https://docs.continue.dev/customize/deep-dives/prompts)

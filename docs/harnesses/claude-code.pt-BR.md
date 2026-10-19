@@ -21,3 +21,5 @@ Não existe um formato separado de "agente" aqui — personas (Wizer, Shuri, Haw
 ## Como ativar
 
 Escolha **Claude Code** como alvo de IDE em `npx wize-dev-kit install` (padrão). Reinicie o Claude Code e diga *"Ative o Wizer e dê o briefing do projeto a ele"* ou rode `/wize-orchestrator`.
+
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). `npx wize-dev-kit hooks install --claude` hidrata cada sessão nova automaticamente. Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).

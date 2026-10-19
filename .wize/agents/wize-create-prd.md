@@ -1,6 +1,6 @@
 # Create PRD
 
-> 2-plan: Create PRD
+> Use quando o brief + research + trigger map estiverem prontos e precisar convertê-los em um PRD com escopo e acceptance criteria.
 
 # Create PRD
 
@@ -145,8 +145,7 @@ Maria Hill validates every story's ACs against INVEST:
 - **I**ndependent: no implicit dependency on another story being built first.
 - **N**egotiable: details can move; intent can't.
 - **V**aluable: a real outcome to a real user.
-- **E**stimable: Tony can size it.
-- **S**mall: ≤ 1 PR worth (sliced finer in Phase 3 if not).
+- **S**mall: ≤ 1 PR worth (sliced finer in Phase 3 if not) — the only sizing test. INVEST's "Estimable" is dropped on purpose: we don't produce time or point estimates.
 - **T**estable: every AC is observable.
 
 If any letter fails, fix the story before it leaves Plan.

@@ -21,6 +21,8 @@ O Kiro, IDE/CLI agêntica da AWS, segue o padrão aberto [Agent Skills](https://
 
 Escolha **Kiro — AWS** como alvo de IDE em `npx wize-dev-kit install` (ou adicione depois e rode `npx wize-dev-kit sync`). Reinicie o Kiro e rode `/wize-orchestrator`.
 
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).
+
 ## Headless
 
 `kiro-cli chat --no-interactive --trust-all-tools "<prompt>"` roda uma sessão headless de uma execução (requer `KIRO_API_KEY`), usada pelo baseline brownfield do instalador quando o Kiro CLI é o harness detectado.

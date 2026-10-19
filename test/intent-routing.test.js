@@ -338,6 +338,12 @@ test('"tem atualização" routes to wize-update', () => {
   assert.ok(assertRoute(tableText, 'tem atualização', 'wize-update'));
 });
 
+test('missing skills and fresh worktrees route to wize-update (hydrate path)', () => {
+  for (const phrase of ['os comandos /wize sumiram', 'worktree nova sem skills', 'skills ausentes', 'hidratar']) {
+    assert.ok(assertRoute(tableText, phrase, 'wize-update'), phrase);
+  }
+});
+
 test('"spec" routes to wize-spec', () => {
   assert.ok(assertRoute(tableText, 'spec', 'wize-spec'));
 });

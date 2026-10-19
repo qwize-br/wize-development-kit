@@ -1,6 +1,6 @@
 ---
 name: wize-ux-design
-description: "2-plan: UX Design"
+description: "Use quando os cenários UX estiverem prontos e precisar produzir especificações página por página para arquitetura e implementação."
 ---
 
 # UX Design

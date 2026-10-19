@@ -1,5 +1,5 @@
 ---
-description: "design: TEA Test Design"
+description: "Use quando uma story entrar em desenvolvimento e precisar do contrato de testes (split, fixtures, mocks, assertions) que a Shuri implementará."
 agent: wize-agent-test-architect
 ---
 

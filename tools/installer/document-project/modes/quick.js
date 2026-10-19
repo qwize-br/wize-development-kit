@@ -196,16 +196,23 @@ function runQuick(projectRoot, opts = {}) {
   const dir = path.join(projectRoot, '.wize', 'knowledge', 'document-project');
   fs.mkdirSync(dir, { recursive: true });
 
+  const overwrite = opts.overwrite === true;
   const written = [];
+  const skipped = [];
   for (const [name, factory] of Object.entries(BASELINE_FILES)) {
     const file = path.join(dir, name);
-    const content = factory(projectRoot, pkg);
-    fs.writeFileSync(file, content, 'utf-8');
+    if (!overwrite && fs.existsSync(file)) {
+      skipped.push(name);
+      continue;
+    }
+    fs.writeFileSync(file, factory(projectRoot, pkg), 'utf-8');
     written.push(name);
   }
 
-  if (opts.log) opts.log(`Quick baseline written to ${dir}`);
-  return { changed: true, mode: 'quick', written };
+  if (opts.log) {
+    opts.log(`Quick baseline: wrote ${written.length}, kept ${skipped.length} existing (use --force to overwrite)`);
+  }
+  return { changed: written.length > 0, mode: 'quick', written, skipped };
 }
 
 module.exports = { runQuick, BASELINE_FILES, countLines };

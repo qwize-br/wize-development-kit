@@ -1,5 +1,5 @@
 ---
-description: "1-analysis: Refresh Project Knowledge"
+description: "Use quando o document-project acumulou bullets datados durante o sprint e precisar ser consolidado em uma baseline atualizada."
 agent: wize-agent-analyst
 ---
 
@@ -15,7 +15,7 @@ Pepper drives the consolidation. Peggy edits prose. Tony reviews architecture-sn
 
 ## When to run
 
-- **End of sprint** (default cadence). `wize-help next` suggests it when it detects the sprint ended.
+- **End of sprint** (default cadence). `/wize next` (or `/wize-help next`) suggests it when it detects the sprint ended.
 - **After a major epic ships.** Architecture often shifts visibly; this is the moment to consolidate.
 - **Before onboarding a new engineer.** The baseline is the first thing they read; keep it fresh.
 - **Before an audit / external review.** Same.

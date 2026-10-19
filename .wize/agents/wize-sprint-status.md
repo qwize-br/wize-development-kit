@@ -1,6 +1,6 @@
 # Sprint Status
 
-> 4-implementation: Sprint Status
+> Use quando precisar verificar o status atual do sprint — stories concluídas, em progresso e bloqueios.
 
 # Sprint Status
 

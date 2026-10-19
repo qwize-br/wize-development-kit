@@ -1,6 +1,6 @@
 # Create Workflow
 
-> workflow: Create Workflow
+> Use quando precisar criar um novo workflow multi-step sob .wize/custom/workflows/.
 
 # Create Workflow
 

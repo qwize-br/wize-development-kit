@@ -21,6 +21,8 @@ O Hermes Agent consome o mesmo formato público de Skill da Anthropic usado pelo
 
 Escolha **Hermes Agent** como alvo de IDE em `npx wize-dev-kit install` (ou adicione depois e rode `npx wize-dev-kit sync`). Rode `hermes skills trust` no repo, reinicie o Hermes e rode `/wize-orchestrator`.
 
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).
+
 ## Headless
 
 `hermes -z "<prompt>"` roda uma sessão headless de uma execução, usada pelo baseline brownfield do instalador quando o Hermes é o CLI de harness detectado.

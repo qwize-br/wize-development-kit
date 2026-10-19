@@ -1,5 +1,5 @@
 ---
-description: "trace: TEA Traceability"
+description: "Use quando uma story estiver em implementação e precisar mapear cada AC para testes concretos no repositório."
 agent: wize-agent-test-architect
 ---
 

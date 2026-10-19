@@ -17,6 +17,8 @@
 
 Escolha **Windsurf** como alvo de IDE em `npx wize-dev-kit install` (ou adicione depois e rode `npx wize-dev-kit sync`). Reinicie o Windsurf, confira as novas rules em **Cascade → Rules**, e peça pra ativar o Wizer.
 
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).
+
 ## Referência
 
 - [docs.windsurf.com — Cascade rules](https://docs.windsurf.com/windsurf/cascade/memories#rules)

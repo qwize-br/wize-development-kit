@@ -1,6 +1,6 @@
 # Product Brief
 
-> 1-analysis: Product Brief
+> Use quando uma demanda bruta chegar e precisar ser convertida em um product brief de uma página.
 
 # Product Brief
 

@@ -14,7 +14,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { loadProjectConfig, loadInstalledKitVersion } = require('./update.js');
 const { detectHarnessCli } = require('../baseline.js');
-const { getLatestVersion, semverGreater } = require('../version-check.js');
+const { getLatestNoWait } = require('../version-check.js');
+const { compareVersions, semverGreater, safePin } = require('../semver.js');
+const { gitContext, defaultBranch, trackedUnder } = require('../git-context.js');
+const { getProjectStatus, supportsHydrate } = require('../project-status.js');
+const { missingTargets } = require('../render-targets.js');
+const { ALIAS_PATHS, gitignoreBlockStatus } = require('../setup-helpers.js');
 
 function fileExists(p) { try { return fs.statSync(p).isFile(); } catch { return false; } }
 function dirExists(p)  { try { return fs.statSync(p).isDirectory(); } catch { return false; } }
@@ -72,12 +77,16 @@ function adapterTargetPath(targetCode, projectRoot) {
   }
 }
 
+// Adapters that emit into more than one directory.
+const EXTRA_ADAPTER_DIRS = { opencode: ['.opencode/commands'] };
+
 function countAdapterFiles(targetCode, projectRoot) {
   const dir = adapterTargetPath(targetCode, projectRoot);
-  if (!dir || !dirExists(dir)) return 0;
+  if (!dir) return 0;
+  const dirs = [dir, ...(EXTRA_ADAPTER_DIRS[targetCode] || []).map(d => path.join(projectRoot, d))];
   // Be permissive on file extension; .mdc, .md, .prompt, and SKILL.md dirs all count.
   let count = 0;
-  const stack = [dir];
+  const stack = dirs.filter(dirExists);
   while (stack.length) {
     const d = stack.pop();
     let entries; try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch { continue; }
@@ -103,7 +112,7 @@ function detectPhase(projectRoot) {
       listFilesUnder(path.join(projectRoot, '.wize/solutioning/stories'), /\.md$/).length === 0)
     return '3-solutioning (stories pending)';
   if (!has('.wize/implementation/tea/risk-profile.md')) return '3-closeout (risk profile pending)';
-  if (!has('.wize/implementation/sprint-status.md')) return '4-implementation (sprint planning pending)';
+  if (!has('.wize/implementation/sprint-status.yaml') && !has('.wize/implementation/sprint-status.md')) return '4-implementation (sprint planning pending)';
   return '4-implementation';
 }
 
@@ -150,19 +159,39 @@ function knowledgeStatus(projectRoot) {
   return { exists: true, files: refreshed, pendingLines, toBeGeneratedMarkers, stateExists, stateAgeDays };
 }
 
+function readHeadFromFs(gitDir, commonDir) {
+  const HEAD = readSafe(path.join(gitDir, 'HEAD')).trim();
+  if (!HEAD) return { branch: null, head: null, detached: false };
+  if (!HEAD.startsWith('ref: ')) return { branch: null, head: HEAD.slice(0, 7), detached: true };
+  const ref = HEAD.slice(5).trim();
+  const branch = ref.replace(/^refs\/heads\//, '');
+  let sha = null;
+  for (const dir of [gitDir, commonDir].filter(Boolean)) {
+    const loose = readSafe(path.join(dir, ref)).trim();
+    if (loose) { sha = loose; break; }
+  }
+  return { branch, head: sha ? sha.slice(0, 7) : null, detached: false };
+}
+
+// Uses git when it works; a `.git` file or directory is enough to count as a
+// repository even when git itself cannot run (fake or broken `.git`).
 function gitInfo(projectRoot) {
-  const dotGit = path.join(projectRoot, '.git');
-  if (!dirExists(dotGit)) return { isRepo: false };
-  let branch = '?'; let head = '?';
-  try {
-    const HEAD = readSafe(path.join(dotGit, 'HEAD')).trim();
-    if (HEAD.startsWith('ref: ')) {
-      branch = HEAD.slice(5).replace('refs/heads/', '');
-    } else {
-      head = HEAD.slice(0, 7);
-    }
-  } catch (_) {}
-  return { isRepo: true, branch, head };
+  const ctx = gitContext(projectRoot);
+  if (!ctx.isRepo) return { isRepo: false };
+  let { branch, head, detached } = ctx;
+  if (!branch && !head && ctx.gitDir) {
+    const fromFs = readHeadFromFs(ctx.gitDir, ctx.commonDir);
+    branch = fromFs.branch; head = fromFs.head; detached = fromFs.detached;
+  }
+  return {
+    isRepo: true,
+    linked: !!ctx.linked,
+    primary: ctx.primary || null,
+    branch: branch || null,
+    detached: !!detached,
+    head: head || null,
+    defaultBranch: defaultBranch(projectRoot)
+  };
 }
 
 function severityIcon(level) {
@@ -170,7 +199,10 @@ function severityIcon(level) {
 }
 
 async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
-  const log = opts.log || console.log;
+  const json = !!opts.json;
+  const env = opts.env || process.env;
+  const out = opts.log || console.log;
+  const log = (m) => { if (!json) out(m); };
   const cwd = projectRoot;
   const cfg = loadProjectConfig(cwd);
   const installed = loadInstalledKitVersion(kitRoot);
@@ -181,25 +213,39 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
   const targets = (cfg.install && cfg.install.ide_targets) || [];
   const profiles = (cfg.install && cfg.install.profiles) || [];
   const harnesses = detectHarnessCli({ preferIde: targets });
+  const pin = (cfg.project && cfg.project.kit_version) || null;
 
-  // Try registry — best-effort, never blocks.
+  // Registry: cache only, never the network. WIZE_DISABLE_UPDATE_CHECK=1 skips it.
+  const updateCheckOff = env.WIZE_DISABLE_UPDATE_CHECK === '1';
   let registryLatest = null;
-  try { registryLatest = await getLatestVersion(); } catch (_) {}
+  if (!updateCheckOff) {
+    // Without a terminal (an agent running `doctor --json`) no background refresh is started.
+    const isTTY = opts.isTTY !== undefined ? opts.isTTY : process.stdout.isTTY;
+    const lookupEnv = isTTY ? env : { ...env, WIZE_NO_BG_REFRESH: '1' };
+    try { registryLatest = (opts.getLatestNoWait || getLatestNoWait)({ env: lookupEnv }) || null; } catch (_) { /* best effort */ }
+  }
 
+  const status = getProjectStatus({ kitRoot, cwd, latest: registryLatest, latestSource: 'cache', env });
   const suggestions = [];
+  const suggest = (level, text, command = null) => suggestions.push(command ? { level, text, command } : { level, text });
 
   // -- Section: Kit --
   log('');
   log('Wize Dev Kit — Doctor');
   log('─────────────────────');
   log(`Kit version (installed):   ${installed || '?'}`);
-  log(`Kit version (project):     ${cfg.project && cfg.project.kit_version || '— (no install)'}`);
-  log(`Kit version (registry):    ${registryLatest || '(offline or skipped)'}`);
-  if (installed && cfg.project && cfg.project.kit_version && installed !== cfg.project.kit_version) {
-    suggestions.push({ level: 'warn', text: `Project pinned to ${cfg.project.kit_version} but ${installed} is installed. Run \`npx wize-dev-kit update\` to refresh adapters.` });
+  log(`Kit version (project):     ${pin || '— (no install)'}`);
+  log(`Kit version (registry):    ${registryLatest || (updateCheckOff ? '(update check disabled)' : '(offline or skipped)')}`);
+  if (pin && installed) {
+    const cmp = compareVersions(pin, installed);
+    if (cmp < 0) {
+      suggest('warn', `Project pinned ${pin}, this kit is ${installed}. Run \`npx wize-dev-kit@latest update\` to converge.`, 'npx wize-dev-kit@latest update');
+    } else if (cmp > 0 && safePin(pin)) {
+      suggest('info', `Project pinned ${pin} is newer than this kit (${installed}). Use the pinned kit: \`npx --yes wize-dev-kit@${pin} doctor\`.`, `npx --yes wize-dev-kit@${pin} doctor`);
+    }
   }
   if (registryLatest && installed && semverGreater(registryLatest, installed)) {
-    suggestions.push({ level: 'info', text: `Registry has ${registryLatest}; you're on ${installed}. Run \`npx wize-dev-kit@latest update\` to pick it up.` });
+    suggest('info', `Registry has ${registryLatest}; you're on ${installed}. Run \`npx wize-dev-kit@latest update\` to pick it up.`, 'npx wize-dev-kit@latest update');
   }
 
   // -- Section: Project --
@@ -207,8 +253,13 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
   log('Project');
   log('───────');
   if (!cfg.project) {
-    log('No .wize/config/project.toml — kit is not installed here.');
-    suggestions.push({ level: 'error', text: 'Run `npx wize-dev-kit install` to set the kit up in this repo.' });
+    if (status.reason === 'kit-not-on-branch') {
+      log(`No .wize/config/project.toml on this branch — the kit is installed on ${status.kit_at}'s branch.`);
+      suggest('warn', `The kit is installed on ${status.kit_at}'s branch but not on this one (kit-not-on-branch). Merge the kit into this branch, or pass --here to install here.`);
+    } else {
+      log('No .wize/config/project.toml — kit is not installed here.');
+      suggest('error', 'Run `npx wize-dev-kit install` to set the kit up in this repo.', 'npx wize-dev-kit install');
+    }
   } else {
     log(`Name:                 ${cfg.project.name || '?'}`);
     log(`Profiles:             ${profiles.join(', ') || '(none)'}`);
@@ -218,7 +269,46 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
     log(`Current phase:        ${phase}`);
   }
 
+  // -- Section: Hydration --
+  let hydration = null;
+  if (cfg.project) {
+    const missing = status.missing_targets;
+    hydration = {
+      status: status.hydrated,
+      marker: status.marker_version,
+      pin: status.pin,
+      binary: installed,
+      user_toml: status.user_toml,
+      missing_targets: missing,
+      command: status.commands.hydrate
+    };
+    log('');
+    log('Hydration');
+    log('─────────');
+    log(`  status:     ${status.hydrated}`);
+    log(`  marker:     ${status.marker_version || '(none)'}`);
+    log(`  pin:        ${status.pin || '(none)'}`);
+    log(`  this kit:   ${installed || '?'}`);
+    log(`  user.toml:  ${status.user_toml}`);
+    for (const t of targets) log(`  ${t.padEnd(14)} ${missing.includes(t) ? '✖ not rendered' : '✓ rendered'}`);
+
+    const cmd = status.commands.hydrate;
+    if (status.hydrated === 'missing') {
+      suggest('error', `This checkout is not hydrated (not rendered: ${missing.join(', ')}). Run \`${cmd}\`.`, cmd);
+    } else if (status.hydrated === 'stale') {
+      suggest('error', `Rendered output is stale: marker says kit ${status.marker_version}, project pins ${status.pin}. Run \`${cmd}\`.`, cmd);
+    }
+    if (status.user_toml === 'missing' && status.hydrated === 'ok') {
+      if (supportsHydrate(status.pin)) {
+        suggest('error', `.wize/config/user.toml is missing in this checkout. Run \`${cmd}\`.`, cmd);
+      } else {
+        suggest('warn', '.wize/config/user.toml is missing in this checkout. Copy it from your primary checkout, or run `npx wize-dev-kit@latest update` to adopt hydrate.', 'npx wize-dev-kit@latest update');
+      }
+    }
+  }
+
   // -- Section: Adapters --
+  const adapters = [];
   if (cfg.install) {
     log('');
     log('IDE Adapters');
@@ -226,9 +316,33 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
     for (const t of targets) {
       const dir = adapterTargetPath(t, cwd);
       const count = countAdapterFiles(t, cwd);
-      const status = count > 0 ? `✓ ${count} files` : '✖ none';
-      log(`  ${t.padEnd(14)} ${status.padEnd(15)} ${dir ? path.relative(cwd, dir) : '(no path)'}`);
-      if (count === 0) suggestions.push({ level: 'warn', text: `Adapter "${t}" has no rendered files. Run \`npx wize-dev-kit sync\`.` });
+      const rendered = missingTargets(cwd, [t]).length === 0;
+      adapters.push({ target: t, files: count, rendered });
+      const label = rendered && count > 0 ? `✓ ${count} files` : count > 0 ? `✖ alias only` : '✖ none';
+      log(`  ${t.padEnd(14)} ${label.padEnd(15)} ${dir ? path.relative(cwd, dir) : '(no path)'}`);
+    }
+  }
+
+  // -- Section: Leaks (generated files that git would see) --
+  const leaks = { tracked_aliases: [], gitignore: null };
+  if (cfg.project && git.isRepo) {
+    leaks.tracked_aliases = trackedUnder(cwd, ALIAS_PATHS);
+    const giFile = path.join(cwd, '.gitignore');
+    leaks.gitignore = gitignoreBlockStatus(fs.existsSync(giFile) ? readSafe(giFile) : null);
+    log('');
+    log('Generated files and git');
+    log('───────────────────────');
+    log(`  tracked alias files:   ${leaks.tracked_aliases.length}`);
+    log(`  .gitignore block:      ${leaks.gitignore}`);
+    const fix = 'npx wize-dev-kit@latest update';
+    if (leaks.tracked_aliases.length) {
+      const shown = leaks.tracked_aliases.slice(0, 3).join(', ') + (leaks.tracked_aliases.length > 3 ? ', ...' : '');
+      suggest('warn', `${leaks.tracked_aliases.length} generated alias file(s) are tracked by git (${shown}). Run \`${fix}\` to untrack them.`, fix);
+    }
+    if (leaks.gitignore === 'drift') {
+      suggest('warn', `The managed .gitignore block is out of date; generated files can leak into git status. Run \`${fix}\`.`, fix);
+    } else if (leaks.gitignore === 'missing') {
+      suggest('warn', `.gitignore has no wize-dev-kit managed block; generated files can leak into git status. Run \`${fix}\`.`, fix);
     }
   }
 
@@ -242,8 +356,8 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
     log(`CONCERNS:  ${gates.CONCERNS}`);
     log(`FAIL:      ${gates.FAIL}`);
     log(`WAIVED:    ${gates.WAIVED}`);
-    if (gates.FAIL > 0) suggestions.push({ level: 'error', text: `${gates.FAIL} story gate(s) at FAIL. Stories must not merge until resolved (advisory mode) or are blocking (enforcing mode).` });
-    if (gates.CONCERNS > 0) suggestions.push({ level: 'warn', text: `${gates.CONCERNS} story gate(s) at CONCERNS. Review findings before next sprint.` });
+    if (gates.FAIL > 0) suggest('error', `${gates.FAIL} story gate(s) at FAIL. Stories must not merge until resolved (advisory mode) or are blocking (enforcing mode).`);
+    if (gates.CONCERNS > 0) suggest('warn', `${gates.CONCERNS} story gate(s) at CONCERNS. Review findings before next sprint.`);
   }
 
   // -- Section: Knowledge --
@@ -255,26 +369,26 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
       const age = f.days == null ? 'no last_refreshed' : `${f.days}d ago`;
       log(`  ${f.name.padEnd(28)} ${age}`);
       if (f.days != null && f.days > 60) {
-        suggestions.push({ level: 'warn', text: `\`${f.name}\` last refreshed ${f.days}d ago. Run \`/wize-refresh-knowledge\` after current sprint.` });
+        suggest('warn', `\`${f.name}\` last refreshed ${f.days}d ago. Run \`/wize-refresh-knowledge\` after current sprint.`);
       }
     }
     if (knowledge.pendingLines > 0) {
       log(`  _pending.md:                ${knowledge.pendingLines} inline note(s) waiting consolidation`);
       if (knowledge.pendingLines >= 5) {
-        suggestions.push({ level: 'info', text: `${knowledge.pendingLines} notes piled up in _pending.md. Time to run \`/wize-refresh-knowledge\`.` });
+        suggest('info', `${knowledge.pendingLines} notes piled up in _pending.md. Time to run \`/wize-refresh-knowledge\`.`);
       }
     }
     const markerText = knowledge.toBeGeneratedMarkers > 0 ? `${knowledge.toBeGeneratedMarkers} marker(s)` : 'none';
     log(`  To be generated markers:    ${markerText}`);
     if (knowledge.toBeGeneratedMarkers >= 5) {
-      suggestions.push({ level: 'warn', text: `${knowledge.toBeGeneratedMarkers} docs marked "To be generated" in index.md. Run \`wize-dev-kit document-project initial_scan deep\` to fill them.` });
+      suggest('warn', `${knowledge.toBeGeneratedMarkers} docs marked "To be generated" in index.md. Run \`wize-dev-kit document-project initial_scan deep\` to fill them.`);
     }
     const stateText = knowledge.stateExists
       ? (knowledge.stateAgeDays == null ? 'project-scan-report.json exists (age unknown)' : `project-scan-report.json ${knowledge.stateAgeDays}d old`)
       : 'no project-scan-report.json';
     log(`  Scan state:                 ${stateText}`);
     if (!knowledge.stateExists) {
-      suggestions.push({ level: 'info', text: 'No scan state file found. Run `wize-dev-kit document-project quick` to create a baseline + state.' });
+      suggest('info', 'No scan state file found. Run `wize-dev-kit document-project initial_scan` to create a baseline + state.');
     }
   }
 
@@ -284,7 +398,7 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
   log('───────────────────────');
   if (harnesses.length === 0) {
     log('  (none detected)');
-    suggestions.push({ level: 'info', text: 'No harness CLI detected. Brownfield baseline + auto-run features only work in your IDE; the headless flow is unavailable.' });
+    suggest('info', 'No harness CLI detected. Brownfield baseline + auto-run features only work in your IDE; the headless flow is unavailable.');
   } else {
     for (const h of harnesses) log(`  ${h.binary.padEnd(10)} ${h.path}`);
   }
@@ -295,10 +409,12 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
   log('───');
   if (!git.isRepo) {
     log('  (not a git repo)');
-    suggestions.push({ level: 'warn', text: 'Not a git repository. Run `git init` before installing the kit so version history is recorded.' });
+    suggest('warn', 'Not a git repository. Run `git init` before installing the kit so version history is recorded.');
   } else {
-    log(`  branch: ${git.branch}`);
-    log(`  head:   ${git.head}`);
+    log(`  checkout: ${git.linked ? `linked worktree of ${git.primary || '?'}` : 'primary checkout'}`);
+    log(`  branch:   ${git.detached ? `detached @${git.head || '?'}` : (git.branch || '?')}`);
+    log(`  head:     ${git.head || '(no commits)'}`);
+    log(`  default branch: ${git.defaultBranch || '(unknown)'}`);
   }
 
   // -- Section: Suggestions --
@@ -312,7 +428,37 @@ async function cmdDoctor({ kitRoot, projectRoot, opts = {} } = {}) {
   }
   log('');
 
-  return { suggestions, phase, gates, knowledge, targets, profiles, installed, registryLatest };
+  const count = (level) => suggestions.filter(s => s.level === level).length;
+  const summary = { errors: count('error'), warnings: count('warn'), infos: count('info') };
+  const exitCode = opts.strict && summary.errors > 0 ? 1 : 0;
+
+  if (json) {
+    out(JSON.stringify({
+      schema: 1,
+      ok: summary.errors === 0,
+      exit_code: exitCode,
+      root: cwd,
+      kit: { installed, project: pin, registry: registryLatest, update_check: updateCheckOff ? 'disabled' : 'cache' },
+      project: cfg.project ? {
+        name: cfg.project.name || null,
+        profiles,
+        targets,
+        language: { communication: (cfg.language && cfg.language.communication) || null, document_output: (cfg.language && cfg.language.document_output) || null },
+        phase
+      } : null,
+      git,
+      hydration,
+      adapters,
+      leaks,
+      gates,
+      knowledge,
+      harnesses: harnesses.map(h => ({ binary: h.binary, path: h.path })),
+      suggestions,
+      summary
+    }));
+  }
+
+  return { suggestions, phase, gates, knowledge, targets, profiles, installed, registryLatest, status, hydration, leaks, git, summary, exitCode };
 }
 
 module.exports = {

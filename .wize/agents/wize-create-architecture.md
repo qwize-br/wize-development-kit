@@ -1,6 +1,6 @@
 # Create Architecture
 
-> 3-solutioning: Create Architecture
+> Use quando o PRD e UX design estiverem prontos e precisar projetar a arquitetura do sistema com componentes, sequências e ADRs.
 
 # Create Architecture
 

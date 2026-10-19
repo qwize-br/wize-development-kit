@@ -1,5 +1,5 @@
 ---
-description: "gate: TEA Gate Decision"
+description: "Use quando uma story chegar ao final e precisar da decisão de gate (PASS/CONCERNS/FAIL/WAIVED) com rationale documentado."
 agent: wize-agent-test-architect
 ---
 
@@ -33,7 +33,10 @@ Hawkeye drives. The four inputs (`design`, `trace`, `review`, plus `nfr` at epic
 | Any AC `not-met` | **FAIL** |
 | NFR `FAIL` on the epic (last story) | **FAIL** |
 | `tea-review` flagged `knowledge_axes_touched` ≠ `knowledge_axes_updated` (any axis touched without update) | **CONCERNS** (advisory mode) / **FAIL** (enforcing mode) — adds finding `KN-NN` |
+| All ACs `met`, but `review.md` evidence is unpinned (no commit SHA) or from a commit other than HEAD | **CONCERNS** (advisory mode) / **FAIL** (enforcing mode) |
 | Failing AC OR non-neg NFR with documented business rationale + senior signoff | **WAIVED** |
+
+An AC the story left `untested` counts as `not-met`, unless **WAIVED** with a reason.
 
 Score (0–100): heuristic. `100 - (10 × high) - (5 × medium) - (2 × low)`. Floor 0.
 

@@ -1,6 +1,6 @@
 # Trigger Map
 
-> 1-analysis: Trigger Map
+> Use quando precisar mapear gatilhos psicológicos dos usuários para objetivos de negócio — a ponte entre o brief e o PRD.
 
 # Trigger Map
 

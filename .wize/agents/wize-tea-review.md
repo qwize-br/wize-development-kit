@@ -1,6 +1,6 @@
 # TEA Story Review
 
-> review: TEA Story Review
+> Use quando uma story terminar implementação e precisar de revisão estruturada de AC fulfillment, disciplina de teste e cobertura de risco.
 
 # TEA — Story Review
 
@@ -23,7 +23,7 @@ Hawkeye drives. Runs at story end, right before `tea-gate`.
 
 ### 1. AC check (per AC)
 
-For each AC, observe the actual behavior on a staging or local build and decide: `met` / `partial` / `not-met`. Use the recorded video/screenshot when CI captured one (Playwright `screenshot: only-on-failure` or always for review tag).
+For each AC, observe the actual behavior on a staging or local build and decide: `met` / `partial` / `not-met`. Record the `evidence` as the artifact or test id **plus the commit SHA it was observed on**. What counts as observed evidence is defined once, in the proof-per-type block of `wize-dev-story` step 10; for UI ACs, prefer a before/after pair when a baseline exists.
 
 ### 2. Test discipline
 
@@ -75,10 +75,10 @@ status: PASS
 ac_check:
   - id: AC-02-1
     met: true
-    evidence: "e2e/onboarding/invite.spec.ts::happy path passed on PR-#412; recording in CI artifact #412-1"
+    evidence: "e2e/onboarding/invite.spec.ts::happy path passed @ 4f2a9c1 (PR-#412); recording in CI artifact #412-1"
   - id: AC-02-2
     met: true
-    evidence: "InviteForm.spec.tsx::error region announces"
+    evidence: "InviteForm.spec.tsx::error region announces @ 4f2a9c1"
 knowledge_axes_touched: [conventions, risk-spots]
 knowledge_axes_updated: [conventions, risk-spots]   # leave empty array if axes touched but no update happened
 findings:
@@ -128,6 +128,7 @@ Recommend `gate PASS` with one low-severity finding to fix in a follow-up.
 
 - **Review without walking the code.** Reading the test names isn't review.
 - **AC marked "met" without observed evidence.** Tests passing + screenshot/recording, please.
+- **Evidence from a commit other than HEAD.** Re-observe on HEAD.
 - **Findings without owners.** Same as everywhere else in the kit.
 - **Recommending PASS when an AC is `partial`.** No.
 - **Recommending PASS when a non-negotiable NFR slipped.** That's a gate FAIL.

@@ -17,6 +17,8 @@
 
 Pick **Cursor** as an IDE target during `npx wize-dev-kit install` (or add it and re-run `npx wize-dev-kit sync`). Restart Cursor, then reference `@wize-orchestrator` or ask it to activate Wizer.
 
+Fresh clone or new worktree: generated files are gitignored, so run `npx wize-dev-kit hydrate` there (no prompts, touches no tracked file). `npx wize-dev-kit hooks install --cursor` hydrates every new Cursor worktree on its own. See [Worktrees and automatic updates](../WORKTREES.md).
+
 ## Reference
 
 - [cursor.com/docs/context/rules](https://cursor.com/docs/context/rules)

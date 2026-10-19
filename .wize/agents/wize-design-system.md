@@ -1,6 +1,6 @@
 # Design System
 
-> 3-solutioning: Design System
+> Use quando o UX design estiver avançando e precisar estabelecer a baseline do design system (tokens, componentes, grids).
 
 # Design System
 
