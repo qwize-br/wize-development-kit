@@ -18,3 +18,5 @@ For any AI IDE that isn't one of the [dedicated targets](../../README.md#support
 ## Setup
 
 Pick **Generic fallback** as an IDE target during `npx wize-dev-kit install` — it's on by default alongside your primary target, precisely so an unsupported second tool in the same repo still has something to read.
+
+Fresh clone or new worktree: generated files are gitignored, so run `npx wize-dev-kit hydrate` there (no prompts, touches no tracked file). See [Worktrees and automatic updates](../WORKTREES.md).

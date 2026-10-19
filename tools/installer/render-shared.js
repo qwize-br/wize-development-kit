@@ -105,8 +105,98 @@ function clipOneLine(str, max = 240) {
   return flat.slice(0, max - 1).trimEnd() + '…';
 }
 
+// Where `dir` would be created: the nearest existing ancestor resolved through
+// symlinks, plus the part that does not exist yet.
+function landingDir(dir) {
+  const rest = [];
+  let cur = path.resolve(dir);
+  for (;;) {
+    try { return path.join(fs.realpathSync(cur), ...rest.reverse()); } catch { /* not there yet */ }
+    const parent = path.dirname(cur);
+    if (parent === cur) return path.resolve(dir);
+    rest.push(path.basename(cur));
+    cur = parent;
+  }
+}
+
+// With a write guard set, a directory the guard vetoes is not created, so a
+// symlinked directory cannot be filled with empty folders behind the guard.
 function ensureDir(dir) {
+  if (probeOnly) return;
+  if (writeGuard && (writeGuard(path.resolve(dir)) || writeGuard(landingDir(dir)))) return;
   fs.mkdirSync(dir, { recursive: true });
+}
+
+// ---- Write safety -------------------------------------------------------
+// Every file a renderer emits goes through writeFileIfChanged /
+// copyFileIfChanged: identical bytes are left alone (mtime untouched), writes
+// are atomic (tmp + rename, safe for concurrent hydrates of one tree), and an
+// optional guard can veto a path (hydrate uses it to never touch tracked files).
+let writeGuard = null;
+// Probe mode: every write still goes through the guard (so vetoes are
+// recorded) but nothing touches the disk.
+let probeOnly = false;
+const writeStats = { written: 0, unchanged: 0, skippedTracked: [] };
+
+function setWriteGuard(fn) { writeGuard = typeof fn === 'function' ? fn : null; }
+function clearWriteGuard() { writeGuard = null; }
+function setProbeMode(on) { probeOnly = !!on; }
+function getWriteStats() {
+  return { written: writeStats.written, unchanged: writeStats.unchanged, skippedTracked: writeStats.skippedTracked.slice() };
+}
+function resetWriteStats() {
+  writeStats.written = 0;
+  writeStats.unchanged = 0;
+  writeStats.skippedTracked = [];
+}
+
+function atomicWrite(abs, buf, mode) {
+  const tmp = path.join(path.dirname(abs), `.${path.basename(abs)}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`);
+  try {
+    fs.writeFileSync(tmp, buf);
+    if (mode !== undefined) fs.chmodSync(tmp, mode);
+    fs.renameSync(tmp, abs);
+  } catch (err) {
+    try { fs.rmSync(tmp, { force: true }); } catch { /* ignore */ }
+    throw err;
+  }
+}
+
+// The path a write really lands on: the parent directory is resolved through
+// symlinks, so a tracked `.claude/skills -> ../skills` link cannot hide the
+// tracked file behind it from the guard.
+function landingPath(abs) {
+  return path.join(landingDir(path.dirname(abs)), path.basename(abs));
+}
+
+function emit(file, buf, mode) {
+  const abs = path.resolve(file);
+  if (writeGuard && (writeGuard(abs) || writeGuard(landingPath(abs)))) {
+    writeStats.skippedTracked.push(abs);
+    return 'skipped-tracked';
+  }
+  if (probeOnly) {
+    writeStats.unchanged++;
+    return 'unchanged';
+  }
+  let existing = null;
+  try { existing = fs.readFileSync(abs); } catch { /* absent */ }
+  if (existing && existing.equals(buf)) {
+    writeStats.unchanged++;
+    return 'unchanged';
+  }
+  atomicWrite(abs, buf, mode);
+  writeStats.written++;
+  return 'written';
+}
+
+// -> 'written' | 'unchanged' | 'skipped-tracked'
+function writeFileIfChanged(file, content) {
+  return emit(file, Buffer.isBuffer(content) ? content : Buffer.from(String(content), 'utf-8'));
+}
+
+function copyFileIfChanged(src, dst) {
+  return emit(dst, fs.readFileSync(src), fs.statSync(src).mode & 0o777);
 }
 
 // Companion files (steps/, templates/, data/, *.csv, *-template.md,
@@ -139,7 +229,7 @@ function copyCompanionFiles(srcDir, destDir, written, relPrefix = '') {
       copyCompanionFiles(s, d, written, rel);
     } else if (entry.isFile()) {
       ensureDir(path.dirname(d));
-      fs.copyFileSync(s, d);
+      copyFileIfChanged(s, d);
       written.push(rel);
     }
   }
@@ -244,7 +334,7 @@ function renderAnthropicSkills(kitRoot, targetDir, opts = {}) {
     } else {
       const skillDir = path.join(targetDir, a.code);
       ensureDir(skillDir);
-      fs.writeFileSync(path.join(skillDir, 'SKILL.md'), content, 'utf-8');
+      writeFileIfChanged(path.join(skillDir, 'SKILL.md'), content);
       written.push(`${a.code}/SKILL.md`);
       // Copy companion files (steps/, templates/, data/, *.csv, customize.toml,
       // *-template.md, research.template.md, etc.) so micro-file workflows can
@@ -272,7 +362,69 @@ const AGENT_ORDER = [
   'wize-sec-red-teamer'
 ];
 
+// ---- managed bootstrap block ---------------------------------------------------
+//
+// AGENTS.md is the one tracked file that Codex, Cursor, Windsurf, Antigravity
+// and others read at session start. The block below tells the agent to run
+// `version-check --json` and follow its `action`. The text names no version,
+// so `update` only rewrites it when the wording itself changes.
+
+const AGENTS_TITLE = '# Agents — Wize Development Kit';
+const BOOTSTRAP_BEGIN = '<!-- wize:bootstrap:begin (managed by wize-dev-kit; edits inside are replaced by update) -->';
+const BOOTSTRAP_END = '<!-- wize:bootstrap:end -->';
+const BOOTSTRAP_BEGIN_RE = /<!-- wize:bootstrap:begin[^\n]*?-->/;
+
+const BOOTSTRAP_LINES = [
+  BOOTSTRAP_BEGIN,
+  '## Kit bootstrap',
+  '',
+  'Once per session, if you can run shell commands, run `npx --yes --fetch-retries=0 wize-dev-kit version-check --json`',
+  '(prefix it with `timeout 20` where that exists) and follow its `action` field (if npx fails or times out,',
+  'for example offline, skip this):',
+  '',
+  '- `hydrate`: run `commands.hydrate` now. It writes only git-ignored files. If the `/wize-*`',
+  '  commands are still missing afterwards, tell the user to restart the harness.',
+  '- `update`: run `commands.update`. It prepares a `chore/wize-kit-<version>` branch in a temporary',
+  '  worktree and never touches this checkout. Then ask once before running `commands.pr`, which',
+  '  pushes the branch and opens a PR. Exception: when `reason` is `pin-unpublished`, `commands.update`',
+  '  lowers the project pin; ask the user first and run it only on a yes.',
+  '- `use-pin`: tell the user to run kit commands as `npx wize-dev-kit@<pin>`, with `<pin>` taken from',
+  '  `project.pin` in the JSON.',
+  '- `none` with `reason` `kit-not-on-branch`: tell the user to merge the kit into this branch, or install here with `install --here`.',
+  '- `install`, other `none`: do nothing.',
+  '',
+  'If the `/wize-*` commands are missing, run `npx --yes wize-dev-kit hydrate`.',
+  'Never commit a kit update on the default branch.',
+  BOOTSTRAP_END
+];
+const BOOTSTRAP_BLOCK = BOOTSTRAP_LINES.join('\n');
+
+// True only for an AGENTS.md this kit generated. A foreign file is never edited.
+function isKitAgentsMd(content) {
+  if (typeof content !== 'string') return false;
+  return content.replace(/^﻿/, '').split(/\r?\n/, 1)[0] === AGENTS_TITLE;
+}
+
+// Pure: returns `content` with exactly one managed bootstrap block. An existing
+// block is replaced in place; otherwise the block goes before the first `## `
+// heading, or at the end when there is none. A half-written block (one marker
+// without the other) is left alone rather than guessed at.
+function upsertBootstrapBlock(content) {
+  const begin = BOOTSTRAP_BEGIN_RE.exec(content);
+  const endIdx = content.indexOf(BOOTSTRAP_END);
+  if (begin || endIdx !== -1) {
+    if (!begin || endIdx === -1 || endIdx < begin.index) return content;
+    return content.slice(0, begin.index) + BOOTSTRAP_BLOCK + content.slice(endIdx + BOOTSTRAP_END.length);
+  }
+  const heading = /^## /m.exec(content);
+  if (heading) {
+    return content.slice(0, heading.index) + BOOTSTRAP_BLOCK + '\n\n' + content.slice(heading.index);
+  }
+  return content.replace(/\s*$/, '') + '\n\n' + BOOTSTRAP_BLOCK + '\n';
+}
+
 function renderAgentsMd(kitRoot, projectRoot, opts = {}) {
+  if (opts.skipAgentsMd) return { written: [], skipped: ['AGENTS.md (skipAgentsMd)'] };
   const assets = collectAssets(kitRoot, opts);
   const rank = (code) => {
     const i = AGENT_ORDER.indexOf(code);
@@ -286,11 +438,13 @@ function renderAgentsMd(kitRoot, projectRoot, opts = {}) {
     return { written: [], skipped: ['AGENTS.md (already present; not overwritten)'] };
   }
   const lines = [
-    '# Agents — Wize Development Kit',
+    AGENTS_TITLE,
     '',
     'This repo is wired with the [`wize-dev-kit`](https://www.npmjs.com/package/wize-dev-kit).',
     'Detailed artifacts live under `.wize/`. The agents below are activated through your AI IDE',
     'using slash commands (Claude Code, Codex, Cursor, Windsurf, Antigravity, Hermes all read this file).',
+    '',
+    ...BOOTSTRAP_LINES,
     '',
     '## Operating context',
     '',
@@ -351,7 +505,7 @@ function renderAgentsMd(kitRoot, projectRoot, opts = {}) {
   lines.push('', '## Where to start', '', 'Activate the orchestrator: `/wize` (or `/wize-help`). Wizer will guide you.', '');
 
   if (opts.dryRun) return { written: ['[dry-run] AGENTS.md'], skipped: [] };
-  fs.writeFileSync(file, lines.join('\n'), 'utf-8');
+  writeFileIfChanged(file, lines.join('\n'));
   return { written: ['AGENTS.md'], skipped: [] };
 }
 
@@ -359,7 +513,19 @@ module.exports = {
   collectAssets,
   renderAnthropicSkills,
   renderAgentsMd,
+  upsertBootstrapBlock,
+  isKitAgentsMd,
+  BOOTSTRAP_BEGIN,
+  BOOTSTRAP_END,
+  BOOTSTRAP_BLOCK,
   copyCompanionFiles,
+  writeFileIfChanged,
+  copyFileIfChanged,
+  setWriteGuard,
+  clearWriteGuard,
+  setProbeMode,
+  getWriteStats,
+  resetWriteStats,
   // Re-exports for adapter authors who need to roll their own format:
   readFrontmatter,
   bodyAfterFrontmatter,

@@ -1,6 +1,6 @@
 # PR/FAQ
 
-> 1-analysis: PR/FAQ
+> Use quando precisar forçar alinhamento escrevendo o press release futuro e FAQ antes de construir — estilo Amazon Working Backwards.
 
 # PR/FAQ — Working Backwards
 

@@ -1,0 +1,38 @@
+# Managed by `wize-dev-kit hooks install --github-action`; safe to edit.
+# Opens a pull request that bumps the wize-dev-kit pin once a week.
+#
+# Pull requests created with GITHUB_TOKEN do not trigger other workflows, so
+# required checks will not run on them until someone pushes to the branch.
+# The repository setting "Allow GitHub Actions to create and approve pull
+# requests" (Settings > Actions > General) must be enabled.
+name: Wize kit update
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Set git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Prepare the kit update PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+        # A fresh checkout has no origin/HEAD, so name the default branch explicitly.
+        run: npx --yes wize-dev-kit@latest update --pr --base "origin/$BASE_BRANCH"

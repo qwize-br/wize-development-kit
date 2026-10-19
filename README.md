@@ -156,8 +156,9 @@ Cross-cutting:
     /wize-check                 Progress checklist for the demand in flight:
                                 done (with evidence), in progress, what's left —
                                 then resumes the interrupted work.
-    /wize-update                Checks kit version skew, shows the changelog
-                                jump, confirms, then applies the update.
+    /wize-update                Kit maintenance: hydrates a checkout with missing
+                                skills, prepares the kit-bump branch locally, and
+                                opens the PR after one push confirmation.
     /wize-grill                 Interview-to-understanding before any authoring step.
     /wize-eli5                  Explain anything to anyone — vocabulary, analogies,
                                 tone, depth and framing calibrated to the audience
@@ -238,24 +239,44 @@ When the **Wize Security** profile is installed, **Natasha Romanoff** (`wize-sec
 
 ---
 
+## Worktrees & automatic updates
+
+A new `git worktree` has no generated skills (they are gitignored). One command fixes it:
+
+```bash
+npx wize-dev-kit hydrate    # render this checkout from project.toml; writes no tracked file
+```
+
+- The `kit_version` pin in `.wize/config/project.toml` decides which kit renders the repo, for everyone.
+- `/wize` reads the pin and hydrates a bare checkout without asking. `hooks install` (Claude Code, Cursor) and `hooks print` (Orca, Codex) do the same when a worktree is created. A weekly GitHub Action opens the bump PR.
+- `update` prepares `chore/wize-kit-<version>` in a throwaway worktree. It never touches your checkout or the default branch; `--pr` pushes it and opens the PR. In an existing repo, run `npx wize-dev-kit@latest update --pr` once and merge.
+- Opt out of registry checks with `WIZE_DISABLE_UPDATE_CHECK=1`.
+
+Full guide: [`docs/WORKTREES.md`](docs/WORKTREES.md).
+
+---
+
 ## CLI commands
 
 ```bash
 npx wize-dev-kit install         # interactive setup
-npx wize-dev-kit update          # bring an installed kit up to the current version
+npx wize-dev-kit update          # prepare the kit-bump branch in a temp worktree (--pr, --check, --in-place)
+npx wize-dev-kit update --pr     # also push the branch and open the PR
+npx wize-dev-kit hydrate         # render a fresh checkout/worktree from the pin; never touches tracked files
+npx wize-dev-kit hooks <install|print>  # opt-in automation: hydrate on worktree/session start, weekly bump PR
 npx wize-dev-kit sync            # re-render IDE adapters after editing config
 npx wize-dev-kit list            # list installed agents, skills and workflows
 npx wize-dev-kit agent list      # list built-in + custom agents
 npx wize-dev-kit agent create    # scaffold a new custom agent (validated + dry-run)
 npx wize-dev-kit agent edit <code>  # override a built-in agent
 npx wize-dev-kit workflow <create|list>  # scaffold or list custom workflows
-npx wize-dev-kit doctor          # diagnose kit / project / adapters / gates
+npx wize-dev-kit doctor [--json] [--strict]  # diagnose kit / project / hydration / adapters / gates
 npx wize-dev-kit validate        # structural checks on the kit assets
-npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--target <path>]
+npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--force] [--target <path>]
 npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 npx wize-dev-kit help            # command reference
 npx wize-dev-kit version         # print the installed kit version
-npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptable; never blocks)
+npx wize-dev-kit version-check [--json] [--exit-code]  # pin, hydration and registry; names the next action (cached; at most ~1.5 s registry wait)
 ```
 
 ---
@@ -267,6 +288,7 @@ npx wize-dev-kit version-check [--json]  # installed vs latest (cached; scriptab
 - [`AGENTS.md`](AGENTS.md) — the generated roster + operating context IDEs read at the repo root.
 - [`DECISIONS.md`](DECISIONS.md) — decisions log.
 - [`CHANGELOG.md`](CHANGELOG.md) — release history.
+- [`docs/WORKTREES.md`](docs/WORKTREES.md) — worktrees, hydrate, hooks and the update flow.
 - [`docs/harnesses/`](docs/harnesses/) — one doc per [supported harness](#supported-harnesses), in English + [pt-BR](README.pt-BR.md#harnesses-suportadas).
 
 ---

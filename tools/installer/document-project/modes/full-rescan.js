@@ -9,7 +9,7 @@ const { runInitialScan } = require('./initial-scan.js');
 
 function runFullRescan(projectRoot, options = {}) {
   archiveOldState(projectRoot);
-  return runInitialScan(projectRoot, { ...options, mode: 'full_rescan' });
+  return runInitialScan(projectRoot, { ...options, mode: 'full_rescan', overwrite: true });
 }
 
 module.exports = { runFullRescan };

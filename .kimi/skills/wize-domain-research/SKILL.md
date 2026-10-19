@@ -1,9 +1,15 @@
 ---
 name: wize-domain-research
-description: "1-analysis: Domain Research"
+description: "Use quando precisar pesquisar um domínio de negócio, indústria ou setor."
 ---
 
 # Domain Research
+
+> **Variante de pesquisa.** Para outros tipos de pesquisa, veja:
+> - Mercado/concorrência → `/wize-market-research`
+> - Domínio/indústria → `/wize-domain-research`
+> - Técnica/stack → `/wize-technical-research`
+> - Pesquisa geral (dispatcher) → `/wize-research`
 
 # Domain Research
 

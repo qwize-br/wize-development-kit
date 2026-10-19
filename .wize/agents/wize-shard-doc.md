@@ -1,6 +1,6 @@
 # Shard Doc
 
-> core skill: Shard Doc
+> Use quando um documento markdown grande (PRD, arquitetura) precisar ser dividido em shards endereçáveis por ID.
 
 # Shard Doc
 

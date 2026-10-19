@@ -18,3 +18,5 @@ Para qualquer IDE com IA que não esteja entre os [alvos dedicados](../../README
 ## Como ativar
 
 Escolha **Fallback genérico** como alvo de IDE em `npx wize-dev-kit install` — ele já vem ligado por padrão junto do seu alvo principal, justamente pra que uma segunda ferramenta sem suporte dedicado no mesmo repositório ainda tenha algo pra ler.
+
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).

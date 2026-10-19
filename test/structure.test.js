@@ -122,3 +122,9 @@ test('no description is a phase-derived fallback', () => {
   }
   assert.strictEqual(bad.length, 0, `Files with phase-derived descriptions:\n${bad.join('\n')}`);
 });
+
+test('worktree guides present in both languages', () => {
+  for (const f of ['docs/WORKTREES.md', 'docs/WORKTREES.pt-BR.md']) {
+    assert.ok(fs.existsSync(path.join(KIT, f)), `missing doc: ${f}`);
+  }
+});

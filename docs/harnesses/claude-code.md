@@ -21,3 +21,5 @@ There is no separate "agent" file shape here — personas (Wizer, Shuri, Hawkeye
 ## Setup
 
 Pick **Claude Code** as an IDE target during `npx wize-dev-kit install` (default). Restart Claude Code, then say *"Activate Wizer and brief him on the project"* or run `/wize-orchestrator`.
+
+Fresh clone or new worktree: generated files are gitignored, so run `npx wize-dev-kit hydrate` there (no prompts, touches no tracked file). `npx wize-dev-kit hooks install --claude` hydrates every new session on its own. See [Worktrees and automatic updates](../WORKTREES.md).

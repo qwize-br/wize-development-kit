@@ -1,6 +1,6 @@
 ---
 name: wize-create-workflow
-description: "workflow: Create Workflow"
+description: "Use quando precisar criar um novo workflow multi-step sob .wize/custom/workflows/."
 ---
 
 # Create Workflow

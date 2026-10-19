@@ -1,6 +1,6 @@
 # UX Design
 
-> 2-plan: UX Design
+> Use quando os cenários UX estiverem prontos e precisar produzir especificações página por página para arquitetura e implementação.
 
 # UX Design
 

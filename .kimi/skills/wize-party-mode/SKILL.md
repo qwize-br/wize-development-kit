@@ -1,6 +1,6 @@
 ---
 name: wize-party-mode
-description: "workflow: Party Mode (multi-agent)"
+description: "Use quando uma decisão cruzar preocupações de múltiplos agentes e precisar de discussão multi-agente facilitada."
 ---
 
 # Party Mode (multi-agent)

@@ -25,6 +25,8 @@ This is also the harness the kit's own subagent fan-out pattern (documented in W
 
 Pick **OpenCode** as an IDE target during `npx wize-dev-kit install` (or add it and re-run `npx wize-dev-kit sync`). Restart OpenCode, then say *"Activate Wizer and brief him on the project"* or run `/wize-orchestrator`.
 
+Fresh clone or new worktree: generated files are gitignored, so run `npx wize-dev-kit hydrate` there (no prompts, touches no tracked file). See [Worktrees and automatic updates](../WORKTREES.md).
+
 ## Reference
 
 - [opencode.ai/docs/agents](https://opencode.ai/docs/agents/)

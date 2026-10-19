@@ -1,5 +1,5 @@
 ---
-description: "4-implementation: Quick Dev (lifecycle shortcut)"
+description: "Use quando a demanda for pequena e bem delimitada (bug fix, copy edit, refactor) e não justificar o ciclo completo."
 agent: wize-agent-dev
 ---
 
@@ -61,6 +61,10 @@ Is it ≤ 1 hour to a careful dev?      → quick-dev       → full lifecycle
 
 What changes, why, and what could break. If the paragraph is hard to write, you're not in quick-dev territory.
 
+### 1.5. Branch guard
+
+Run `git branch --show-current` and `git status --short`, and resolve the default branch with `git symbolic-ref refs/remotes/origin/HEAD` (never hardcode `main`). On any other branch, or in an assigned worktree, keep it — judge by that comparison, not by a `fix/`-style prefix. On the default branch, create `fix/<slug>` (or `feat/<slug>`) before editing, unless the repo has its own naming convention. No remote: branch locally.
+
 ### 2. Implement
 
 - TDD when reasonable; smoke-test-and-fix when the cost of TDD is greater than the value.
@@ -97,7 +101,7 @@ Heuristic: *"would a new dev hitting `document-project/*.md` next week be misled
 
 ### 6. Commit + open PR
 
-Conventional commit. PR description: the paragraph from step 1.
+Conventional commit. PR description: the paragraph from step 1. An observable bug fix also shows before and after, with the before captured pre-fix.
 
 ```
 fix(auth): typo in error message for AC-04-2 follow-up

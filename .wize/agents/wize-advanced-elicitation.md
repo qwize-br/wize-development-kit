@@ -1,6 +1,6 @@
 # Advanced Elicitation
 
-> core skill: Advanced Elicitation
+> Use quando uma resposta do usuário parecer subespecificada e precisar de técnicas de elicitação (5 Whys, laddering, premortem) para aprofundar o entendimento.
 
 # Advanced Elicitation
 

@@ -39,7 +39,7 @@ function existingDocs(root) {
   return candidates.filter(f => fs.existsSync(path.join(root, f))).map(f => path.join(root, f));
 }
 
-function runInitialScan(projectRoot, { scanLevel = 'quick', log = console.log, csvPath } = {}) {
+function runInitialScan(projectRoot, { scanLevel = 'quick', log = console.log, csvPath, overwrite = false } = {}) {
   const classification = classifyProject(projectRoot, csvPath ? { csvPath } : {});
   const state = initState(projectRoot, 'initial_scan', scanLevel);
 
@@ -68,9 +68,10 @@ function runInitialScan(projectRoot, { scanLevel = 'quick', log = console.log, c
     });
   }
 
-  // Always write baseline + index.
-  const quick = runQuick(projectRoot, { log });
-  generated.push(...quick.written.map(f => path.join(projectRoot, '.wize', 'knowledge', 'document-project', f)));
+  // Write the missing baseline files (existing ones are kept unless overwrite) + index.
+  const quick = runQuick(projectRoot, { log, overwrite });
+  const baselineDir = path.join(projectRoot, '.wize', 'knowledge', 'document-project');
+  generated.push(...[...quick.written, ...(quick.skipped || [])].map(f => path.join(baselineDir, f)));
 
   const indexResult = renderIndex(projectRoot, {
     projectTypes: classification.projectTypes,

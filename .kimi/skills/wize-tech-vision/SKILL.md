@@ -1,6 +1,6 @@
 ---
 name: wize-tech-vision
-description: "2-to-3-boundary: Tech Vision"
+description: "Use quando o PRD estiver validado e precisar definir o norte técnico: stack family, build-buy-borrow e non-negotiables."
 ---
 
 # Tech Vision

@@ -1,6 +1,6 @@
 ---
 name: wize-nfr-principles
-description: "2-to-3-boundary: NFR Principles"
+description: "Use quando o PRD estiver validado e precisar definir os princípios de NFR (perf, segurança, confiabilidade, acessibilidade, custo) que guiarão a arquitetura."
 ---
 
 # NFR Principles

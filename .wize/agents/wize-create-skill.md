@@ -1,6 +1,6 @@
 # Create Skill
 
-> workflow: Create Skill
+> Use quando precisar criar uma nova skill single-step sob .wize/custom/skills/.
 
 # Create Skill
 

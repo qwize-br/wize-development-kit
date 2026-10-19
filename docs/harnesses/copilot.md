@@ -57,6 +57,8 @@ Generated `wize-*` files are gitignored (regenerate any time with
 `npx wize-dev-kit sync`). Hand-written team skills added next to them should be
 committed.
 
+Fresh clone or new worktree: generated files are gitignored, so run `npx wize-dev-kit hydrate` there (no prompts, touches no tracked file). For the cloud agent, add `npx --yes wize-dev-kit hydrate` as a step in `.github/workflows/copilot-setup-steps.yml`. See [Worktrees and automatic updates](../WORKTREES.md).
+
 ## Headless
 
 `copilot -p "<prompt>"` runs a one-shot session without entering the interactive

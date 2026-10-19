@@ -1,6 +1,12 @@
 # Market Research
 
-> 1-analysis: Market Research
+> Use quando precisar pesquisar mercado, concorrentes, tendências ou posicionamento.
+
+> **Variante de pesquisa.** Para outros tipos de pesquisa, veja:
+> - Mercado/concorrência → `/wize-market-research`
+> - Domínio/indústria → `/wize-domain-research`
+> - Técnica/stack → `/wize-technical-research`
+> - Pesquisa geral (dispatcher) → `/wize-research`
 
 # Market Research
 

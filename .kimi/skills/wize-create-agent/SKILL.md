@@ -1,6 +1,6 @@
 ---
 name: wize-create-agent
-description: "workflow: Create Agent"
+description: "Use quando precisar criar um novo agente customizado sob .wize/custom/agents/."
 ---
 
 # Create Agent

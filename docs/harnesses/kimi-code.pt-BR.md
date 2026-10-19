@@ -17,3 +17,5 @@ O Kimi Code, da Moonshot, consome o mesmo formato público de Skill da Anthropic
 ## Como ativar
 
 Escolha **Kimi Code** como alvo de IDE em `npx wize-dev-kit install` (ou adicione depois e rode `npx wize-dev-kit sync`). Reinicie o Kimi Code e rode `/wize-orchestrator`.
+
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).

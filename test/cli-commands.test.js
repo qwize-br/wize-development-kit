@@ -97,6 +97,118 @@ test('cmdSync regenerates adapters declared in project.toml', () => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 
+// ---------- sync: skew, marker, stable output (0.27.0) ----------
+
+const KIT_PKG_VERSION = require(path.join(KIT, 'package.json')).version;
+const { readMarker } = require(path.join(KIT, 'tools/installer/marker.js'));
+
+function runSync(root, extra = {}) {
+  const out = []; const err = [];
+  const r = cmdSync({ kitRoot: KIT, projectRoot: root, opts: { log: m => out.push(m), warn: m => err.push(m), ...extra } });
+  return { r, out, err };
+}
+
+function kitVersionLine(root) {
+  return fs.readFileSync(path.join(root, '.wize/config/project.toml'), 'utf-8').match(/^kit_version = "(.*)"$/m)[1];
+}
+
+test('sync with a pin behind the kit warns on stderr and leaves kit_version alone', () => {
+  const root = tmpProject('wize-sync-behind-');
+  seedInstalledProject(root, { kitVersion: '0.0.1', ideTargets: ['claude-code', 'generic'] });
+  const tomlBefore = fs.readFileSync(path.join(root, '.wize/config/project.toml'), 'utf-8');
+  const { r, out, err } = runSync(root);
+  assert.strictEqual(r.skew, 'project-behind');
+  assert.strictEqual(err[0], `wize: project pinned 0.0.1, running ${KIT_PKG_VERSION}; for an exact render run: npx --yes wize-dev-kit@0.0.1 sync (or update the pin: npx wize-dev-kit@latest update)`);
+  assert.ok(!err.some(l => /prefer:/.test(l)), 'no hydrate hint for a pin that predates hydrate');
+  assert.ok(!out.some(l => /pinned/.test(l)), 'the skew line is stderr only');
+  assert.strictEqual(fs.readFileSync(path.join(root, '.wize/config/project.toml'), 'utf-8'), tomlBefore);
+  assert.strictEqual(kitVersionLine(root), '0.0.1');
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('sync with a pin above the kit uses the use-pin wording', () => {
+  const root = tmpProject('wize-sync-ahead-');
+  seedInstalledProject(root, { kitVersion: '99.0.0', ideTargets: ['generic'] });
+  const { r, err } = runSync(root);
+  assert.strictEqual(r.skew, 'project-ahead');
+  assert.strictEqual(err[0], `wize: project pinned 99.0.0 is newer than this kit ${KIT_PKG_VERSION}; run: npx --yes wize-dev-kit@99.0.0 sync`);
+  assert.ok(!err.some(l => /update the pin/.test(l)));
+  assert.ok(err.includes('prefer: npx wize-dev-kit hydrate'), 'pin >= 0.27.0 gets the hydrate hint');
+  assert.strictEqual(kitVersionLine(root), '99.0.0');
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('sync with a pin equal to the kit is silent about skew', () => {
+  const root = tmpProject('wize-sync-equal-');
+  seedInstalledProject(root, { kitVersion: KIT_PKG_VERSION, ideTargets: ['generic'] });
+  const { r, err } = runSync(root);
+  assert.strictEqual(r.skew, 'none');
+  assert.ok(!err.some(l => /pinned/.test(l)));
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('sync writes the hydration marker with the running kit version and keeps today\'s stdout lines', () => {
+  const root = tmpProject('wize-sync-marker-');
+  seedInstalledProject(root, { kitVersion: '0.0.1', ideTargets: ['claude-code', 'generic'] });
+  const { out } = runSync(root);
+  assert.strictEqual(out[0], 'Syncing 2 adapter(s) for profile(s) core:');
+  assert.ok(out.some(l => /^  ✓ claude-code: \d+ file\(s\) emitted$/.test(l)), out.join('\n'));
+  assert.ok(out.some(l => /^  ✓ generic: \d+ file\(s\) emitted$/.test(l)));
+  assert.ok(out.some(l => l.includes('Done. Restart your IDE')));
+  const m = readMarker(root);
+  assert.strictEqual(m.kit_version, KIT_PKG_VERSION);
+  assert.deepStrictEqual(m.targets, ['claude-code', 'generic']);
+  assert.deepStrictEqual(m.profiles, ['core']);
+  assert.strictEqual(m.rendered_with, KIT_PKG_VERSION);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('sync never writes user.toml, .gitignore or kit_version', () => {
+  const root = tmpProject('wize-sync-nowrite-');
+  seedInstalledProject(root, { kitVersion: '0.0.1', ideTargets: ['generic'] });
+  fs.rmSync(path.join(root, '.wize/config/user.toml'));
+  runSync(root);
+  assert.ok(!fs.existsSync(path.join(root, '.wize/config/user.toml')));
+  assert.ok(!fs.existsSync(path.join(root, '.gitignore')));
+  assert.strictEqual(kitVersionLine(root), '0.0.1');
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('a second sync reports changed:false', () => {
+  const root = tmpProject('wize-sync-twice-');
+  seedInstalledProject(root, { ideTargets: ['claude-code', 'generic'] });
+  assert.strictEqual(runSync(root).r.changed, true);
+  const second = runSync(root);
+  assert.strictEqual(second.r.changed, false);
+  assert.ok(second.r.adapters.every(a => a.written === 0));
+  fs.rmSync(path.join(root, '.claude/skills/wize-orchestrator/SKILL.md'));
+  assert.strictEqual(runSync(root).r.changed, true, 'a deleted file is regenerated');
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('sync without a project.toml returns the empty shape', () => {
+  const root = tmpProject('wize-sync-none-');
+  const { r, out } = runSync(root);
+  assert.deepStrictEqual(r, { changed: false, adapters: [], skew: 'none' });
+  assert.match(out[0], /No \.wize\/config\/project\.toml/);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('`sync` via the CLI exits 0, keeps stdout lines and puts the skew line on stderr', () => {
+  const root = tmpProject('wize-sync-cli-');
+  seedInstalledProject(root, { kitVersion: '0.0.1', ideTargets: ['generic'] });
+  const { spawnSync } = require('node:child_process');
+  const r = spawnSync(process.execPath, [path.join(KIT, 'tools/installer/wize-cli.js'), 'sync'], {
+    cwd: root, encoding: 'utf-8', timeout: 30000,
+    env: { ...process.env, WIZE_DISABLE_UPDATE_CHECK: '1' }
+  });
+  assert.strictEqual(r.status, 0, r.stderr);
+  assert.match(r.stdout, /Syncing 1 adapter\(s\)/);
+  assert.match(r.stdout, /✓ generic: \d+ file\(s\) emitted/);
+  assert.match(r.stderr, /wize: project pinned 0\.0\.1, running /);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
 // ---------- agent ----------
 
 test('cmdAgentList returns every built-in agent + any custom present', () => {
@@ -207,4 +319,27 @@ test('cmdVersionCheck (human) points at npx wize-dev-kit@latest update when behi
     assert.match(out, /Update available/);
     assert.match(out, /npx wize-dev-kit@latest update/);
   });
+});
+
+// ---------- hints never await the network ----------
+
+test('`sync` returns quickly even when fetch hangs forever', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wize-hang-'));
+  const stub = path.join(dir, 'hang-fetch.js');
+  fs.writeFileSync(stub, 'global.fetch = () => new Promise(() => {});\n');
+  const proj = path.join(dir, 'proj');
+  fs.mkdirSync(path.join(proj, '.wize/config'), { recursive: true });
+  fs.writeFileSync(path.join(proj, '.wize/config/project.toml'),
+    '[project]\nname = "x"\n\n[install]\nide_targets = ["generic"]\nprofiles = ["core"]\n');
+  const { spawnSync } = require('node:child_process');
+  const t0 = Date.now();
+  const r = spawnSync(process.execPath, ['--require', stub, path.join(KIT, 'tools/installer/wize-cli.js'), 'sync'], {
+    cwd: proj,
+    encoding: 'utf-8',
+    timeout: 20000,
+    env: { ...process.env, WIZE_DISABLE_UPDATE_CHECK: '', XDG_CACHE_HOME: path.join(dir, 'cache'), CI: '' }
+  });
+  assert.strictEqual(r.status, 0, r.stderr);
+  assert.ok(Date.now() - t0 < 10000, 'not blocked on the registry');
+  fs.rmSync(dir, { recursive: true, force: true });
 });

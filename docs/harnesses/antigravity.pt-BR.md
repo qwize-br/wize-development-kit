@@ -18,3 +18,5 @@ O Antigravity usa o mesmo formato público de Skill da Anthropic que o Claude Co
 ## Como ativar
 
 Escolha **Antigravity** como alvo de IDE em `npx wize-dev-kit install` (ou adicione depois e rode `npx wize-dev-kit sync`). Reinicie o Antigravity e rode `/wize-orchestrator` ou peça pra ele ler o `AGENTS.md`.
+
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).

@@ -158,8 +158,9 @@ Transversales:
     /wize-check                 Checklist de avance de la demanda en vuelo: hecho
                                 (con evidencia), en curso, lo que falta — luego
                                 retoma el trabajo interrumpido.
-    /wize-update                Revisa si el kit está desactualizado, muestra el
-                                changelog, confirma y aplica la actualización.
+    /wize-update                Mantenimiento del kit: hidrata un checkout sin skills,
+                                prepara la rama del bump localmente y abre el PR
+                                tras una confirmación de push.
     /wize-grill                 Entrevista-hasta-entendimiento antes de cualquier
                                 paso de autoría.
     /wize-no-ai-slop            Higiene de escrita para texto de usuario final:
@@ -239,11 +240,31 @@ Con el perfil **Wize Security** instalado, **Natasha Romanoff** (`wize-sec-red-t
 
 ---
 
+## Worktrees y actualizaciones automáticas
+
+Un `git worktree` nuevo no tiene las skills generadas (están en el `.gitignore`). Un comando lo resuelve:
+
+```bash
+npx wize-dev-kit hydrate    # renderiza este checkout desde project.toml; no escribe en archivos rastreados
+```
+
+- El pin `kit_version` en `.wize/config/project.toml` decide qué kit renderiza el repo, para todo el equipo.
+- `/wize` lee el pin e hidrata un checkout vacío sin preguntar. `hooks install` (Claude Code, Cursor) y `hooks print` (Orca, Codex) hacen lo mismo al crear el worktree. Una GitHub Action semanal abre el PR de bump.
+- `update` prepara `chore/wize-kit-<versión>` en un worktree desechable. Nunca toca tu checkout ni la rama por defecto; `--pr` hace push y abre el PR. En un repo existente, ejecuta `npx wize-dev-kit@latest update --pr` una vez y haz el merge.
+- Para desactivar la consulta al registry, usa `WIZE_DISABLE_UPDATE_CHECK=1`.
+
+Guía completa: [`docs/WORKTREES.md`](docs/WORKTREES.md) (en inglés; también en [pt-BR](docs/WORKTREES.pt-BR.md)).
+
+---
+
 ## Comandos de la CLI
 
 ```bash
 npx wize-dev-kit install         # setup interactivo
-npx wize-dev-kit update          # actualiza un kit instalado a la versión actual
+npx wize-dev-kit update          # prepara la rama de bump del kit en un worktree temporal (--pr, --check, --in-place)
+npx wize-dev-kit update --pr     # también hace push de la rama y abre el PR
+npx wize-dev-kit hydrate         # renderiza un checkout/worktree nuevo desde el pin; nunca toca archivos rastreados
+npx wize-dev-kit hooks <install|print>  # automatización opt-in: hydrate al crear worktree/sesión, PR semanal de bump
 npx wize-dev-kit sync            # re-renderiza los adapters de IDE tras editar la config
 npx wize-dev-kit list            # lista agentes, skills y workflows instalados
 npx wize-dev-kit agent list      # lista agentes nativos + personalizados
@@ -251,13 +272,13 @@ npx wize-dev-kit agent create    # crea un nuevo agente personalizado (validado 
 npx wize-dev-kit agent edit <code>  # sobrescribe un agente nativo
 npx wize-dev-kit workflow list   # lista workflows nativos + personalizados
 npx wize-dev-kit workflow create # crea un nuevo workflow personalizado
-npx wize-dev-kit doctor          # diagnostica kit / proyecto / adapters / gates
+npx wize-dev-kit doctor [--json] [--strict]  # diagnostica kit / proyecto / hidratación / adapters / gates
 npx wize-dev-kit validate        # chequeos estructurales en los assets del kit
-npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--target <path>]
+npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--force] [--target <path>]
 npx wize-dev-kit uninstall       # elimina .wize/ (tu código queda intacto)
 npx wize-dev-kit help            # referencia de comandos
 npx wize-dev-kit version         # imprime la versión instalada del kit
-npx wize-dev-kit version-check [--json]  # instalada vs. más reciente (con caché; scriptable; nunca bloquea)
+npx wize-dev-kit version-check [--json] [--exit-code]  # pin, hidratación y registry; indica la siguiente acción (con caché; como máximo ~1,5 s de espera del registry)
 ```
 
 ---
@@ -269,6 +290,7 @@ npx wize-dev-kit version-check [--json]  # instalada vs. más reciente (con cach
 - [`AGENTS.md`](AGENTS.md) — el roster generado + el contexto operativo que las IDEs leen en la raíz del repo.
 - [`DECISIONS.md`](DECISIONS.md) — registro de decisiones.
 - [`CHANGELOG.md`](CHANGELOG.md) — historial de releases.
+- [`docs/WORKTREES.md`](docs/WORKTREES.md) — worktrees, hydrate, hooks y el flujo de update (en inglés; también en [pt-BR](docs/WORKTREES.pt-BR.md)).
 - [`docs/harnesses/`](docs/harnesses/) — un doc por [harness soportado](#harnesses-soportados), en inglés + [pt-BR](README.pt-BR.md#harnesses-suportadas).
 
 ---

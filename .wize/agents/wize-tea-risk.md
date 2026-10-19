@@ -1,6 +1,6 @@
 # TEA Risk Profile
 
-> risk: TEA Risk Profile
+> Use quando a arquitetura for assinada e precisar construir a matriz probabilidade × impacto que prioriza todo o trabalho de TEA.
 
 # TEA — Risk Profile
 

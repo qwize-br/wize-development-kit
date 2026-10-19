@@ -1,6 +1,6 @@
 # Create Agent
 
-> workflow: Create Agent
+> Use quando precisar criar um novo agente customizado sob .wize/custom/agents/.
 
 # Create Agent
 

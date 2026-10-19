@@ -5,9 +5,8 @@
 
 'use strict';
 
-const fs = require('node:fs');
 const path = require('node:path');
-const { collectAssets, escapeYamlDouble, clipOneLine, ensureDir } = require('../../tools/installer/render-shared.js');
+const { collectAssets, escapeYamlDouble, clipOneLine, ensureDir, writeFileIfChanged } = require('../../tools/installer/render-shared.js');
 
 function render(kitRoot, projectRoot, opts = {}) {
   const targetDir = path.join(projectRoot, '.cursor', 'rules');
@@ -39,7 +38,7 @@ function render(kitRoot, projectRoot, opts = {}) {
     if (opts.dryRun) {
       written.push(`[dry-run] ${a.code}.mdc`);
     } else {
-      fs.writeFileSync(path.join(targetDir, `${a.code}.mdc`), content, 'utf-8');
+      writeFileIfChanged(path.join(targetDir, `${a.code}.mdc`), content);
       written.push(`${a.code}.mdc`);
     }
   }

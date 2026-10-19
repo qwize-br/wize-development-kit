@@ -97,17 +97,27 @@ When intent is ambiguous or no intent phrase matches, apply this heuristic top-d
 
 See the full intent routing table in `wize-help/skill.md` (Step 2a). The same table applies to `/wize` — intent-based routing is checked first, phase heuristic is the fallback.
 
-## Step 2.5 — version skew (proactive)
+## Step 2.5 — kit state (proactive)
 
-If you have Bash, run `npx wize-dev-kit version-check --json` once — it reads a local 1h cache before touching the network, caps any registry call at ~1.5s, and degrades to `{"latest":null}` silently if offline, so this never blocks the response. Compare its `installed` field against `kit_version` (project.toml):
+If you have Bash, run `npx --yes --fetch-retries=0 wize-dev-kit version-check --json` once per conversation and obey its `action`. Never compare versions by hand. The command reads a local cache and caps its own registry call at about 1.5s. The `--fetch-retries=0` flag turns off npm's own retries, so npx fails quickly when the network refuses connections; it cannot cap a network that silently drops packets, so prefix the command with `timeout 20` where that exists. If npx fails or times out, skip this step.
 
-| Condition | Suggest |
+| `action` | Do |
 |---|---|
-| `installed` > `kit_version` (project.toml) | `/wize-update` |
-| `latest` > `installed` | `/wize-update` |
-| everything matches, or `latest` is `null` | nothing |
+| `hydrate` | Run `commands.hydrate` now, without asking: it writes only git-ignored files. Then one line: restart the harness if the `/wize-*` commands are still missing. |
+| `update` | Run `commands.update` now, without asking (except for `pin-unpublished`, below): it is local, runs in an isolated temp worktree, and never touches this checkout or the default branch. Report the branch in one line, then ask once: *"Abrir PR do bump do kit? (git push)"*. Run `commands.pr` only on a yes. |
+| `use-pin` | Show the exact command `npx wize-dev-kit@<pin>`, with `<pin>` from `project.pin`. Run nothing. |
+| `install` | Show `commands.install` (see `wize-onboarding`). |
+| `none` | Say nothing. |
 
-Phrase as one short line, not a banner — and only the **first time in this conversation**. If you already mentioned it earlier in this session, don't repeat it.
+Exception: when `reason` is `pin-unpublished`, the project pin is newer than the registry's latest, and `commands.update` lowers it (`--allow-downgrade`). Never run it unattended. Ask first: *"O pin do projeto (<pin>) é mais novo que o último publicado (<latest>). Rebaixar o pin?"*, and run it only on a yes. Do not offer the PR as a "bump".
+
+Exception: when `reason` is `kit-not-on-branch` (`action` is `none`), this linked worktree's branch has no kit while `kit_at` does. One line: merge the kit into this branch, or install here with `install --here`. Do not run `install`.
+
+`disabled: true` only turns off update checks: `action` can still be `hydrate`, `use-pin` or `install`, so follow it.
+
+Loop guard: run `version-check` and its follow-up command once per conversation. After a `hydrate` or `update`, do not run `version-check` again to confirm.
+
+No Bash: one line suggesting `/wize-update`.
 
 ## Step 3 — respond
 

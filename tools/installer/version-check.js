@@ -5,18 +5,24 @@
 // the registry is misbehaving.
 //
 // Strategy:
-//   - Cache the registry answer in $XDG_CACHE_HOME (or ~/.cache) for 1 hour.
-//   - Resolve via fetch with a 1.5s timeout. Failure is silent.
+//   - Cache the registry answer in $XDG_CACHE_HOME (or ~/.cache) as
+//     { version, fetched_at, attempted_at }. The 1h TTL runs from fetched_at.
+//   - Hints never wait on the network: getLatestNoWait() returns whatever is
+//     cached (any age) and, when it is stale, starts a detached refresher.
+//   - The explicit `version-check` command resolves via fetch with a 1.5s
+//     timeout. Failure is silent and falls back to the cache.
 //   - Compare with the kit version baked into the running CLI.
-//   - Expose a `printUpdateHintIfAny(currentVersion)` helper for the CLI.
 
 'use strict';
 
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const childProcess = require('node:child_process');
+const { semverGreater, compareVersions } = require('./semver.js');
 
 const CACHE_TTL_MS = 60 * 60 * 1000;       // 1h
+const ATTEMPT_THROTTLE_MS = 10 * 60 * 1000; // 10 min between background refresh attempts
 const NETWORK_TIMEOUT_MS = 1500;
 
 function cacheFile() {
@@ -24,15 +30,41 @@ function cacheFile() {
   return path.join(base, 'wize-dev-kit', 'registry-version.json');
 }
 
-function readCache() {
+function toMs(v) {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string') { const t = Date.parse(v); if (Number.isFinite(t)) return t; }
+  return null;
+}
+
+// The cache entry regardless of age: { version, fetchedAt, attemptedAt }.
+// fetched_at drives the TTL; the file mtime only stands in for a legacy payload
+// that has none. Null when the file is missing or unreadable.
+function readCacheEntry() {
   const f = cacheFile();
   try {
     const stat = fs.statSync(f);
-    if (Date.now() - stat.mtimeMs > CACHE_TTL_MS) return null;
-    return JSON.parse(fs.readFileSync(f, 'utf-8'));
+    const payload = JSON.parse(fs.readFileSync(f, 'utf-8'));
+    if (!payload || typeof payload !== 'object') return null;
+    const fetchedAt = toMs(payload.fetched_at);
+    return {
+      version: typeof payload.version === 'string' && payload.version ? payload.version : null,
+      fetchedAt: fetchedAt === null ? stat.mtimeMs : fetchedAt,
+      attemptedAt: toMs(payload.attempted_at) || 0,
+      payload
+    };
   } catch (_) {
     return null;
   }
+}
+
+function isFresh(entry, now = Date.now()) {
+  return !!(entry && entry.version && now - entry.fetchedAt <= CACHE_TTL_MS);
+}
+
+// Returns the cached payload only while it is fresh.
+function readCache() {
+  const entry = readCacheEntry();
+  return isFresh(entry) ? entry.payload : null;
 }
 
 function writeCache(payload) {
@@ -43,7 +75,19 @@ function writeCache(payload) {
   } catch (_) { /* cache failure is harmless */ }
 }
 
-async function fetchLatestFromRegistry() {
+// Records a refresh attempt without touching the cached answer or its age.
+function markAttempted(now = Date.now()) {
+  const entry = readCacheEntry();
+  writeCache({
+    version: entry ? entry.version : null,
+    fetched_at: entry ? entry.fetchedAt : 0,
+    attempted_at: now
+  });
+}
+
+// { latest, versions } from the registry packument, or null on any failure.
+// `versions` lists every published version (null when the packument has none).
+async function fetchRegistryInfo() {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), NETWORK_TIMEOUT_MS);
   try {
@@ -54,7 +98,9 @@ async function fetchLatestFromRegistry() {
     if (!res.ok) return null;
     const body = await res.json();
     const latest = body && body['dist-tags'] && body['dist-tags'].latest;
-    return typeof latest === 'string' ? latest : null;
+    if (typeof latest !== 'string') return null;
+    const versions = body.versions && typeof body.versions === 'object' ? Object.keys(body.versions) : null;
+    return { latest, versions };
   } catch (_) {
     return null;   // any error → silent fallback
   } finally {
@@ -62,41 +108,107 @@ async function fetchLatestFromRegistry() {
   }
 }
 
+async function fetchLatestFromRegistry() {
+  const info = await fetchRegistryInfo();
+  return info ? info.latest : null;
+}
+
+// Resolves the registry-latest version: fresh cache first, then the network
+// (capped, abortable). On failure the previous answer survives as a stale
+// cache hit. Never throws.
+// -> { latest, source: 'cache'|'network'|'none', stale }
+async function resolveLatest({ skipCache = false } = {}) {
+  const entry = readCacheEntry();
+  if (!skipCache && isFresh(entry)) return { latest: entry.version, source: 'cache', stale: false };
+  const info = await fetchRegistryInfo();
+  if (info) {
+    const now = Date.now();
+    writeCache({ version: info.latest, fetched_at: now, attempted_at: now });
+    return { latest: info.latest, source: 'network', stale: false, versions: info.versions };
+  }
+  markAttempted();
+  if (entry && entry.version) return { latest: entry.version, source: 'cache', stale: true };
+  return { latest: null, source: 'none', stale: false };
+}
+
 // Returns the registry-latest version, hitting the cache first. Never throws,
-// never blocks meaningfully (network call is capped + abortable).
+// never blocks meaningfully (network call is capped + abortable). A stale
+// cache is not an answer here: when the fetch fails this resolves to null.
 async function getLatestVersion({ skipCache = false } = {}) {
-  if (!skipCache) {
-    const c = readCache();
-    if (c && c.version) return c.version;
-  }
-  const fresh = await fetchLatestFromRegistry();
-  if (fresh) writeCache({ version: fresh, fetched_at: Date.now() });
-  return fresh;
+  const r = await resolveLatest({ skipCache });
+  return r.stale ? null : r.latest;
 }
 
-function semverGreater(a, b) {
-  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0);
-  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
-  for (let i = 0; i < 3; i++) {
-    if ((pa[i] || 0) > (pb[i] || 0)) return true;
-    if ((pa[i] || 0) < (pb[i] || 0)) return false;
-  }
-  return false;
+function isCI(env = process.env) {
+  const v = env.CI;
+  return !!v && v !== '0' && v.toLowerCase() !== 'false';
 }
 
-// Prints a one-line hint when a newer version is available. Silent otherwise.
-// Designed to be awaited near the top of a CLI command; if anything is slow
-// or off, it just returns.
-async function printUpdateHintIfAny(currentVersion, { log = console.log, isTTY = process.stdout.isTTY } = {}) {
-  if (process.env.WIZE_DISABLE_UPDATE_CHECK === '1') return;
-  if (!isTTY) return;            // don't spam pipes
+function refresherArgs() {
+  return [path.join(__dirname, 'wize-cli.js'), 'version-check', '--refresh', '--quiet'];
+}
+
+// Stale-while-revalidate: returns the cached version whatever its age (null
+// when there is none) and never waits on the network. When the cache is
+// older than the TTL and no attempt was made in the last 10 minutes, stamps
+// attempted_at and starts a detached `version-check --refresh --quiet`.
+// No refresher runs when updates are disabled, in CI, or with
+// WIZE_NO_BG_REFRESH=1. `spawn` is injectable for tests.
+function getLatestNoWait({ spawn = childProcess.spawn, env = process.env, now = Date.now() } = {}) {
+  const entry = readCacheEntry();
+  const version = entry ? entry.version : null;
   try {
-    const latest = await getLatestVersion();
-    if (!latest) return;
-    if (semverGreater(latest, currentVersion)) {
+    if (env.WIZE_DISABLE_UPDATE_CHECK === '1' || env.WIZE_NO_BG_REFRESH === '1' || isCI(env)) return version;
+    if (isFresh(entry, now)) return version;
+    if (entry && now - entry.attemptedAt < ATTEMPT_THROTTLE_MS) return version;
+    markAttempted(now);
+    const child = spawn(process.execPath, refresherArgs(), {
+      detached: true,
+      stdio: 'ignore',
+      env: { ...env, WIZE_NO_BG_REFRESH: '1' }
+    });
+    if (child && typeof child.on === 'function') child.on('error', () => {});
+    if (child && typeof child.unref === 'function') child.unref();
+  } catch (_) { /* a failed spawn never disturbs the command */ }
+  return version;
+}
+
+// One-line hints for a human's terminal. Never waits on the network: the
+// registry answer comes from getLatestNoWait. Silent when stdout is not a
+// TTY, in CI, when updates are disabled, or when `--json` is in argv.
+// When the project's kit_version trails the running kit, that line comes
+// first.
+async function printUpdateHintIfAny(currentVersion, opts = {}) {
+  const {
+    log = console.log,
+    isTTY = process.stdout.isTTY,
+    env = process.env,
+    argv = process.argv.slice(2),
+    projectRoot = null,
+    spawn
+  } = opts;
+  if (env.WIZE_DISABLE_UPDATE_CHECK === '1') return;
+  if (!isTTY) return;            // don't spam pipes
+  if (isCI(env)) return;
+  if (argv.includes('--json')) return;
+  try {
+    const lines = [];
+    if (projectRoot) {
+      const { loadProjectConfig } = require('./toml.js');
+      const cfg = loadProjectConfig(projectRoot);
+      const pin = cfg.project && cfg.project.kit_version;
+      if (pin && compareVersions(pin, currentVersion) < 0) {
+        lines.push(`  ↑ wize-dev-kit: project pinned ${pin}, kit ${currentVersion} -> run npx wize-dev-kit@latest update (or /wize-update)`);
+      }
+    }
+    const latest = getLatestNoWait({ env, ...(spawn ? { spawn } : {}) });
+    if (latest && semverGreater(latest, currentVersion)) {
+      lines.push(`  ↑ Update available: wize-dev-kit ${currentVersion} → ${latest}`);
+      lines.push('    Run `npx wize-dev-kit@latest update` in your project to refresh adapters.');
+    }
+    if (lines.length) {
       log('');
-      log(`  ↑ Update available: wize-dev-kit ${currentVersion} → ${latest}`);
-      log(`    Run \`npx wize-dev-kit@latest update\` in your project to refresh adapters.`);
+      for (const l of lines) log(l);
       log('');
     }
   } catch (_) {
@@ -123,15 +235,33 @@ async function getVersionCheckResult(currentVersion, { skipCache = false } = {})
   };
 }
 
+// Same answer plus where it came from. Unlike getVersionCheckResult it falls
+// back to a stale cache when the registry is unreachable.
+async function getVersionCheckDetailed(currentVersion, { skipCache = false } = {}) {
+  if (process.env.WIZE_DISABLE_UPDATE_CHECK === '1') {
+    return { installed: currentVersion, latest: null, updateAvailable: false, disabled: true, latest_source: 'none' };
+  }
+  const r = await resolveLatest({ skipCache });
+  return {
+    installed: currentVersion,
+    latest: r.latest,
+    updateAvailable: r.latest ? semverGreater(r.latest, currentVersion) : false,
+    latest_source: r.source,
+    ...(r.versions ? { published_versions: r.versions } : {})
+  };
+}
+
 module.exports = {
-  CACHE_TTL_MS,
-  NETWORK_TIMEOUT_MS,
   cacheFile,
   readCache,
   writeCache,
   fetchLatestFromRegistry,
+  resolveLatest,
   getLatestVersion,
+  getLatestNoWait,
   semverGreater,
+  isCI,
   printUpdateHintIfAny,
-  getVersionCheckResult
+  getVersionCheckResult,
+  getVersionCheckDetailed
 };

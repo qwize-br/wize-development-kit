@@ -4,9 +4,8 @@
 
 'use strict';
 
-const fs = require('node:fs');
 const path = require('node:path');
-const { collectAssets, renderAgentsMd, clipOneLine, ensureDir } = require('../../tools/installer/render-shared.js');
+const { collectAssets, renderAgentsMd, clipOneLine, ensureDir, writeFileIfChanged } = require('../../tools/installer/render-shared.js');
 
 function render(kitRoot, projectRoot, opts = {}) {
   const targetDir = path.join(projectRoot, '.wize', 'agents');
@@ -21,7 +20,7 @@ function render(kitRoot, projectRoot, opts = {}) {
     if (opts.dryRun) {
       written.push(`[dry-run] ${a.code}.md`);
     } else {
-      fs.writeFileSync(path.join(targetDir, `${a.code}.md`), content, 'utf-8');
+      writeFileIfChanged(path.join(targetDir, `${a.code}.md`), content);
       written.push(`${a.code}.md`);
     }
   }

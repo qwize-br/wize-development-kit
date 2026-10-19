@@ -1,9 +1,15 @@
 ---
-description: "1-analysis: Technical Research"
+description: "Use quando precisar pesquisar tecnologias, stacks, bibliotecas ou decisões técnicas."
 agent: wize-agent-analyst
 ---
 
 # Technical Research
+
+> **Variante de pesquisa.** Para outros tipos de pesquisa, veja:
+> - Mercado/concorrência → `/wize-market-research`
+> - Domínio/indústria → `/wize-domain-research`
+> - Técnica/stack → `/wize-technical-research`
+> - Pesquisa geral (dispatcher) → `/wize-research`
 
 # Technical Research
 

@@ -51,3 +51,15 @@ test('READMEs credit unslop next to No AI Slop', () => {
     assert.match(text, /\[unslop\]\(https:\/\/github\.com\/michaelshimeles\/skills\/tree\/main\/unslop\) (by|por) Lauren Tan \(MIT\)/, f);
   }
 });
+
+test('WORKTREES guides avoid the banned vocabulary', () => {
+  const skill = read(SLOP);
+  const line = skill.split('\n').find((l) => l.startsWith('- **Banned:**'));
+  assert.ok(line, 'banned list not found in the skill');
+  const words = line.replace('- **Banned:**', '').replace(/\.$/, '').split(',').map((w) => w.trim()).filter((w) => /^[a-z]+$/.test(w) && w !== 'harness'); // 'harness' is the kit's noun for an AI IDE, not the verb
+  assert.ok(words.length > 10);
+  for (const f of ['docs/WORKTREES.md']) {
+    const text = read(f).toLowerCase();
+    for (const w of words) assert.ok(!new RegExp(`\\b${w}\\b`).test(text), `${f} uses "${w}"`);
+  }
+});

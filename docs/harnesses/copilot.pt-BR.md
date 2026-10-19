@@ -57,6 +57,8 @@ Arquivos `wize-*` gerados ficam no `.gitignore` (regenere com
 `npx wize-dev-kit sync`). Skills de time escritas à mão ao lado deles devem ser
 commitadas.
 
+Clone ou worktree novo: os arquivos gerados estão no `.gitignore`, então rode `npx wize-dev-kit hydrate` ali (sem perguntas, não toca arquivo rastreado). Para o cloud agent, adicione `npx --yes wize-dev-kit hydrate` como um passo em `.github/workflows/copilot-setup-steps.yml`. Veja [Worktrees e atualizações automáticas](../WORKTREES.pt-BR.md).
+
 ## Headless
 
 `copilot -p "<prompt>"` roda uma sessão one-shot sem entrar na UI interativa — é o

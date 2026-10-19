@@ -16,10 +16,21 @@ const path = require('node:path');
 const readline = require('node:readline');
 const { execSync } = require('node:child_process');
 const prompts = require('prompts');
-const { applyGitignore, generateUserToml } = require('./setup-helpers.js');
-const { cmdUpdate, loadProjectConfig } = require('./commands/update.js');
+const { applyGitignore, generateUserToml, ALIAS_BY_TARGET } = require('./setup-helpers.js');
+const { cmdUpdate } = require('./commands/update.js');
+const { loadProjectConfig } = require('./toml.js');
+const { resolveRoot } = require('./project-root.js');
+const { renderTargets } = require('./render-targets.js');
 const { printUpdateHintIfAny } = require('./version-check.js');
 const { cmdVersionCheck } = require('./commands/version-check.js');
+const { cmdHydrate } = require('./commands/hydrate.js');
+const { writeMarker } = require('./marker.js');
+const { cmdHooks } = require('./commands/hooks.js');
+const {
+  checkInstallRoot, conflictingFlags, installedPin, resolveProjectName, resolveUserName,
+  baselineDecision, resolveUninstallRoot
+} = require('./install-plan.js');
+const { gitContext } = require('./git-context.js');
 const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 const { cmdDoctor, adapterTargetPath } = require('./commands/doctor.js');
@@ -73,17 +84,19 @@ Usage:
   wize-dev-kit <command> [options]
 
 Commands:
-  install                 Install the kit into the current repo (interactive).
-  update                  Apply upstream diff while preserving customizations.
-  version-check [--json]  Check installed vs. latest version (scriptable; never blocks).
+  install                 Install the kit at the repo root (interactive); on an installed project it only hydrates.
+  update                  Converge to this kit: pin kit_version + managed .gitignore + AGENTS block; prepares chore/wize-kit-<v> in a temp worktree (--pr pushes + opens PR).
+  hydrate                 Render this checkout from project.toml (worktree-safe; never touches tracked files).
+  hooks <install|print>   Opt-in automation: hooks install [--claude] [--cursor] [--github-action]; hooks print <orca|claude|cursor|codex|github-action>.
+  version-check [--json]  Check project pin, hydration and registry; names the next action (scriptable).
   uninstall               Remove the kit from the current repo (preserves code).
   list                    List installed agents, skills and workflows.
   sync                    Regenerate IDE adapters for active targets.
   agent <create|list>     Manage agents (built-in or custom).
   workflow <create|list>  Manage workflows.
   validate                Run schema + lint + dry-run validators.
-  doctor                  Diagnose the kit + project state, suggest fixes.
-  document-project        Document the current repo (quick | initial_scan | full_rescan | deep_dive).
+  doctor [--json] [--strict]  Diagnose the kit + project state (hydration, skew, leaks) and suggest fixes.
+  document-project        Document the current repo (quick | initial_scan | full_rescan | deep_dive); existing files are kept unless --force.
   help                    Show this message.
 
 Documentation:
@@ -308,7 +321,7 @@ async function multiSelect(label, items, isSelected = i => i.default) {
 }
 
 function isGitRepo(dir) {
-  return fs.existsSync(path.join(dir, '.git'));
+  return gitContext(dir).isRepo;
 }
 
 function detectBrownfield(dir) {
@@ -404,33 +417,15 @@ gate    = { granularity = "per-story" }
 }
 
 function renderAdapters({ kitRoot, projectRoot, targets, profiles }) {
-  const results = [];
-  const profileCodes = profiles.map(p => p.code);
-  for (const target of targets) {
-    const adapterDir = path.join(kitRoot, 'adapters', target.code);
-    const renderPath = path.join(adapterDir, 'render.js');
-    if (!fs.existsSync(renderPath)) {
-      results.push({ code: target.code, skipped: true, reason: 'adapter missing' });
-      continue;
-    }
-    try {
-      const mod = require(renderPath);
-      if (typeof mod.render !== 'function') {
-        results.push({ code: target.code, skipped: true, reason: 'no render() export' });
-        continue;
-      }
-      const out = mod.render(kitRoot, projectRoot, { profiles: profileCodes });
-      if (out && typeof out === 'object' && Array.isArray(out.written)) {
-        results.push({ code: target.code, written: out.written.length });
-      } else {
-        results.push({ code: target.code, skipped: true, reason: 'stub (no skills emitted)' });
-      }
-    } catch (err) {
-      results.push({ code: target.code, error: err.message });
-    }
-  }
-  return results;
+  return renderTargets({ kitRoot, projectRoot, targets, profiles }).adapters;
 }
+
+// Flags that never take a value: the next token stays positional.
+const BOOLEAN_FLAGS = new Set([
+  'yes', 'json', 'quiet', 'strict', 'check', 'dry-run', 'if-needed', 'no-delegate',
+  'no-notice', 'no-render', 'in-place', 'pr', 'allow-downgrade', 'exit-code',
+  'refresh', 'here', 'force', 'baseline', 'claude', 'cursor', 'github-action'
+]);
 
 // Parse --key value and --flag from an argv slice. Returns { flags, positional }.
 function parseArgs(args) {
@@ -440,9 +435,11 @@ function parseArgs(args) {
     const a = args[i];
     if (a.startsWith('--')) {
       const key = a.slice(2);
-      if (key.includes('=')) {
-        const [k, v] = key.split('=', 2);
-        flags[k] = v;
+      const eq = key.indexOf('=');
+      if (eq !== -1) {
+        flags[key.slice(0, eq)] = key.slice(eq + 1);
+      } else if (BOOLEAN_FLAGS.has(key)) {
+        flags[key] = true;
       } else if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
         flags[key] = args[++i];
       } else {
@@ -453,6 +450,22 @@ function parseArgs(args) {
     }
   }
   return { flags, positional };
+}
+
+// Drops `--name value` / `--name=value` pairs, value included, so a
+// sub-command's own option parser never sees them.
+function stripValueFlags(args, names) {
+  const out = [];
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    const key = a.startsWith('--') ? a.slice(2).split('=')[0] : null;
+    if (key && names.includes(key)) {
+      if (!a.includes('=') && i + 1 < args.length && !args[i + 1].startsWith('--')) i++;
+      continue;
+    }
+    out.push(a);
+  }
+  return out;
 }
 
 function resolveProfiles(flags) {
@@ -489,15 +502,6 @@ function resolveLang(flags) {
   return null;
 }
 
-function resolveName(flags) {
-  if (flags.name) return flags.name.trim();
-  if (flags.yes) {
-    try { return execSync('git config user.name', { encoding: 'utf-8' }).trim(); } catch (_) {}
-    return process.env.USER || process.env.USERNAME || 'Developer';
-  }
-  return null;
-}
-
 // --yes quick install: everything on. All harnesses + all overlays, so
 // `npx wize-dev-kit install --yes` is a true one-shot full install.
 function defaultProfiles() {
@@ -513,6 +517,53 @@ async function cmdInstall(args) {
   const { flags } = parseArgs(args);
   const dryRun = !!flags['dry-run'];
   const nonInteractive = !!flags.yes;
+
+  const guard = checkInstallRoot({ cwd, flags });
+  if (guard.status === 'nested') {
+    console.error(`✖ ${guard.message}`);
+    process.exit(1);
+  }
+  if (guard.status === 'primary') {
+    if (nonInteractive) {
+      console.log(`wize: ${guard.message}; skipping install`);
+      return;
+    }
+    console.error(`✖ ${guard.message}`);
+    process.exit(1);
+  }
+  if (guard.status === 'subdir') {
+    if (nonInteractive) {
+      console.error(`✖ ${guard.message}`);
+      process.exit(1);
+    }
+    console.log(`\n⚠ ${cwd} não é a raiz do repositório git (${guard.toplevel}).`);
+    const ok = await confirm('Instalar aqui mesmo assim?', false);
+    if (!ok) process.exit(1);
+  }
+
+  // Existing project: never reconfigure. Hydrate this checkout and stop, so
+  // `install --yes` stays safe in worktree hooks.
+  if (guard.installed) {
+    const pin = installedPin(cwd);
+    const conflicts = conflictingFlags({ flags, root: cwd });
+    if (conflicts.length) {
+      console.error(`✖ ${conflicts.join(', ')} differ from .wize/config/project.toml: edit [install] in .wize/config/project.toml, then run hydrate`);
+      process.exit(1);
+    }
+    console.log(`kit already installed (kit_version ${pin}): hydrating; run \`npx wize-dev-kit@latest update\` to refresh the managed .gitignore / AGENTS block`);
+    if (dryRun) {
+      console.log('[DRY-RUN] Executaria hydrate. Nenhum arquivo foi modificado.');
+      return;
+    }
+    const r = cmdHydrate({
+      kitRoot: KIT_ROOT,
+      binary: KIT_VERSION,
+      projectRoot: cwd,
+      flags: { 'no-delegate': !!flags['no-delegate'], quiet: !!flags.quiet, 'no-notice': !!flags['no-notice'] }
+    });
+    process.exitCode = r.exitCode || 0;
+    return;
+  }
 
   console.log(logo());
   if (dryRun) console.log('[DRY-RUN] Nenhum arquivo será modificado.\n');
@@ -539,15 +590,16 @@ async function cmdInstall(args) {
   let project_name, profiles, targets, communication_language, document_output_language, user_name, wantsGitignore;
 
   if (nonInteractive) {
-    project_name = flags.name ? resolveName(flags) : (path.basename(cwd));
+    project_name = resolveProjectName({ flags, cwd, ctx: guard.ctx });
     profiles = resolveProfiles(flags) || defaultProfiles();
     targets = resolveTargets(flags) || defaultTargets();
     communication_language = resolveLang(flags) || 'pt-BR';
     document_output_language = resolveLang(flags) || communication_language;
-    user_name = resolveName(flags);
+    user_name = resolveUserName({ flags, cwd, nonInteractive: true });
     wantsGitignore = true;
   } else {
-    project_name = (await promptText(`Nome do projeto`, path.basename(cwd))) || path.basename(cwd);
+    const defaultProject = resolveProjectName({ flags, cwd, ctx: guard.ctx });
+    project_name = (await promptText(`Nome do projeto`, defaultProject)) || defaultProject;
     profiles = await multiSelect('Selecione o(s) perfil(is) para instalar', PROFILES);
     targets = await multiSelect('Selecione o(s) IDE target(s)', TARGETS);
 
@@ -560,7 +612,7 @@ async function cmdInstall(args) {
       communication_language
     );
 
-    const defaultName = (os.userInfo().username || '').trim();
+    const defaultName = resolveUserName({ flags, cwd }) || (os.userInfo().username || '').trim();
     user_name = await promptTextMandatory(
       'Como os agentes devem te chamar?',
       defaultName
@@ -631,14 +683,32 @@ async function cmdInstall(args) {
   });
   for (const r of renderResults) {
     if (r.skipped) console.log(`  - ${r.code}: pulado (${r.reason})`);
-    else if (r.written) console.log(`  ✓ ${r.code}: ${r.written} skill(s) emitidas`);
     else if (r.error) console.log(`  ✖ ${r.code}: ${r.error}`);
+    else console.log(`  ✓ ${r.code}: ${r.written + r.unchanged} arquivo(s) emitidos`);
+  }
+  if (!renderResults.some(r => r.error)) {
+    writeMarker(cwd, {
+      kit_version: KIT_VERSION,
+      pin: KIT_VERSION,
+      targets: targets.map(t => t.code),
+      profiles: profiles.map(p => p.code),
+      counts: {
+        written: renderResults.reduce((n, r) => n + (r.written || 0), 0),
+        unchanged: renderResults.reduce((n, r) => n + (r.unchanged || 0), 0),
+        skipped_tracked: 0
+      },
+      delegated: false,
+      rendered_with: KIT_VERSION
+    });
   }
 
-  if (detection.brownfield) {
-    if (process.env.WIZE_SKIP_BASELINE === '1') {
-      console.log('\nWIZE_SKIP_BASELINE=1 — baseline não será executado.');
-    } else if (!INTERACTIVE || nonInteractive) {
+  const baseline = baselineDecision({ root: cwd, flags, brownfield: detection.brownfield });
+  if (baseline.reason === 'env' && (detection.brownfield || flags.baseline)) {
+    console.log('\nWIZE_SKIP_BASELINE=1 — baseline não será executado.');
+  } else if (baseline.reason === 'exists') {
+    console.log('\nBaseline já existe em .wize/knowledge/document-project/; não será executado (use --baseline ou `wize-dev-kit document-project`).');
+  } else if (baseline.run) {
+    if (!INTERACTIVE || nonInteractive) {
       console.log('\nInstalação não-interativa detectada; executando baseline rápido...');
       cmdDocumentProject({ kitRoot: KIT_ROOT, projectRoot: cwd, args: ['quick'], opts: { log: console.log } });
     } else {
@@ -667,8 +737,10 @@ async function cmdInstall(args) {
   console.log(composeOnboarding(detection, profiles));
   console.log('');
   console.log('Mantenha o kit sincronizado:');
-  console.log('  • `npx wize-dev-kit update`  atualizar adapters após nova versão do kit');
-  console.log('  • `npx wize-dev-kit sync`    re-renderizar adapters após editar config');
+  console.log('  • `npx wize-dev-kit hydrate`    renderizar um checkout novo ou worktree (sem tocar em arquivos versionados)');
+  console.log('  • `npx wize-dev-kit update --pr`  atualizar o kit numa branch isolada e abrir o PR');
+  console.log('  • `npx wize-dev-kit hooks install`  hydrate automático ao criar worktrees');
+  console.log('  • `npx wize-dev-kit sync`       re-renderizar adapters após editar config');
   console.log('  • `npx wize-dev-kit agent list | create | edit <code>`  gerenciar agentes');
   console.log('──────────────────────────────────────────────────────────────');
 }
@@ -704,13 +776,20 @@ function cleanAdapterTarget(targetDir) {
 }
 
 async function cmdUninstall(args) {
-  const cwd = process.cwd();
   const { flags } = parseArgs(args || []);
   const dryRun = !!flags['dry-run'];
+  const target = resolveUninstallRoot({ cwd: process.cwd(), flags, env: process.env });
+  const root = target.root;
+
+  console.log(`uninstalling from ${root}`);
+  if (target.refused) {
+    console.error(`✖ run from ${root} or pass --root ${root}`);
+    process.exit(1);
+  }
 
   if (dryRun) console.log('[DRY-RUN] Nenhum arquivo será removido.\n');
 
-  const wizeDir = path.join(cwd, '.wize');
+  const wizeDir = path.join(root, '.wize');
   if (!fs.existsSync(wizeDir)) {
     console.log('Nenhuma pasta .wize/ encontrada aqui.');
     return;
@@ -719,7 +798,7 @@ async function cmdUninstall(args) {
   // Read project.toml to discover which IDE targets were configured.
   let ideTargets = [];
   try {
-    const cfg = loadProjectConfig(cwd);
+    const cfg = loadProjectConfig(root);
     ideTargets = (cfg.install && cfg.install.ide_targets) || [];
   } catch { /* project.toml may be missing or corrupt */ }
 
@@ -729,7 +808,7 @@ async function cmdUninstall(args) {
   // 1. Adapter target dirs (wize-* entries).
   const adapterDirs = [];
   for (const code of ideTargets) {
-    const dir = adapterTargetPath(code, cwd);
+    const dir = adapterTargetPath(code, root);
     if (!dir) continue;
     if (!fs.existsSync(dir)) continue;
     let entries;
@@ -739,12 +818,21 @@ async function cmdUninstall(args) {
       adapterDirs.push({ target: code, dir, name, full: path.join(dir, name) });
     }
   }
+  // The `wize` alias entrypoints do not start with "wize-": remove them by
+  // exact path, never by prefix.
+  for (const code of ideTargets) {
+    for (const alias of ALIAS_BY_TARGET[code] || []) {
+      const full = path.join(root, alias.replace(/\/$/, ''));
+      try { fs.lstatSync(full); } catch { continue; }
+      adapterDirs.push({ target: code, dir: path.dirname(full), name: alias, full, alias: true });
+    }
+  }
 
   // 2. .wize/ directory.
   toRemove.push({ kind: 'diretório', path: wizeDir, label: '.wize/' });
 
   // 3. AGENTS.md if kit-generated.
-  const agentsMd = path.join(cwd, 'AGENTS.md');
+  const agentsMd = path.join(root, 'AGENTS.md');
   if (isKitAgentsMd(agentsMd)) {
     toRemove.push({ kind: 'arquivo', path: agentsMd, label: 'AGENTS.md' });
   }
@@ -759,6 +847,10 @@ async function cmdUninstall(args) {
     }
     for (const [code, names] of Object.entries(byTarget)) {
       console.log(`  ${code}: ${names.length} entrada(s) (${names.slice(0, 5).join(', ')}${names.length > 5 ? '...' : ''})`);
+    }
+    const aliases = adapterDirs.filter(a => a.alias);
+    if (aliases.length > 0) {
+      console.log(`  alias wize (caminho exato): ${aliases.map(a => path.relative(root, a.full)).join(', ')}`);
     }
   } else {
     console.log('Nenhum arquivo de adapter wize-* encontrado.');
@@ -846,14 +938,14 @@ function cmdList() {
   }
 }
 
-function cmdSync() {
-  return cmdSyncReal({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
+function cmdSync(projectRoot) {
+  return cmdSyncReal({ kitRoot: KIT_ROOT, projectRoot });
 }
 
-function cmdAgent(args) {
+function cmdAgent(args, projectRoot) {
   const sub = args[0] || 'list';
   const rest = args.slice(1);
-  const ctx = { kitRoot: KIT_ROOT, projectRoot: process.cwd() };
+  const ctx = { kitRoot: KIT_ROOT, projectRoot };
   if (sub === 'list')   return cmdAgentList(ctx);
   if (sub === 'create') return cmdAgentCreate(ctx);
   if (sub === 'edit')   return cmdAgentEdit({ ...ctx, code: rest[0] });
@@ -877,37 +969,83 @@ function cmdValidate() {
 
 // Commands worth nudging the user about when a newer version exists. Skipped
 // for `update` (already updating), `install` (already setting up), `uninstall`
-// (already leaving), `validate` (developer-tool), and `version` (the user is
-// already asking about versions).
+// (already leaving), `validate` (developer-tool), `hydrate` (runs unattended
+// in worktree hooks and prints its own notice) and `version` (the user is
+// already asking about versions). The hint never waits on the network.
 const HINT_COMMANDS = new Set(['list', 'sync', 'agent', 'workflow', 'help', 'doctor', 'document-project']);
 
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
+  const { flags } = parseArgs(rest);
+  const rootFor = () => resolveRoot({ flags, env: process.env, cwd: process.cwd(), forCommand: cmd });
+  const hint = () => printUpdateHintIfAny(KIT_VERSION, { projectRoot: rootFor(), argv: process.argv.slice(2) });
   if (!cmd || cmd === 'help' || cmd === '--help' || cmd === '-h') {
-    await printUpdateHintIfAny(KIT_VERSION);
+    await hint();
+    console.log(HELP);
+    return;
+  }
+  // `<command> --help` never runs the command: update, sync, hydrate, install
+  // and uninstall all change files.
+  if (rest.includes('--help') || rest.includes('-h')) {
     console.log(HELP);
     return;
   }
   if (HINT_COMMANDS.has(cmd)) {
-    await printUpdateHintIfAny(KIT_VERSION);
+    await hint();
   }
   switch (cmd) {
     case 'install':   return cmdInstall(rest);
-    case 'update':    return cmdUpdate({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
-    case 'version-check':
-      return cmdVersionCheck({ currentVersion: KIT_VERSION, json: rest.includes('--json') });
+    case 'update': {
+      const r = await cmdUpdate({ kitRoot: KIT_ROOT, projectRoot: rootFor(), opts: flags });
+      process.exitCode = r.exitCode || 0;
+      return;
+    }
+    case 'hydrate': {
+      let exitCode = 0;
+      try {
+        const r = cmdHydrate({ kitRoot: KIT_ROOT, binary: KIT_VERSION, projectRoot: rootFor(), flags });
+        exitCode = r.exitCode;
+      } catch (err) {
+        console.error(`wize: hydrate: ${err && err.message ? err.message : err}; run: npx --yes wize-dev-kit@latest hydrate`);
+        exitCode = flags.strict ? 1 : 0;
+      }
+      process.exitCode = exitCode;
+      return;
+    }
+    case 'hooks': {
+      const r = cmdHooks({ projectRoot: rootFor(), args: parseArgs(rest).positional, flags });
+      process.exitCode = r.exitCode || 0;
+      return;
+    }
+    case 'version-check': {
+      const r = await cmdVersionCheck({
+        currentVersion: KIT_VERSION,
+        kitRoot: KIT_ROOT,
+        projectRoot: rootFor(),
+        json: !!flags.json,
+        refresh: !!flags.refresh,
+        quiet: !!flags.quiet,
+        exitCode: !!flags['exit-code']
+      });
+      process.exitCode = r.exitCode || 0;
+      return;
+    }
     case 'uninstall': return cmdUninstall(rest);
     case 'list':      return cmdList();
-    case 'sync':      return cmdSync();
-    case 'agent':     return cmdAgent(rest);
+    case 'sync':      return cmdSync(rootFor());
+    case 'agent':     return cmdAgent(stripValueFlags(rest, ['root']), rootFor());
     case 'workflow':  return cmdWorkflow(rest);
     case 'validate':  return cmdValidate();
-    case 'doctor':    return cmdDoctor({ kitRoot: KIT_ROOT, projectRoot: process.cwd() });
+    case 'doctor': {
+      const r = await cmdDoctor({ kitRoot: KIT_ROOT, projectRoot: rootFor(), opts: { json: !!flags.json, strict: !!flags.strict } });
+      process.exitCode = r.exitCode || 0;
+      return;
+    }
     case 'document-project':
       return cmdDocumentProject({
         kitRoot: KIT_ROOT,
-        projectRoot: process.cwd(),
-        args: rest,
+        projectRoot: rootFor(),
+        args: stripValueFlags(rest, ['root']),
         opts: { log: console.log }
       });
     case 'version':

@@ -21,6 +21,8 @@ Hermes Agent consumes the same public Anthropic Skill format as Claude Code, Cod
 
 Pick **Hermes Agent** as an IDE target during `npx wize-dev-kit install` (or add it and re-run `npx wize-dev-kit sync`). Run `hermes skills trust` in the repo, restart Hermes, then run `/wize-orchestrator`.
 
+Fresh clone or new worktree: generated files are gitignored, so run `npx wize-dev-kit hydrate` there (no prompts, touches no tracked file). See [Worktrees and automatic updates](../WORKTREES.md).
+
 ## Headless
 
 `hermes -z "<prompt>"` runs a one-shot headless session, which the installer's brownfield baseline uses when Hermes is the detected harness CLI.

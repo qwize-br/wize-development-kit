@@ -1,6 +1,6 @@
 ---
 name: wize-prfaq
-description: "1-analysis: PR/FAQ"
+description: "Use quando precisar forçar alinhamento escrevendo o press release futuro e FAQ antes de construir — estilo Amazon Working Backwards."
 ---
 
 # PR/FAQ

@@ -1,6 +1,6 @@
 # Party Mode (multi-agent)
 
-> workflow: Party Mode (multi-agent)
+> Use quando uma decisão cruzar preocupações de múltiplos agentes e precisar de discussão multi-agente facilitada.
 
 # Party Mode
 
