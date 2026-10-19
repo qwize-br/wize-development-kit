@@ -110,6 +110,23 @@ export default defineConfig({
 });
 ```
 
+### Capturing proof (success path)
+
+The config above records failures only. For review evidence, scope always-on capture to a project (or tag) so the full suite stays cheap:
+
+```ts
+{ name: 'review', grep: /@review/, use: { ...devices['Desktop Chrome'], screenshot: 'on', video: 'on' } }
+```
+
+Outside the test runner, close the context in `finally` so the video finalizes even when an assertion throws:
+
+```ts
+const context = await browser.newContext({ recordVideo: { dir: 'test-results/proof' } });
+try { /* walk the flow, assert */ } finally { await context.close(); }
+```
+
+Write captures to a gitignored directory and attach them per the hosting rule in `wize-dev-story` step 10. `reuseExistingServer: true` will happily record someone else's app, so confirm the server on the port is your build first.
+
 ### Page Object Model (light)
 
 ```ts

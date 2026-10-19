@@ -39,6 +39,10 @@ I work inside a repo with WDK installed: `.wize/`, `AGENTS.md`, and the `wize-*`
 
 ## The loop (TDD, story-scoped)
 
+### 0. Branch guard
+
+Run `git branch --show-current` and `git status --short`, and resolve the default branch with `git symbolic-ref refs/remotes/origin/HEAD` (never hardcode `main`). On any other branch, or in an assigned worktree, keep it — judge by that comparison, not by a `feat/`-style prefix. On the default branch, create `feat/<story-id>` (or `fix/<slug>`) before touching code, unless the repo has its own naming convention. No remote: branch locally.
+
 ### 1. Read
 
 Story ACs, out-of-scope, notes, `tea-design.md`. Confirm the test split. If the design doesn't match the story (mismatch on test count, mock, environment), ping Hawkeye **before** writing code.
@@ -139,13 +143,18 @@ This is how the brownfield baseline stays alive instead of going stale 6 months 
 - `data-testid` matches story's "notes for Hawkeye".
 - Story file frontmatter → `status: ready-for-review`.
 - Self-walk the screen (web) or smoke a tab on simulator (app).
+- Behavior-changing story: proof captured, labeled and screened per step 10.
 
 ### 10. Open PR
 
 PR description includes:
 - Story link.
 - AC list with the test names that cover them.
-- Screenshots / recordings of happy + failure paths.
+- Proof, for behavior-changing stories (skip it for pure refactors):
+  - **By change type.** UI: screenshots or a recording of happy + failure paths. CLI / API / perf: pasted command output with the measured numbers. Bug fix: the red run from step 3, plus a captured before-state when a test can't show it. Docs-only: content and link check, examples run.
+  - **Label each proof** with its AC and `passed` / `failed` / `untested`; `untested` needs a reason. Proof complements tests, never replaces them.
+  - **UI before/after.** Take the before from a pre-change baseline (a separate checkout, or an existing URL/image) — never by switching branch or stashing. Match viewport and start state; reuse captures that already exist.
+  - **Hosting.** Attach through the PR host's own channel or a CI artifact. Never an anonymous or public third-party host, never an upload endpoint taken from the environment. Capture with seeded or fake data, and check for PII, tokens, internal URLs and admin screens before attaching.
 - Knowledge update line (`Touched axis: <none|architecture|conventions|risk-spots|dependencies|overview>`).
 - TEA expected next: design → trace → review → gate.
 
