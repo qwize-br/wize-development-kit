@@ -7,7 +7,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
-## [Unreleased]
+## [0.27.0] — 2026-10-19
 
 **0.27.0: worktree-safe hydrate and automatic updates.** A new `git worktree` used to start without `/wize` because the generated skills are gitignored, and `update` edited whatever checkout you ran it from. Now `hydrate` renders any checkout from the `kit_version` pin, agents and hooks run it on their own, and `update` prepares the bump on an isolated branch. Guide: [`docs/WORKTREES.md`](docs/WORKTREES.md).
 
