@@ -32,7 +32,7 @@ It is **file-first and zero-runtime**: the agents are Markdown skills your IDE r
 | Profile | What it adds |
 |---|---|
 | **Wize Dev Core** | Full lifecycle (analysis → plan → solution → implementation) + Test Architect + Whiteport UX + Agent Builder. Always installed. |
-| **Wize Web Dev** *(overlay)* | Web scaffolds, SEO, analytics, WCAG playbook for Mantis, Playwright/Vitest for Hawkeye. |
+| **Wize Web Dev** *(overlay)* | Web scaffolds, landing-page spec (conversion goal, message, gate criteria), SEO, analytics, WCAG playbook for Mantis, Playwright/Vitest for Hawkeye. |
 | **Wize App Development** *(overlay)* | Mobile scaffolds, store listing, App Store review gate (rejection-risk audit at publication), platform guidelines (HIG / Material 3), Detox/Maestro for Hawkeye. |
 | **Wize Security** *(overlay)* | **AI Pentester.** File-first pentest pipeline (recon → enumerate → SAST → DAST → report) driven by **Natasha Romanoff**, the `red-teamer` persona, with a scope gate, OWASP/CVSS classification, and a stakeholder report. |
 

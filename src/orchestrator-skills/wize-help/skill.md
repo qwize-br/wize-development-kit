@@ -106,7 +106,7 @@ Adapters ausentes (skills or `/wize-*` commands missing in this checkout) → hy
 | 21 | Release tagged, retrospective not done | **Wizer / `wize-retrospective`** + **Pepper+Peggy / `wize-refresh-knowledge`** |
 | 22 | All gated, no new epic pulled | Plan next epic (Tony + Maria Hill), or a roadmap session |
 
-**Overlay ship stages** (when the profile is active): web-overlay adds `wize-web-deploy` / `wize-web-seo-audit`; app-overlay adds `wize-app-release-channels` / `wize-app-store-listing` / `wize-app-store-review` (publication gate, after listing, before prod go-live); security-overlay adds `wize-sec-pentest` (recon → enumerate → SAST → DAST → report, gated by `.wize/security/scope.md`).
+**Overlay ship stages** (when the profile is active): web-overlay adds `wize-web-landing-page` (spec before a marketing page is built) / `wize-web-deploy` / `wize-web-seo-audit`; app-overlay adds `wize-app-release-channels` / `wize-app-store-listing` / `wize-app-store-review` (publication gate, after listing, before prod go-live); security-overlay adds `wize-sec-pentest` (recon → enumerate → SAST → DAST → report, gated by `.wize/security/scope.md`).
 
 ### Intent routing table
 
@@ -152,6 +152,7 @@ Match is case-insensitive, substring-based. Longest match wins. When no intent m
 | "implementar story", "dev story", "codar", "desenvolver", "implementar", "fazer story" | `wize-dev-story` |
 | "code review", "revisar código", "revisão de código", "peer review" | `wize-code-review` |
 | "pr audit", "auditar pr", "auditoria de pr", "auditor de pr", "auditar pull request", "auditar um pr", "pr de terceiro", "revisar pr de terceiro", "pr é seguro", "esse pr é seguro", "pode mergear esse pr", "esse pr pode mergear", "pr externo" | `wize-pr-audit` |
+| "landing page", "criar landing page", "página de vendas", "página de captura", "página de conversão", "squeeze page", "waitlist page" | `wize-web-landing-page` (web overlay) |
 | "investigar", "debug", "problema", "root cause", "causa raiz", "regressão" | `wize-investigate` |
 | "checkpoint", "validar direção", "mid-story check" | `wize-checkpoint-preview` |
 | "criar story", "nova story", "author story", "escrever story" | `wize-create-story` |

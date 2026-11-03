@@ -7,6 +7,12 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 > **0.10.0 and earlier are in Brazilian Portuguese** and are kept verbatim as a
 > historical record (not back-translated).
 
+## [Unreleased]
+
+### Added
+
+- **`wize-web-landing-page`** (web overlay, owner Mantis) — plans and specifies a landing page; writes no page code. Builds the spec in conversion order: one goal, a message that matches the traffic source, objections mapped to where the page answers them, sections chosen by page type (SaaS, waitlist, event, app, service, sales page) instead of a fixed list, a visual direction that follows the brand system when one exists, conversion events with LGPD consent, the form and post-conversion step, and gate criteria Hawkeye can check (no `TODO(proof)` left, axe at WCAG AA, Core Web Vitals budgets, event firing). Never invents testimonials, logos or metrics, and allows urgency only when the deadline or limit is real. Hands off a story stub to `wize-create-story`. Routed from "landing page", "página de vendas", "página de captura".
+
 ## [0.27.2] — 2026-10-19
 
 ### Fixed

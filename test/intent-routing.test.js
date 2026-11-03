@@ -142,6 +142,14 @@ test('"code review" routes to wize-code-review', () => {
   assert.ok(assertRoute(tableText, 'code review', 'wize-code-review'));
 });
 
+test('"landing page" routes to wize-web-landing-page', () => {
+  assert.ok(assertRoute(tableText, 'landing page', 'wize-web-landing-page'));
+});
+
+test('"página de vendas" routes to wize-web-landing-page', () => {
+  assert.ok(assertRoute(tableText, 'página de vendas', 'wize-web-landing-page'));
+});
+
 test('"pr audit" routes to wize-pr-audit', () => {
   assert.ok(assertRoute(tableText, 'pr audit', 'wize-pr-audit'));
 });
