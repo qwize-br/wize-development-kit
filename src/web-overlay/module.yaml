@@ -1,6 +1,6 @@
 code: web-overlay
 name: "Wize Web Dev (overlay)"
-description: "Web-stack extension: scaffolds (Next/Vue/Astro/Laravel/SvelteKit), SEO audit, deploy flows, WCAG playbook for Mantis, Playwright/Vitest playbook for Hawkeye."
+description: "Web-stack extension: scaffolds (Next/Vue/Astro/Laravel/SvelteKit), landing-page spec, SEO audit, deploy flows, WCAG playbook for Mantis, Playwright/Vitest playbook for Hawkeye."
 default_selected: false
 required: false
 overlay_of: method
@@ -21,10 +21,13 @@ artifacts:
   - ".wize/planning/web/seo-strategy.md"
   - ".wize/planning/web/analytics-plan.md"
   - ".wize/planning/ux/design-tokens.json"
+  - ".wize/planning/web/landing-pages/{slug}/spec.md"
 
 skills:
   - code: wize-web-scaffold
     description: "Scaffold a web app skeleton per chosen stack (Next/Vue/etc)."
+  - code: wize-web-landing-page
+    description: "Plan and specify a landing page (goal, message, structure by page type, visual direction, measurement, gate criteria); no code, hands off a story."
   - code: wize-web-seo-audit
     description: "Audit SEO basics: sitemap, meta tags, structured data, Core Web Vitals."
   - code: wize-web-deploy

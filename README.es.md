@@ -32,7 +32,7 @@ Es **file-first y zero-runtime**: los agentes son skills en Markdown que tu IDE 
 | Perfil | Qué añade |
 |---|---|
 | **Wize Dev Core** | Ciclo completo (análisis → plan → solución → implementación) + Test Architect + UX Whiteport + Agent Builder. Siempre instalado. |
-| **Wize Web Dev** *(overlay)* | Scaffolds web, SEO, analytics, playbook WCAG para Mantis, Playwright/Vitest para Hawkeye. |
+| **Wize Web Dev** *(overlay)* | Scaffolds web, spec de landing page (objetivo de conversión, mensaje, criterios de gate), SEO, analytics, playbook WCAG para Mantis, Playwright/Vitest para Hawkeye. |
 | **Wize App Development** *(overlay)* | Scaffolds móviles, ficha de tienda, gate de revisión de App Store (auditoría de rechazo al publicar), directrices de plataforma (HIG / Material 3), Detox/Maestro para Hawkeye. |
 | **Wize Security** *(overlay)* | **Pentester de IA.** Pipeline de pentest file-first (recon → enumerate → SAST → DAST → report) conducido por **Natasha Romanoff**, la persona `red-teamer`, con gate de alcance, clasificación OWASP/CVSS e informe ejecutivo. |
 

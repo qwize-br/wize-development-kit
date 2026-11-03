@@ -255,8 +255,8 @@ wize-dev-kit sync     # regera adapters IDE
 
 ### Wize Web Dev (overlay)
 
-- Workflows extras: `wize-web-scaffold` (Next/Vue/etc), `wize-web-deploy`, `wize-web-seo-audit`.
-- Artefatos extras: `seo-strategy.md`, `analytics-plan.md`, `design-tokens.json` (responsivo).
+- Workflows extras: `wize-web-scaffold` (Next/Vue/etc), `wize-web-landing-page` (spec de LP, sem código), `wize-web-deploy`, `wize-web-seo-audit`.
+- Artefatos extras: `seo-strategy.md`, `analytics-plan.md`, `design-tokens.json` (responsivo), `landing-pages/{slug}/spec.md`.
 - Hawkeye playbook: Playwright/Vitest patterns.
 - Mantis playbook: WCAG, breakpoints, semantic HTML.
 
@@ -353,6 +353,7 @@ wize-dev-kit/
 │   │   └── wize-create-workflow/
 │   ├── web-overlay/            # Wize Web Dev overlay
 │   │   ├── wize-web-scaffold/
+│   │   ├── wize-web-landing-page/
 │   │   ├── wize-web-deploy/
 │   │   ├── wize-web-seo-audit/
 │   │   └── module.yaml

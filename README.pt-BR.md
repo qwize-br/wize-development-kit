@@ -32,7 +32,7 @@ O Wize Development Kit (WDK) é uma **stack de agentes de IA** instalável que r
 | Perfil | O que adiciona |
 |---|---|
 | **Wize Dev Core** | Ciclo completo (análise → plano → solução → implementação) + Test Architect + UX Whiteport + Agent Builder. Sempre instalado. |
-| **Wize Web Dev** *(overlay)* | Scaffolds web, SEO, analytics, playbook WCAG para o Mantis, Playwright/Vitest para o Hawkeye. |
+| **Wize Web Dev** *(overlay)* | Scaffolds web, spec de landing page (objetivo de conversão, mensagem, critérios de gate), SEO, analytics, playbook WCAG para o Mantis, Playwright/Vitest para o Hawkeye. |
 | **Wize App Development** *(overlay)* | Scaffolds mobile, listagem em loja, gate de revisão da App Store (auditoria de rejeição no momento da publicação), diretrizes de plataforma (HIG / Material 3), Detox/Maestro para o Hawkeye. |
 | **Wize Security** *(overlay)* | **Pentester de IA.** Pipeline de pentest file-first (recon → enumerate → SAST → DAST → report) conduzido por **Natasha Romanoff**, a persona `red-teamer`, com gate de escopo, classificação OWASP/CVSS e relatório executivo. |
 
