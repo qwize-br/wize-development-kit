@@ -207,6 +207,7 @@ Match is case-insensitive, substring-based. Longest match wins. When no intent m
 | "party mode", "multi-agent", "reunir agentes" | `wize-party-mode` |
 | "atualizar o kit", "tem atualização", "nova versão do kit", "update the kit", "wize update" | `wize-update` |
 | "skills ausentes", "os comandos /wize sumiram", "comandos /wize sumiram", "worktree nova sem skills", "worktree nova", "hidratar", "hydrate" | `wize-update` (hydrate path) |
+| "openbot", "agentes no openbot", "exportar agentes para o openbot", "export agents to openbot" | `wize-update` (openbot path) |
 
 ## Step 2.5 — kit state (proactive)
 

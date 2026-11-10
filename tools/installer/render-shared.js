@@ -191,8 +191,8 @@ function emit(file, buf, mode) {
 }
 
 // -> 'written' | 'unchanged' | 'skipped-tracked'
-function writeFileIfChanged(file, content) {
-  return emit(file, Buffer.isBuffer(content) ? content : Buffer.from(String(content), 'utf-8'));
+function writeFileIfChanged(file, content, mode) {
+  return emit(file, Buffer.isBuffer(content) ? content : Buffer.from(String(content), 'utf-8'), mode);
 }
 
 function copyFileIfChanged(src, dst) {
@@ -519,6 +519,8 @@ module.exports = {
   BOOTSTRAP_END,
   BOOTSTRAP_BLOCK,
   copyCompanionFiles,
+  landingDir,
+  AGENT_ORDER,
   writeFileIfChanged,
   copyFileIfChanged,
   setWriteGuard,

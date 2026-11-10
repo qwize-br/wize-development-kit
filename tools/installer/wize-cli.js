@@ -35,6 +35,7 @@ const { cmdSync: cmdSyncReal } = require('./commands/sync.js');
 const { cmdAgentList, cmdAgentCreate, cmdAgentEdit } = require('./commands/agent.js');
 const { cmdDoctor, adapterTargetPath } = require('./commands/doctor.js');
 const { cmdDocumentProject } = require('./commands/document-project.js');
+const { cmdOpenbot } = require('./commands/openbot.js');
 const { compose: composeOnboarding } = require('./onboarding.js');
 
 const INTERACTIVE = process.stdout.isTTY && process.stdin.isTTY;
@@ -96,6 +97,7 @@ Commands:
   workflow <create|list>  Manage workflows.
   validate                Run schema + lint + dry-run validators.
   doctor [--json] [--strict]  Diagnose the kit + project state (hydration, skew, leaks) and suggest fixes.
+  openbot <export|sync>   Agents for the OpenBot app: export [--profiles a,b] [--lang pt-BR] [--out <dir>] [--json] writes an import .zip; sync [--dry-run] [--adopt] [--allow-outside] [--strict] [--json] [--team <file>] [--agents-dir <dir>] [--profiles a,b] [--lang pt-BR] refreshes imported agents in place.
   document-project        Document the current repo (quick | initial_scan | full_rescan | deep_dive); existing files are kept unless --force.
   help                    Show this message.
 
@@ -424,7 +426,7 @@ function renderAdapters({ kitRoot, projectRoot, targets, profiles }) {
 const BOOLEAN_FLAGS = new Set([
   'yes', 'json', 'quiet', 'strict', 'check', 'dry-run', 'if-needed', 'no-delegate',
   'no-notice', 'no-render', 'in-place', 'pr', 'allow-downgrade', 'exit-code',
-  'refresh', 'here', 'force', 'baseline', 'claude', 'cursor', 'github-action'
+  'refresh', 'here', 'force', 'baseline', 'claude', 'cursor', 'github-action', 'adopt', 'allow-outside'
 ]);
 
 // Parse --key value and --flag from an argv slice. Returns { flags, positional }.
@@ -437,7 +439,12 @@ function parseArgs(args) {
       const key = a.slice(2);
       const eq = key.indexOf('=');
       if (eq !== -1) {
-        flags[key.slice(0, eq)] = key.slice(eq + 1);
+        const name = key.slice(0, eq);
+        const value = key.slice(eq + 1);
+        // `--adopt=false` must not read as on: booleans take true/false/1/0.
+        if (BOOLEAN_FLAGS.has(name) && /^(true|1)$/i.test(value)) flags[name] = true;
+        else if (BOOLEAN_FLAGS.has(name) && /^(false|0)$/i.test(value)) flags[name] = false;
+        else flags[name] = value;
       } else if (BOOLEAN_FLAGS.has(key)) {
         flags[key] = true;
       } else if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
@@ -1048,6 +1055,11 @@ async function main() {
         args: stripValueFlags(rest, ['root']),
         opts: { log: console.log }
       });
+    case 'openbot': {
+      const r = cmdOpenbot({ kitRoot: KIT_ROOT, projectRoot: rootFor(), args: parseArgs(rest).positional, flags });
+      process.exitCode = r.exitCode || 0;
+      return;
+    }
     case 'version':
     case '--version':
     case '-v':

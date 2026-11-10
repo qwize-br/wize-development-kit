@@ -86,6 +86,8 @@ Os 12 alvos de IDE são gerados a partir da mesma fonte; formato e mecânica mud
 | **Continue.dev** | `.continue/prompts/*.prompt` | Slash commands via `invokable: true`. [Docs →](docs/harnesses/continue.pt-BR.md) |
 | **Fallback genérico** | `.wize/agents/*.md` + `AGENTS.md` na raiz | Para qualquer IDE sem adapter dedicado. [Docs →](docs/harnesses/generic.pt-BR.md) |
 
+O **OpenBot** é um app de agentes, não um alvo de IDE, então não entra na contagem acima e não tem entrada no `project.toml`. `npx wize-dev-kit openbot export` monta um `.zip` de importação com um agente por persona; `npx wize-dev-kit openbot sync` renova, depois de cada atualização do kit, os agentes que você já importou. [Docs →](docs/harnesses/openbot.pt-BR.md)
+
 ---
 
 ## O elenco
@@ -276,6 +278,8 @@ npx wize-dev-kit workflow <create|list>  # cria ou lista workflows customizados
 npx wize-dev-kit doctor [--json] [--strict]  # diagnostica kit / projeto / hidratação / adapters / gates
 npx wize-dev-kit validate        # checagens estruturais nos assets do kit
 npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--force] [--target <path>]
+npx wize-dev-kit openbot export [--profiles a,b] [--lang pt-BR] [--out <dir>]  # zip do time para o app OpenBot
+npx wize-dev-kit openbot sync [--dry-run] [--adopt]  # renova no lugar os agentes já importados no OpenBot
 npx wize-dev-kit uninstall       # remove .wize/ (seu código permanece intacto)
 npx wize-dev-kit help            # referência de comandos
 npx wize-dev-kit version         # imprime a versão instalada do kit
