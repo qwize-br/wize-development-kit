@@ -61,6 +61,10 @@ Rules: never commit on the default branch, never force-push, never merge.
 - Repeat in one line that the harness needs a restart to pick up refreshed slash commands.
 - Flag any adapter the output reported as `skipped` or `error`; those need a manual look.
 
+## OpenBot agents (on request)
+
+When the user runs the team in OpenBot, a kit update does not reach the agents they already imported. Offer, once, `npx --yes wize-dev-kit@latest openbot sync --dry-run`, show its summary, and run it without `--dry-run` only after a yes. For a first import, `npx wize-dev-kit openbot export` writes the zip; the user imports it in OpenBot under Server settings → Import. Guide: `docs/harnesses/openbot.md`.
+
 ## When NOT to use
 
 - The user only wants to know whether an update exists: Step 1 alone answers that. Do not push into Step 3 unasked.

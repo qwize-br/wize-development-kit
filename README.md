@@ -86,6 +86,8 @@ All 12 IDE targets render from the same source; format and mechanics differ per 
 | **Continue.dev** | `.continue/prompts/*.prompt` | `invokable: true` slash commands. [Docs →](docs/harnesses/continue.md) |
 | **Generic fallback** | `.wize/agents/*.md` + root `AGENTS.md` | For any IDE without a dedicated adapter. [Docs →](docs/harnesses/generic.md) |
 
+**OpenBot** is an agent app, not an IDE target, so it is not in the count above and has no entry in `project.toml`. `npx wize-dev-kit openbot export` builds an import `.zip` with one agent per persona; `npx wize-dev-kit openbot sync` refreshes the agents you already imported, after each kit update. [Docs →](docs/harnesses/openbot.md)
+
 ---
 
 ## The roster
@@ -273,6 +275,8 @@ npx wize-dev-kit workflow <create|list>  # scaffold or list custom workflows
 npx wize-dev-kit doctor [--json] [--strict]  # diagnose kit / project / hydration / adapters / gates
 npx wize-dev-kit validate        # structural checks on the kit assets
 npx wize-dev-kit document-project [quick|initial_scan|full_rescan|deep_dive] [--resume] [--force] [--target <path>]
+npx wize-dev-kit openbot export [--profiles a,b] [--lang pt-BR] [--out <dir>]  # zip of the team for the OpenBot app
+npx wize-dev-kit openbot sync [--dry-run] [--adopt]  # refresh agents already imported into OpenBot, in place
 npx wize-dev-kit uninstall       # remove .wize/ (your code is left untouched)
 npx wize-dev-kit help            # command reference
 npx wize-dev-kit version         # print the installed kit version
