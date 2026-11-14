@@ -20,8 +20,8 @@ Ao terminar um `wize-sec-pentest`, o desenvolvedor não fica com um relatório q
 
 ## Success criteria
 1. Ao fim do `wize-sec-pentest`, é gravado `.wize/security/security-backlog.md` com epics/stories de correção derivados dos findings, cada story com severidade, CVSS, OWASP e referência ao finding de origem (rastreabilidade) — em ≤ 1 execução, sem edição manual.
-2. O backlog agrupa findings por **tema de correção** (ex.: "rotacionar secrets", "atualizar deps vulneráveis", "hardening de headers") e ordena por prioridade P0/P1/P2 derivada da severidade — não 1 story por finding cru (97 secrets = 1 story de rotação, não 97).
-3. O backlog é consumível por `wize-create-epics-and-stories` sem transformação: o red-teamer/agente aponta a skill para ele e gera as stories formais. Demonstrado end-to-end com os findings reais do sabia.
+2. O backlog agrupa findings por **tema de correção** (ex.: "rotacionar secrets", "atualizar deps vulneráveis", "hardening de headers") e ordena por prioridade P0/P1/P2 derivada da severidade — não 1 story por finding cru (dezenas de secrets = 1 story de rotação, não uma por secret).
+3. O backlog é consumível por `wize-create-epics-and-stories` sem transformação: o red-teamer/agente aponta a skill para ele e gera as stories formais. Demonstrado end-to-end com os findings de um alvo real.
 4. **Zero runtime próprio mantido + comando claro:** o overlay gera o artefato file-first e **imprime, ao fim do scan, um comando copiável e uma instrução de próximo passo** (ex.: `Próximo passo: rode /wize-create-epics-and-stories --from .wize/security/security-backlog.md`). O overlay não invoca skills; o usuário/agente executa o comando. O report HTML/MD também mostra esse call-to-action.
 5. Rastreabilidade reversa: cada story gerada cita o(s) finding(s) que a originou, e fechar a story é verificável (re-rodar o scan e confirmar que o finding sumiu).
 

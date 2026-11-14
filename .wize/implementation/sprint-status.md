@@ -18,7 +18,7 @@ Releases após o fechamento do sprint security-overlay rodaram como quick-dev
 
 **Goal:** Entregar o `security-overlay` (AI Pentester) — pipeline file-first completo + report executivo, instalável como profile.
 
-**Result:** ✅ Shipped. 8 epics / 27 stories, todas done. **v0.6.0** no npm. Validado end-to-end contra `sabia/starterkit-sabia`.
+**Result:** ✅ Shipped. 8 epics / 27 stories, todas done. **v0.6.0** no npm. Validado end-to-end contra um projeto interno.
 
 - Epics E01–E08 — all stories shipped, suite verde (246 testes), validate verde.
 - Release v0.6.0 (Trusted Publishing + provenance + GitHub Release).
